@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS settings (
+  user_id TEXT PRIMARY KEY,
+  data_json TEXT NOT NULL,
+  updated_at INTEGER NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);

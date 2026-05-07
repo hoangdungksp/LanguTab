@@ -1,0 +1,145 @@
+import type { Word } from '../../types';
+
+/**
+ * Level 6 — Academic preparation & extras.
+ *
+ * Target audience: học sinh cuối cấp tiểu học và đầu THCS chuẩn bị KET/PET.
+ * Phủ academic vocabulary, abstract concepts, more sophisticated verbs and
+ * adjectives, formal register, và miscellaneous useful words.
+ *
+ * User-facing label: "Cấp 6 — Chuẩn bị nâng cao".
+ */
+export const enLevel6: Word[] = [
+  // ─── Academic concepts ──────────────────────────────────────────────
+  { id: 'en_909', lang: 'en', term: 'research', phonetic: '/ˈriːsɜːrtʃ/', translation: 'nghiên cứu', level: 6, pos: 'danh từ', example: 'Do research online.', exampleTranslation: 'Nghiên cứu trên mạng.', hint: '🔬' },
+  { id: 'en_910', lang: 'en', term: 'project', phonetic: '/ˈprɒdʒekt/', translation: 'dự án', level: 6, pos: 'danh từ', example: 'A school project.', exampleTranslation: 'Dự án của trường.', hint: '📋' },
+  { id: 'en_911', lang: 'en', term: 'topic', phonetic: '/ˈtɒpɪk/', translation: 'chủ đề', level: 6, pos: 'danh từ', example: 'An interesting topic.', exampleTranslation: 'Chủ đề thú vị.', hint: '💭' },
+  { id: 'en_912', lang: 'en', term: 'theory', phonetic: '/ˈθɪəri/', translation: 'lý thuyết', level: 6, pos: 'danh từ', example: 'A new theory.', exampleTranslation: 'Lý thuyết mới.', hint: '🧪' },
+  { id: 'en_913', lang: 'en', term: 'fact', phonetic: '/fækt/', translation: 'sự thật', level: 6, pos: 'danh từ', example: 'A scientific fact.', exampleTranslation: 'Sự thật khoa học.', hint: '✅' },
+  { id: 'en_914', lang: 'en', term: 'opinion', phonetic: '/əˈpɪnjən/', translation: 'ý kiến', level: 6, pos: 'danh từ', example: 'My opinion is different.', exampleTranslation: 'Ý kiến tôi khác.', hint: '💭' },
+  { id: 'en_915', lang: 'en', term: 'evidence', phonetic: '/ˈevɪdəns/', translation: 'bằng chứng', level: 6, pos: 'danh từ', example: 'Show me evidence.', exampleTranslation: 'Cho tôi xem bằng chứng.', hint: '🔍' },
+  { id: 'en_916', lang: 'en', term: 'example', phonetic: '/ɪɡˈzæmpəl/', translation: 'ví dụ', level: 6, pos: 'danh từ', example: 'Give me an example.', exampleTranslation: 'Cho tôi ví dụ.', hint: '👉' },
+  { id: 'en_917', lang: 'en', term: 'detail', phonetic: '/ˈdiːteɪl/', translation: 'chi tiết', level: 6, pos: 'danh từ', example: 'Tell me the details.', exampleTranslation: 'Kể tôi chi tiết.', hint: '🔎' },
+  { id: 'en_918', lang: 'en', term: 'summary', phonetic: '/ˈsʌməri/', translation: 'tóm tắt', level: 6, pos: 'danh từ', example: 'Write a summary.', exampleTranslation: 'Viết tóm tắt.', hint: '📝' },
+  { id: 'en_919', lang: 'en', term: 'introduction', phonetic: '/ˌɪntrəˈdʌkʃən/', translation: 'phần mở đầu', level: 6, pos: 'danh từ', example: 'Read the introduction.', exampleTranslation: 'Đọc phần mở đầu.', hint: '📄' },
+  { id: 'en_920', lang: 'en', term: 'conclusion', phonetic: '/kənˈkluːʒən/', translation: 'kết luận', level: 6, pos: 'danh từ', example: 'In conclusion, we win.', exampleTranslation: 'Kết luận, chúng ta thắng.', hint: '🏁' },
+  { id: 'en_921', lang: 'en', term: 'paragraph', phonetic: '/ˈpærəɡræf/', translation: 'đoạn văn', level: 6, pos: 'danh từ', example: 'Write three paragraphs.', exampleTranslation: 'Viết ba đoạn văn.', hint: '📖' },
+  { id: 'en_922', lang: 'en', term: 'chapter', phonetic: '/ˈtʃæptər/', translation: 'chương', level: 6, pos: 'danh từ', example: 'Read chapter five.', exampleTranslation: 'Đọc chương năm.', hint: '📑' },
+  { id: 'en_923', lang: 'en', term: 'subject', phonetic: '/ˈsʌbdʒɪkt/', translation: 'chủ ngữ (ngữ pháp)', level: 6, pos: 'danh từ', example: 'Find the subject.', exampleTranslation: 'Tìm chủ ngữ.', hint: '🔠' },
+  { id: 'en_924', lang: 'en', term: 'verb', phonetic: '/vɜːrb/', translation: 'động từ', level: 6, pos: 'danh từ', example: 'Underline the verb.', exampleTranslation: 'Gạch dưới động từ.', hint: '⚡' },
+  { id: 'en_925', lang: 'en', term: 'noun', phonetic: '/naʊn/', translation: 'danh từ', level: 6, pos: 'danh từ', example: 'A common noun.', exampleTranslation: 'Danh từ chung.', hint: '📚' },
+  { id: 'en_926', lang: 'en', term: 'grammar', phonetic: '/ˈɡræmər/', translation: 'ngữ pháp', level: 6, pos: 'danh từ', example: 'Grammar is important.', exampleTranslation: 'Ngữ pháp quan trọng.', hint: '✏️' },
+  { id: 'en_927', lang: 'en', term: 'spelling', phonetic: '/ˈspelɪŋ/', translation: 'đánh vần', level: 6, pos: 'danh từ', example: 'Check your spelling.', exampleTranslation: 'Kiểm tra chính tả.', hint: '🔤' },
+  { id: 'en_928', lang: 'en', term: 'pronunciation', phonetic: '/prəˌnʌnsiˈeɪʃən/', translation: 'phát âm', level: 6, pos: 'danh từ', example: 'Good pronunciation matters.', exampleTranslation: 'Phát âm tốt quan trọng.', hint: '🗣️' },
+
+  // ─── Communication ──────────────────────────────────────────────────
+  { id: 'en_929', lang: 'en', term: 'message', phonetic: '/ˈmesɪdʒ/', translation: 'tin nhắn', level: 6, pos: 'danh từ', example: 'Send me a message.', exampleTranslation: 'Gửi tôi tin nhắn.', hint: '💬' },
+  { id: 'en_930', lang: 'en', term: 'letter', phonetic: '/ˈletər/', translation: 'lá thư', level: 6, pos: 'danh từ', example: 'Write a letter.', exampleTranslation: 'Viết một lá thư.', hint: '✉️' },
+  { id: 'en_931', lang: 'en', term: 'address', phonetic: '/əˈdres/', translation: 'địa chỉ', level: 6, pos: 'danh từ', example: 'My address is 12 Main St.', exampleTranslation: 'Địa chỉ tôi 12 đường Chính.', hint: '📍' },
+  { id: 'en_932', lang: 'en', term: 'phone number', phonetic: '/foʊn ˈnʌmbər/', translation: 'số điện thoại', level: 6, pos: 'danh từ', example: 'Save my phone number.', exampleTranslation: 'Lưu số tôi.', hint: '📞' },
+  { id: 'en_933', lang: 'en', term: 'meeting', phonetic: '/ˈmiːtɪŋ/', translation: 'cuộc họp', level: 6, pos: 'danh từ', example: 'A class meeting.', exampleTranslation: 'Cuộc họp lớp.', hint: '🤝' },
+  { id: 'en_934', lang: 'en', term: 'appointment', phonetic: '/əˈpɔɪntmənt/', translation: 'cuộc hẹn', level: 6, pos: 'danh từ', example: 'A doctor appointment.', exampleTranslation: 'Hẹn bác sĩ.', hint: '📅' },
+  { id: 'en_935', lang: 'en', term: 'conversation', phonetic: '/ˌkɒnvərˈseɪʃən/', translation: 'cuộc trò chuyện', level: 6, pos: 'danh từ', example: 'A long conversation.', exampleTranslation: 'Cuộc trò chuyện dài.', hint: '💬' },
+  { id: 'en_936', lang: 'en', term: 'announcement', phonetic: '/əˈnaʊnsmənt/', translation: 'thông báo', level: 6, pos: 'danh từ', example: 'Listen to the announcement.', exampleTranslation: 'Nghe thông báo.', hint: '📢' },
+  { id: 'en_937', lang: 'en', term: 'news', phonetic: '/nuːz/', translation: 'tin tức', level: 6, pos: 'danh từ', example: 'Watch the news.', exampleTranslation: 'Xem tin tức.', hint: '📰' },
+  { id: 'en_938', lang: 'en', term: 'newspaper', phonetic: '/ˈnuːzpeɪpər/', translation: 'báo', level: 6, pos: 'danh từ', example: 'Read the newspaper.', exampleTranslation: 'Đọc báo.', hint: '📰' },
+  { id: 'en_939', lang: 'en', term: 'magazine', phonetic: '/ˌmæɡəˈziːn/', translation: 'tạp chí', level: 6, pos: 'danh từ', example: 'A fashion magazine.', exampleTranslation: 'Tạp chí thời trang.', hint: '📖' },
+  { id: 'en_940', lang: 'en', term: 'advertisement', phonetic: '/ˌædvərˈtaɪzmənt/', translation: 'quảng cáo', level: 6, pos: 'danh từ', example: 'A funny advertisement.', exampleTranslation: 'Quảng cáo vui.', hint: '📺' },
+
+  // ─── Career + workplace ─────────────────────────────────────────────
+  { id: 'en_941', lang: 'en', term: 'career', phonetic: '/kəˈrɪr/', translation: 'sự nghiệp', level: 6, pos: 'danh từ', example: 'Plan your career.', exampleTranslation: 'Lên kế hoạch sự nghiệp.', hint: '💼' },
+  { id: 'en_942', lang: 'en', term: 'manager', phonetic: '/ˈmænɪdʒər/', translation: 'quản lý', level: 6, pos: 'danh từ', example: 'The manager is busy.', exampleTranslation: 'Quản lý bận.', hint: '👔' },
+  { id: 'en_943', lang: 'en', term: 'employee', phonetic: '/ɪmˈplɔɪiː/', translation: 'nhân viên', level: 6, pos: 'danh từ', example: 'A new employee.', exampleTranslation: 'Nhân viên mới.', hint: '👨‍💼' },
+  { id: 'en_944', lang: 'en', term: 'salary', phonetic: '/ˈsæləri/', translation: 'lương', level: 6, pos: 'danh từ', example: 'A good salary.', exampleTranslation: 'Lương tốt.', hint: '💰' },
+  { id: 'en_945', lang: 'en', term: 'business', phonetic: '/ˈbɪznəs/', translation: 'kinh doanh', level: 6, pos: 'danh từ', example: 'A small business.', exampleTranslation: 'Doanh nghiệp nhỏ.', hint: '🏢' },
+  { id: 'en_946', lang: 'en', term: 'company', phonetic: '/ˈkʌmpəni/', translation: 'công ty', level: 6, pos: 'danh từ', example: 'A big company.', exampleTranslation: 'Công ty lớn.', hint: '🏢' },
+  { id: 'en_947', lang: 'en', term: 'engineer', phonetic: '/ˌendʒɪˈnɪr/', translation: 'kỹ sư', level: 6, pos: 'danh từ', example: 'My uncle is an engineer.', exampleTranslation: 'Chú tôi là kỹ sư.', hint: '👷' },
+  { id: 'en_948', lang: 'en', term: 'scientist', phonetic: '/ˈsaɪəntɪst/', translation: 'nhà khoa học', level: 6, pos: 'danh từ', example: 'A famous scientist.', exampleTranslation: 'Nhà khoa học nổi tiếng.', hint: '👨‍🔬' },
+  { id: 'en_949', lang: 'en', term: 'lawyer', phonetic: '/ˈlɔːjər/', translation: 'luật sư', level: 6, pos: 'danh từ', example: 'A good lawyer.', exampleTranslation: 'Luật sư giỏi.', hint: '⚖️' },
+  { id: 'en_950', lang: 'en', term: 'writer', phonetic: '/ˈraɪtər/', translation: 'nhà văn', level: 6, pos: 'danh từ', example: 'A young writer.', exampleTranslation: 'Nhà văn trẻ.', hint: '✍️' },
+  { id: 'en_951', lang: 'en', term: 'journalist', phonetic: '/ˈdʒɜːrnəlɪst/', translation: 'nhà báo', level: 6, pos: 'danh từ', example: 'A journalist asks questions.', exampleTranslation: 'Nhà báo đặt câu hỏi.', hint: '📰' },
+  { id: 'en_952', lang: 'en', term: 'photographer', phonetic: '/fəˈtɒɡrəfər/', translation: 'nhiếp ảnh gia', level: 6, pos: 'danh từ', example: 'A wedding photographer.', exampleTranslation: 'Nhiếp ảnh gia đám cưới.', hint: '📷' },
+
+  // ─── Health + emergency ─────────────────────────────────────────────
+  { id: 'en_953', lang: 'en', term: 'emergency', phonetic: '/ɪˈmɜːrdʒənsi/', translation: 'khẩn cấp', level: 6, pos: 'danh từ', example: 'In an emergency, call 113.', exampleTranslation: 'Khẩn cấp gọi 113.', hint: '🚨' },
+  { id: 'en_954', lang: 'en', term: 'accident', phonetic: '/ˈæksɪdənt/', translation: 'tai nạn', level: 6, pos: 'danh từ', example: 'A car accident.', exampleTranslation: 'Tai nạn xe.', hint: '⚠️' },
+  { id: 'en_955', lang: 'en', term: 'injury', phonetic: '/ˈɪndʒəri/', translation: 'chấn thương', level: 6, pos: 'danh từ', example: 'A small injury.', exampleTranslation: 'Chấn thương nhỏ.', hint: '🤕' },
+  { id: 'en_956', lang: 'en', term: 'pain', phonetic: '/peɪn/', translation: 'cơn đau', level: 6, pos: 'danh từ', example: 'A bad pain.', exampleTranslation: 'Cơn đau nặng.', hint: '😣' },
+  { id: 'en_957', lang: 'en', term: 'cure', phonetic: '/kjʊr/', translation: 'chữa khỏi', level: 6, pos: 'động từ', example: 'Doctors cure people.', exampleTranslation: 'Bác sĩ chữa bệnh.', hint: '💊' },
+  { id: 'en_958', lang: 'en', term: 'patient', phonetic: '/ˈpeɪʃənt/', translation: 'bệnh nhân', level: 6, pos: 'danh từ', example: 'A young patient.', exampleTranslation: 'Bệnh nhân trẻ.', hint: '🤒' },
+  { id: 'en_959', lang: 'en', term: 'fever', phonetic: '/ˈfiːvər/', translation: 'sốt', level: 6, pos: 'danh từ', example: 'I have a fever.', exampleTranslation: 'Tôi bị sốt.', hint: '🤒' },
+  { id: 'en_960', lang: 'en', term: 'cold', phonetic: '/koʊld/', translation: 'cảm lạnh', level: 6, pos: 'danh từ', example: 'I have a cold.', exampleTranslation: 'Tôi bị cảm.', hint: '🤧' },
+  { id: 'en_961', lang: 'en', term: 'cough', phonetic: '/kɒf/', translation: 'ho', level: 6, pos: 'danh từ', example: 'A bad cough.', exampleTranslation: 'Ho nặng.', hint: '😷' },
+  { id: 'en_962', lang: 'en', term: 'headache', phonetic: '/ˈhedeɪk/', translation: 'đau đầu', level: 6, pos: 'danh từ', example: 'A bad headache.', exampleTranslation: 'Đau đầu nặng.', hint: '🤕' },
+
+  // ─── Government + civics ────────────────────────────────────────────
+  { id: 'en_963', lang: 'en', term: 'government', phonetic: '/ˈɡʌvərnmənt/', translation: 'chính phủ', level: 6, pos: 'danh từ', example: 'The government helps people.', exampleTranslation: 'Chính phủ giúp dân.', hint: '🏛️' },
+  { id: 'en_964', lang: 'en', term: 'president', phonetic: '/ˈprezɪdənt/', translation: 'tổng thống', level: 6, pos: 'danh từ', example: 'The president speaks.', exampleTranslation: 'Tổng thống phát biểu.', hint: '👨‍💼' },
+  { id: 'en_965', lang: 'en', term: 'election', phonetic: '/ɪˈlekʃən/', translation: 'cuộc bầu cử', level: 6, pos: 'danh từ', example: 'A free election.', exampleTranslation: 'Bầu cử tự do.', hint: '🗳️' },
+  { id: 'en_966', lang: 'en', term: 'citizen', phonetic: '/ˈsɪtɪzən/', translation: 'công dân', level: 6, pos: 'danh từ', example: 'A good citizen.', exampleTranslation: 'Công dân tốt.', hint: '🆔' },
+  { id: 'en_967', lang: 'en', term: 'freedom', phonetic: '/ˈfriːdəm/', translation: 'tự do', level: 6, pos: 'danh từ', example: 'Freedom is precious.', exampleTranslation: 'Tự do quý giá.', hint: '🕊️' },
+  { id: 'en_968', lang: 'en', term: 'equality', phonetic: '/iˈkwɒləti/', translation: 'bình đẳng', level: 6, pos: 'danh từ', example: 'We need equality.', exampleTranslation: 'Chúng ta cần bình đẳng.', hint: '⚖️' },
+  { id: 'en_969', lang: 'en', term: 'justice', phonetic: '/ˈdʒʌstɪs/', translation: 'công lý', level: 6, pos: 'danh từ', example: 'Justice for all.', exampleTranslation: 'Công lý cho mọi người.', hint: '⚖️' },
+
+  // ─── Verbs (academic) ──────────────────────────────────────────────
+  { id: 'en_970', lang: 'en', term: 'analyze', phonetic: '/ˈænəlaɪz/', translation: 'phân tích', level: 6, pos: 'động từ', example: 'Analyze the data.', exampleTranslation: 'Phân tích dữ liệu.', hint: '📊' },
+  { id: 'en_971', lang: 'en', term: 'predict', phonetic: '/prɪˈdɪkt/', translation: 'dự đoán', level: 6, pos: 'động từ', example: 'Predict the weather.', exampleTranslation: 'Dự đoán thời tiết.', hint: '🔮' },
+  { id: 'en_972', lang: 'en', term: 'observe', phonetic: '/əbˈzɜːrv/', translation: 'quan sát', level: 6, pos: 'động từ', example: 'Observe carefully.', exampleTranslation: 'Quan sát kỹ.', hint: '👀' },
+  { id: 'en_973', lang: 'en', term: 'examine', phonetic: '/ɪɡˈzæmɪn/', translation: 'kiểm tra', level: 6, pos: 'động từ', example: 'Examine the rock.', exampleTranslation: 'Xem xét tảng đá.', hint: '🔍' },
+  { id: 'en_974', lang: 'en', term: 'measure', phonetic: '/ˈmeʒər/', translation: 'đo', level: 6, pos: 'động từ', example: 'Measure the table.', exampleTranslation: 'Đo cái bàn.', hint: '📏' },
+  { id: 'en_975', lang: 'en', term: 'calculate', phonetic: '/ˈkælkjəleɪt/', translation: 'tính toán', level: 6, pos: 'động từ', example: 'Calculate the sum.', exampleTranslation: 'Tính tổng.', hint: '🧮' },
+  { id: 'en_976', lang: 'en', term: 'suggest', phonetic: '/səˈdʒest/', translation: 'đề nghị', level: 6, pos: 'động từ', example: 'Suggest a movie.', exampleTranslation: 'Gợi ý phim.', hint: '💡' },
+  { id: 'en_977', lang: 'en', term: 'recommend', phonetic: '/ˌrekəˈmend/', translation: 'khuyên dùng', level: 6, pos: 'động từ', example: 'I recommend this book.', exampleTranslation: 'Tôi khuyên đọc sách này.', hint: '👍' },
+  { id: 'en_978', lang: 'en', term: 'consider', phonetic: '/kənˈsɪdər/', translation: 'xem xét', level: 6, pos: 'động từ', example: 'Consider the options.', exampleTranslation: 'Xem xét các lựa chọn.', hint: '🤔' },
+  { id: 'en_979', lang: 'en', term: 'prepare', phonetic: '/prɪˈper/', translation: 'chuẩn bị', level: 6, pos: 'động từ', example: 'Prepare for the test.', exampleTranslation: 'Chuẩn bị thi.', hint: '📚' },
+  { id: 'en_980', lang: 'en', term: 'achieve', phonetic: '/əˈtʃiːv/', translation: 'đạt được', level: 6, pos: 'động từ', example: 'Achieve your goal.', exampleTranslation: 'Đạt mục tiêu.', hint: '🏆' },
+  { id: 'en_981', lang: 'en', term: 'continue', phonetic: '/kənˈtɪnjuː/', translation: 'tiếp tục', level: 6, pos: 'động từ', example: 'Continue reading.', exampleTranslation: 'Tiếp tục đọc.', hint: '➡️' },
+  { id: 'en_982', lang: 'en', term: 'develop', phonetic: '/dɪˈveləp/', translation: 'phát triển', level: 6, pos: 'động từ', example: 'Develop new skills.', exampleTranslation: 'Phát triển kỹ năng mới.', hint: '📈' },
+  { id: 'en_983', lang: 'en', term: 'improve', phonetic: '/ɪmˈpruːv/', translation: 'cải thiện', level: 6, pos: 'động từ', example: 'Improve your English.', exampleTranslation: 'Cải thiện tiếng Anh.', hint: '⬆️' },
+  { id: 'en_984', lang: 'en', term: 'increase', phonetic: '/ɪnˈkriːs/', translation: 'tăng lên', level: 6, pos: 'động từ', example: 'Prices increase.', exampleTranslation: 'Giá tăng.', hint: '📈' },
+  { id: 'en_985', lang: 'en', term: 'decrease', phonetic: '/dɪˈkriːs/', translation: 'giảm xuống', level: 6, pos: 'động từ', example: 'Decrease the volume.', exampleTranslation: 'Giảm âm lượng.', hint: '📉' },
+  { id: 'en_986', lang: 'en', term: 'include', phonetic: '/ɪnˈkluːd/', translation: 'bao gồm', level: 6, pos: 'động từ', example: 'Include everyone.', exampleTranslation: 'Bao gồm tất cả.', hint: '➕' },
+  { id: 'en_987', lang: 'en', term: 'exclude', phonetic: '/ɪkˈskluːd/', translation: 'loại trừ', level: 6, pos: 'động từ', example: 'Don\'t exclude anyone.', exampleTranslation: 'Đừng loại bỏ ai.', hint: '➖' },
+  { id: 'en_988', lang: 'en', term: 'depend', phonetic: '/dɪˈpend/', translation: 'phụ thuộc', level: 6, pos: 'động từ', example: 'It depends on you.', exampleTranslation: 'Tùy bạn.', hint: '🔄' },
+  { id: 'en_989', lang: 'en', term: 'avoid', phonetic: '/əˈvɔɪd/', translation: 'tránh', level: 6, pos: 'động từ', example: 'Avoid danger.', exampleTranslation: 'Tránh nguy hiểm.', hint: '🚫' },
+  { id: 'en_990', lang: 'en', term: 'allow', phonetic: '/əˈlaʊ/', translation: 'cho phép', level: 6, pos: 'động từ', example: 'Mom allows TV.', exampleTranslation: 'Mẹ cho xem tivi.', hint: '✅' },
+  { id: 'en_991', lang: 'en', term: 'forbid', phonetic: '/fərˈbɪd/', translation: 'cấm', level: 6, pos: 'động từ', example: 'Smoking is forbidden.', exampleTranslation: 'Cấm hút thuốc.', hint: '🚫' },
+  { id: 'en_992', lang: 'en', term: 'expect', phonetic: '/ɪkˈspekt/', translation: 'mong đợi', level: 6, pos: 'động từ', example: 'I expect good news.', exampleTranslation: 'Tôi mong tin tốt.', hint: '🤞' },
+  { id: 'en_993', lang: 'en', term: 'mention', phonetic: '/ˈmenʃən/', translation: 'đề cập', level: 6, pos: 'động từ', example: 'Mention this in class.', exampleTranslation: 'Đề cập trong lớp.', hint: '💬' },
+  { id: 'en_994', lang: 'en', term: 'realize', phonetic: '/ˈriːəlaɪz/', translation: 'nhận ra', level: 6, pos: 'động từ', example: 'I realize my mistake.', exampleTranslation: 'Tôi nhận ra lỗi.', hint: '💡' },
+  { id: 'en_995', lang: 'en', term: 'recognize', phonetic: '/ˈrekəɡnaɪz/', translation: 'nhận ra', level: 6, pos: 'động từ', example: 'Recognize the song.', exampleTranslation: 'Nhận ra bài hát.', hint: '🎵' },
+
+  // ─── Adjectives (formal/sophisticated) ──────────────────────────────
+  { id: 'en_996', lang: 'en', term: 'serious', phonetic: '/ˈsɪriəs/', translation: 'nghiêm trọng', level: 6, pos: 'tính từ', example: 'A serious problem.', exampleTranslation: 'Vấn đề nghiêm trọng.', hint: '⚠️' },
+  { id: 'en_997', lang: 'en', term: 'comfortable', phonetic: '/ˈkʌmftərbəl/', translation: 'thoải mái', level: 6, pos: 'tính từ', example: 'A comfortable chair.', exampleTranslation: 'Ghế thoải mái.', hint: '😌' },
+  { id: 'en_998', lang: 'en', term: 'uncomfortable', phonetic: '/ʌnˈkʌmftərbəl/', translation: 'không thoải mái', level: 6, pos: 'tính từ', example: 'An uncomfortable seat.', exampleTranslation: 'Ghế không thoải mái.', hint: '😖' },
+  { id: 'en_999', lang: 'en', term: 'public', phonetic: '/ˈpʌblɪk/', translation: 'công cộng', level: 6, pos: 'tính từ', example: 'A public park.', exampleTranslation: 'Công viên công cộng.', hint: '🌳' },
+  { id: 'en_1000', lang: 'en', term: 'private', phonetic: '/ˈpraɪvət/', translation: 'riêng tư', level: 6, pos: 'tính từ', example: 'A private room.', exampleTranslation: 'Phòng riêng.', hint: '🔒' },
+  { id: 'en_1001', lang: 'en', term: 'national', phonetic: '/ˈnæʃənəl/', translation: 'thuộc quốc gia', level: 6, pos: 'tính từ', example: 'The national flag.', exampleTranslation: 'Quốc kỳ.', hint: '🚩' },
+  { id: 'en_1002', lang: 'en', term: 'international', phonetic: '/ˌɪntərˈnæʃənəl/', translation: 'quốc tế', level: 6, pos: 'tính từ', example: 'An international event.', exampleTranslation: 'Sự kiện quốc tế.', hint: '🌐' },
+  { id: 'en_1003', lang: 'en', term: 'natural', phonetic: '/ˈnætʃərəl/', translation: 'tự nhiên', level: 6, pos: 'tính từ', example: 'Natural beauty.', exampleTranslation: 'Vẻ đẹp tự nhiên.', hint: '🌿' },
+  { id: 'en_1004', lang: 'en', term: 'artificial', phonetic: '/ˌɑːrtəˈfɪʃəl/', translation: 'nhân tạo', level: 6, pos: 'tính từ', example: 'Artificial flowers.', exampleTranslation: 'Hoa nhân tạo.', hint: '🌸' },
+  { id: 'en_1005', lang: 'en', term: 'available', phonetic: '/əˈveɪləbəl/', translation: 'có sẵn', level: 6, pos: 'tính từ', example: 'Tickets are available.', exampleTranslation: 'Còn vé.', hint: '✅' },
+  { id: 'en_1006', lang: 'en', term: 'possible', phonetic: '/ˈpɒsɪbəl/', translation: 'có thể', level: 6, pos: 'tính từ', example: 'Anything is possible.', exampleTranslation: 'Mọi chuyện đều có thể.', hint: '✨' },
+  { id: 'en_1007', lang: 'en', term: 'impossible', phonetic: '/ɪmˈpɒsɪbəl/', translation: 'không thể', level: 6, pos: 'tính từ', example: 'It\'s impossible.', exampleTranslation: 'Không thể.', hint: '🚫' },
+  { id: 'en_1008', lang: 'en', term: 'necessary', phonetic: '/ˈnesəseri/', translation: 'cần thiết', level: 6, pos: 'tính từ', example: 'Sleep is necessary.', exampleTranslation: 'Ngủ cần thiết.', hint: '✅' },
+  { id: 'en_1009', lang: 'en', term: 'useful', phonetic: '/ˈjuːsfəl/', translation: 'hữu ích', level: 6, pos: 'tính từ', example: 'A useful tool.', exampleTranslation: 'Công cụ hữu ích.', hint: '🔧' },
+  { id: 'en_1010', lang: 'en', term: 'useless', phonetic: '/ˈjuːsləs/', translation: 'vô ích', level: 6, pos: 'tính từ', example: 'A useless toy.', exampleTranslation: 'Đồ chơi vô ích.', hint: '🚯' },
+  { id: 'en_1011', lang: 'en', term: 'similar', phonetic: '/ˈsɪmɪlər/', translation: 'tương tự', level: 6, pos: 'tính từ', example: 'Similar shapes.', exampleTranslation: 'Hình giống nhau.', hint: '🟰' },
+  { id: 'en_1012', lang: 'en', term: 'opposite', phonetic: '/ˈɒpəzɪt/', translation: 'đối lập', level: 6, pos: 'tính từ', example: 'Opposite colors.', exampleTranslation: 'Màu đối lập.', hint: '↔️' },
+  { id: 'en_1013', lang: 'en', term: 'main', phonetic: '/meɪn/', translation: 'chính', level: 6, pos: 'tính từ', example: 'The main idea.', exampleTranslation: 'Ý chính.', hint: '⭐' },
+  { id: 'en_1014', lang: 'en', term: 'general', phonetic: '/ˈdʒenərəl/', translation: 'tổng quát', level: 6, pos: 'tính từ', example: 'A general idea.', exampleTranslation: 'Ý tổng quát.', hint: '🌐' },
+  { id: 'en_1015', lang: 'en', term: 'specific', phonetic: '/spəˈsɪfɪk/', translation: 'cụ thể', level: 6, pos: 'tính từ', example: 'Specific examples.', exampleTranslation: 'Ví dụ cụ thể.', hint: '🎯' },
+
+  // ─── Final closing words ────────────────────────────────────────────
+  { id: 'en_1016', lang: 'en', term: 'whether', phonetic: '/ˈweðər/', translation: 'liệu có', level: 6, pos: 'liên từ', example: 'I don\'t know whether to go.', exampleTranslation: 'Tôi không biết có nên đi không.', hint: '❓' },
+  { id: 'en_1017', lang: 'en', term: 'instead', phonetic: '/ɪnˈsted/', translation: 'thay vào đó', level: 6, pos: 'trạng từ', example: 'Have tea instead.', exampleTranslation: 'Uống trà thay nhé.', hint: '🔄' },
+  { id: 'en_1018', lang: 'en', term: 'however', phonetic: '/haʊˈevər/', translation: 'tuy nhiên', level: 6, pos: 'trạng từ', example: 'However, I disagree.', exampleTranslation: 'Tuy nhiên, tôi không đồng ý.', hint: '🔄' },
+  { id: 'en_1019', lang: 'en', term: 'therefore', phonetic: '/ˈðerfɔːr/', translation: 'do đó', level: 6, pos: 'trạng từ', example: 'It\'s late, therefore I sleep.', exampleTranslation: 'Trễ rồi, nên tôi ngủ.', hint: '➡️' },
+  { id: 'en_1020', lang: 'en', term: 'although', phonetic: '/ɔːlˈðoʊ/', translation: 'mặc dù', level: 6, pos: 'liên từ', example: 'Although tired, I help.', exampleTranslation: 'Dù mệt, tôi vẫn giúp.', hint: '🔄' },
+  { id: 'en_1021', lang: 'en', term: 'unless', phonetic: '/ənˈles/', translation: 'trừ khi', level: 6, pos: 'liên từ', example: 'I sleep unless busy.', exampleTranslation: 'Tôi ngủ trừ khi bận.', hint: '🔄' },
+  { id: 'en_1022', lang: 'en', term: 'beyond', phonetic: '/biˈjɒnd/', translation: 'vượt quá', level: 6, pos: 'giới từ', example: 'Beyond the mountain.', exampleTranslation: 'Vượt qua núi.', hint: '⛰️' },
+  { id: 'en_1023', lang: 'en', term: 'within', phonetic: '/wɪˈðɪn/', translation: 'trong vòng', level: 6, pos: 'giới từ', example: 'Within an hour.', exampleTranslation: 'Trong vòng một giờ.', hint: '⏱️' },
+  { id: 'en_1024', lang: 'en', term: 'beside', phonetic: '/bɪˈsaɪd/', translation: 'bên cạnh', level: 6, pos: 'giới từ', example: 'Beside my bed.', exampleTranslation: 'Cạnh giường tôi.', hint: '➡️' },
+  { id: 'en_1025', lang: 'en', term: 'eventually', phonetic: '/ɪˈventʃuəli/', translation: 'cuối cùng', level: 6, pos: 'trạng từ', example: 'Eventually, we won.', exampleTranslation: 'Cuối cùng, chúng tôi thắng.', hint: '🏁' },
+];

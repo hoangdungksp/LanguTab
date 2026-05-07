@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS review_log (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id TEXT NOT NULL,
+  word_id TEXT NOT NULL,
+  lang TEXT NOT NULL,
+  rating INTEGER NOT NULL,
+  reviewed_at INTEGER NOT NULL,
+  created_at INTEGER NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);

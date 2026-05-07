@@ -1,0 +1,62 @@
+name = "lingua-newtab-worker"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+
+# Once you know the extension's chrome-extension:// ID, replace "*" with it.
+# For dev "*" works but production should restrict to the extension origin.
+[vars]
+ALLOWED_ORIGINS = "*"
+# Sprint 4.9.2: Bumped from v3 → v4 to invalidate all prior cached audio
+# (position-based scripts) and scenes (clothing-only prompts). v4 audio
+# now describes appearance + activity matching enhanced scene prompts.
+AUDIO_CACHE_VERSION = "v4"
+SCENE_CACHE_VERSION = "v4"
+
+# ─── Cron Triggers ─────────────────────────────────────────────────────────
+# Runs the monitoring system every 15 minutes:
+#   - Collects current quota usage (Workers AI Neurons, requests, KV)
+#   - Persists snapshot into D1 (metrics_snapshots)
+#   - Detects threshold crossings (70% warning, 90% critical)
+#   - Sends alerts via Resend email
+#   - Sends daily summary at 02:00 UTC (= 09:00 ICT)
+[triggers]
+crons = ["*/15 * * * *"]
+
+# ─── Workers AI ────────────────────────────────────────────────────────────
+[ai]
+binding = "AI"
+
+# ─── KV namespace (rate limit + monitoring counters) ───────────────────────
+[[kv_namespaces]]
+binding = "RATE_LIMITER"
+id = "af60b12941fe4176addf7c707b780301"
+
+# ─── R2 bucket (custom flashcard images) ───────────────────────────────────
+# Replaces Google Drive appDataFolder for custom flashcard images. R2 keys
+# are formatted as `{userId}/{lang}/{wordId}.{ext}` so:
+#   - Per-user listing is cheap (prefix scan)
+#   - Account deletion = single prefix delete
+#   - No PII in keys (userId is the Google `sub` claim, opaque)
+#
+# Setup (one time):
+#   wrangler r2 bucket create lingua-newtab-images
+#
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "lingua-newtab-images"
+
+# ─── D1 database (metrics + admin) ─────────────────────────────────────────
+# Sprint 4.7+ uses D1 for: drop_zone_overrides (calibration), exam_audio_scripts,
+# user accounts, sync state, billing. Migrations in src/db/migrations/.
+
+[[d1_databases]]
+binding = "DB"
+database_name = "lingua-newtab-metrics"
+database_id = "9729612b-2b94-4ad0-a708-2dfda0a379db"
+
+# ─── Secrets (set via `wrangler secret put`) ───────────────────────────────
+# For monitoring + admin dashboard:
+#   wrangler secret put RESEND_API_KEY     # from https://resend.com
+#   wrangler secret put RESEND_FROM_EMAIL  # e.g. "alerts@kspstudio.com"
+#   wrangler secret put RESEND_TO_EMAIL    # Jason's recipient email
+#   wrangler secret put ADMIN_TOKEN        # random string, used for /admin/* auth

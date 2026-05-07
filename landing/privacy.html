@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Privacy Policy — LinguaNewTab</title>
+  <link rel="icon" href="./icon-128.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --coral: #FF6B35; --coral-dark: #B83C12;
+      --ink: #1A1A2E; --ink-500: #3D3D5C; --ink-100: #E9E9EF;
+      --paper: #FFFDF7; --cream: #FFF8E7;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: 'Nunito', system-ui, sans-serif;
+      color: var(--ink); background: var(--paper);
+      line-height: 1.7; -webkit-font-smoothing: antialiased;
+    }
+    .container { max-width: 760px; margin: 0 auto; padding: 32px 20px 80px; }
+    .topbar {
+      background: var(--cream); padding: 16px 20px;
+      border-bottom: 1px solid var(--ink-100);
+    }
+    .topbar-inner {
+      max-width: 760px; margin: 0 auto;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .topbar a { color: var(--coral-dark); text-decoration: none; font-weight: 700; }
+    .topbar img { width: 32px; height: 32px; border-radius: 8px; }
+    h1, h2, h3 { font-family: 'Be Vietnam Pro', system-ui, sans-serif; font-weight: 800; letter-spacing: -0.01em; }
+    h1 { font-size: 2rem; margin: 24px 0 8px; }
+    h2 { font-size: 1.5rem; margin: 36px 0 12px; padding-top: 16px; border-top: 1px solid var(--ink-100); }
+    h3 { font-size: 1.125rem; margin: 24px 0 8px; }
+    a { color: var(--coral-dark); }
+    code { background: var(--cream); padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+    pre { background: var(--ink); color: var(--cream); padding: 16px; border-radius: 12px; overflow-x: auto; }
+    pre code { background: transparent; padding: 0; color: inherit; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--ink-100); }
+    th { background: var(--cream); font-weight: 700; }
+    blockquote {
+      border-left: 4px solid var(--coral); margin: 16px 0;
+      padding: 8px 16px; background: var(--cream); color: var(--ink-500);
+    }
+    hr { border: none; border-top: 1px solid var(--ink-100); margin: 32px 0; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <img src="./icon-48.png" alt="LinguaNewTab" />
+      <a href="./index.html">LinguaNewTab</a>
+      <span style="margin-left:auto;color:var(--ink-500);font-size:0.9rem;">
+        <a href="./index.html" style="margin-right:16px;">← Trang chủ</a>
+        <a href="./privacy.html" style="margin-right:16px;">Privacy</a>
+        <a href="./terms.html">Terms</a>
+      </span>
+    </div>
+  </div>
+  <div class="container">
+<h1 id="privacy-policy-linguanewtab">Privacy Policy — LinguaNewTab</h1>
+<p><strong>Effective Date</strong>: 2 May 2026
+<strong>Last Updated</strong>: 2 May 2026
+<strong>Contact</strong>: jasonnguyenksp@gmail.com</p>
+<blockquote>
+<p>🇻🇳 Tiếng Việt ở phía dưới · Vietnamese version below</p>
+</blockquote>
+<hr />
+<h2 id="quick-summary">Quick Summary</h2>
+<p>LinguaNewTab is a free Chrome extension for learning Mandarin Chinese and English vocabulary. We collect the <strong>minimum data</strong> needed to provide cloud sync across your devices and AI-generated stories. We do not sell your data, do not use third-party advertising or tracking, and you can delete your account permanently at any time from inside the extension.</p>
+<hr />
+<h2 id="1-what-we-collect-and-why">1. What we collect and why</h2>
+<h3 id="11-account-information-when-you-sign-in-with-google">1.1 Account information (when you sign in with Google)</h3>
+<p>When you click "Sign in with Google" we receive from Google:</p>
+<ul>
+<li><strong>Email address</strong> — to identify your account across devices</li>
+<li><strong>Display name</strong> — shown in the Account Settings modal</li>
+<li><strong>Avatar image URL</strong> — shown in the Account Settings modal</li>
+<li><strong>Google account ID</strong> (the OAuth <code>sub</code> claim) — used as the primary key in our database</li>
+</ul>
+<p>We use this information solely to provide your account; we do not send marketing emails and do not share it with third parties.</p>
+<h3 id="12-learning-data-synced-to-our-cloud-when-signed-in">1.2 Learning data (synced to our cloud when signed in)</h3>
+<p>If you sign in and enable cloud sync, the following data is uploaded to our Cloudflare-hosted database (Cloudflare D1, region: APAC):</p>
+<ul>
+<li><strong>Vocabulary progress</strong> — which words you have learned and the spaced-repetition (FSRS) scheduling state for each word</li>
+<li><strong>Review log</strong> — timestamps and ratings of each flashcard review (used for the streak counter and statistics)</li>
+<li><strong>AI-generated stories</strong> — stories you created via the AI generator, including the prompt parameters and the resulting Chinese/English text</li>
+<li><strong>Settings</strong> — daily goal, target language, and other preferences</li>
+<li><strong>Custom flashcard image metadata</strong> — file name, size, and timestamp of any images you upload to a flashcard. <strong>The image bytes themselves are stored in your private Google Drive <code>appDataFolder</code> (see §3.2), not on our servers</strong></li>
+</ul>
+<p>If you do not sign in, none of the above leaves your browser.</p>
+<h3 id="13-story-generation-prompts-transient">1.3 Story generation prompts (transient)</h3>
+<p>When you click "Generate Story", we send your story parameters (HSK level, genre, description, sentence count) to <strong>Cloudflare Workers AI</strong> (Qwen 3 30B model). The generated story is returned to your browser and saved to your account. We do not retain prompt logs beyond what Cloudflare requires for billing and abuse prevention. The prompt does <strong>not</strong> include your name, email, or any personally identifying information.</p>
+<h3 id="14-diagnostic-information-aggregate-only">1.4 Diagnostic information (aggregate only)</h3>
+<p>Our worker counts aggregate metrics for capacity planning and abuse detection: total requests per day, AI generations per day, and active-user counts. These metrics are <strong>not</strong> linked to individual user accounts in any user-visible report.</p>
+<hr />
+<h2 id="2-what-we-do-not-collect">2. What we do NOT collect</h2>
+<ul>
+<li><strong>Browsing history</strong> outside the new-tab page itself</li>
+<li><strong>IP addresses</strong> — Cloudflare may log them temporarily for routing but we do not query or retain them</li>
+<li><strong>Third-party tracking</strong> — no Google Analytics, no Facebook Pixel, no advertising SDKs</li>
+<li><strong>Microphone or camera access</strong></li>
+<li><strong>Location data</strong></li>
+<li><strong>Contact lists</strong></li>
+<li><strong>Any data from other browser tabs</strong> — the extension only runs on the new-tab page</li>
+</ul>
+<hr />
+<h2 id="3-third-party-services-we-use">3. Third-party services we use</h2>
+<h3 id="31-google-oauth-sign-in">3.1 Google OAuth (Sign-In)</h3>
+<p>We use Google's OAuth 2.0 to verify your identity. Google's privacy policy applies to the sign-in flow itself: <a href="https://policies.google.com/privacy">https://policies.google.com/privacy</a>.</p>
+<p><strong>OAuth scopes requested:</strong></p>
+<ul>
+<li><code>https://www.googleapis.com/auth/userinfo.email</code> — to get your email address</li>
+<li><code>https://www.googleapis.com/auth/userinfo.profile</code> — to get your display name and avatar</li>
+<li><code>https://www.googleapis.com/auth/drive.appdata</code> — to read/write a hidden, app-specific folder in your Google Drive (see §3.2)</li>
+</ul>
+<p>We do <strong>not</strong> request access to your Gmail, Calendar, Contacts, or your full Google Drive.</p>
+<h3 id="32-google-drive-custom-flashcard-images">3.2 Google Drive (custom flashcard images)</h3>
+<p>Custom images you upload for flashcards are stored in your Google Drive's <strong><code>appDataFolder</code></strong> — a hidden folder that:</p>
+<ul>
+<li>Is <strong>only readable and writable by LinguaNewTab</strong></li>
+<li>Does <strong>not</strong> appear in your normal Drive UI</li>
+<li>Counts against your Google Drive storage quota</li>
+<li>Is automatically deleted when you uninstall the extension and revoke its access in your Google account settings</li>
+</ul>
+<p>We never read or write any file outside this hidden folder.</p>
+<h3 id="33-cloudflare-hosting-database-ai">3.3 Cloudflare (hosting + database + AI)</h3>
+<p>Our backend runs entirely on Cloudflare:</p>
+<ul>
+<li><strong>Cloudflare Workers</strong> — handles all API requests</li>
+<li><strong>Cloudflare D1</strong> — stores account information and learning data (region: APAC)</li>
+<li><strong>Cloudflare KV</strong> — rate-limit counters</li>
+<li><strong>Cloudflare Workers AI</strong> (Qwen 3 30B model) — generates stories from your prompts</li>
+</ul>
+<p>Cloudflare's privacy policy: <a href="https://www.cloudflare.com/privacypolicy/">https://www.cloudflare.com/privacypolicy/</a>.</p>
+<h3 id="34-lemon-squeezy-payments-only-if-you-upgrade-to-pro">3.4 Lemon Squeezy (payments, only if you upgrade to Pro)</h3>
+<p>If you subscribe to LinguaNewTab Pro, payment is processed by <strong>Lemon Squeezy</strong> (Lemon Squeezy LLC, a US-based merchant of record). Lemon Squeezy collects your billing information directly — we never see your card number. We receive only:</p>
+<ul>
+<li>Your subscription status (<code>active</code>, <code>cancelled</code>, <code>expired</code>, etc.)</li>
+<li>Subscription / customer IDs (so we can link a webhook to the right account)</li>
+<li>Renewal / expiry dates</li>
+</ul>
+<p>If you do not upgrade, none of your data is ever sent to Lemon Squeezy.</p>
+<p>Lemon Squeezy's privacy policy: <a href="https://www.lemonsqueezy.com/privacy">https://www.lemonsqueezy.com/privacy</a>.</p>
+<h3 id="35-bundled-audio-files">3.5 Bundled audio files</h3>
+<p>Native-speaker audio for HSK and Oxford 500 vocabulary is bundled with the extension at install time. No network requests are made when you tap "Listen" — the MP3 plays from your local Chrome storage.</p>
+<h3 id="36-no-analytics-or-advertising">3.6 No analytics or advertising</h3>
+<p>We do <strong>not</strong> use Google Analytics, Mixpanel, Segment, Facebook Pixel, or any other analytics, attribution, or advertising provider.</p>
+<hr />
+<h2 id="4-how-long-we-keep-your-data">4. How long we keep your data</h2>
+<table>
+<thead>
+<tr>
+<th>Data</th>
+<th>Retention</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Account record</td>
+<td>Until you delete your account, then permanently within 30 days</td>
+</tr>
+<tr>
+<td>Learning progress, stories, settings</td>
+<td>Until you delete your account, then permanently within 30 days</td>
+</tr>
+<tr>
+<td>Custom flashcard images</td>
+<td>Stored in your Google Drive — you control retention; revoking app access wipes them</td>
+</tr>
+<tr>
+<td>Billing audit log (if Pro)</td>
+<td>7 years (legal/tax requirement)</td>
+</tr>
+<tr>
+<td>Cloudflare AI request logs</td>
+<td>Per Cloudflare's policy, typically &lt;30 days, not linked to your account</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-your-rights">5. Your rights</h2>
+<p>You can exercise the following rights at any time directly inside the extension:</p>
+<h3 id="51-view-what-we-have-on-you">5.1 View what we have on you</h3>
+<p>Open Settings → Account &amp; Sync. The "Cloud storage" section shows the count of every type of record we hold for you (words learned, AI stories, custom images, review log entries).</p>
+<h3 id="52-export-your-data">5.2 Export your data</h3>
+<p>Settings → Account &amp; Sync → "Force download (lấy từ cloud)" — pulls a complete snapshot from the cloud to your local browser. From there you can use the developer tools to inspect IndexedDB if you want a raw copy.</p>
+<h3 id="53-correct-or-update-your-data">5.3 Correct or update your data</h3>
+<p>Re-rate flashcards, edit/delete AI stories, or change your settings — every change syncs to the cloud automatically. To update your name or email, change them in your Google account; the next sync will pull the new values.</p>
+<h3 id="54-delete-your-data">5.4 Delete your data</h3>
+<p>Settings → Account &amp; Sync → "Xóa tài khoản &amp; toàn bộ data". This is <strong>permanent</strong>:</p>
+<ul>
+<li>Your account record is deleted from our database (within 30 days, typical &lt; 24 hours)</li>
+<li>All your learning data, AI stories, settings, and custom-image metadata are deleted</li>
+<li>Your custom-image bytes in Google Drive's appDataFolder remain — to also delete those, revoke app access at <a href="https://myaccount.google.com/permissions">https://myaccount.google.com/permissions</a></li>
+<li>If you have a Pro subscription, it is <strong>not</strong> automatically cancelled — cancel via Lemon Squeezy email link or by emailing us first</li>
+</ul>
+<h3 id="55-sign-out-without-deleting">5.5 Sign out without deleting</h3>
+<p>Settings → Account &amp; Sync → "Đăng xuất". Stops syncing and signs you out of Google but leaves your data on the server so you can sign back in later. You can optionally also clear your local browser cache during sign-out.</p>
+<h3 id="56-withdraw-consent">5.6 Withdraw consent</h3>
+<p>Sign out as above. After sign-out, no data leaves your browser regardless of what you do in the extension.</p>
+<h3 id="57-euuk-gdpr-rights">5.7 EU/UK GDPR rights</h3>
+<p>If you are in the EU or UK, you additionally have the right to:</p>
+<ul>
+<li>File a complaint with your data protection authority</li>
+<li>Request a portable copy of your data in a structured machine-readable format (we will respond within 30 days at jasonnguyenksp@gmail.com)</li>
+<li>Object to processing (sign out — there is no other legal basis we rely on once you have signed out)</li>
+</ul>
+<p>We process your data on the legal bases of (a) <strong>contract</strong> — providing the cloud-sync feature you requested by signing in; and (b) <strong>legitimate interest</strong> — basic abuse prevention.</p>
+<hr />
+<h2 id="6-data-security">6. Data security</h2>
+<ul>
+<li>All API requests use HTTPS</li>
+<li>Account data is stored in Cloudflare D1, encrypted at rest by Cloudflare</li>
+<li>We do not store your Google OAuth refresh token; we hold only short-lived access tokens during request processing</li>
+<li>We never see your payment card information; Lemon Squeezy handles all card data</li>
+<li>Webhooks from Lemon Squeezy are verified using HMAC-SHA256 to prevent forgery</li>
+</ul>
+<p>If we ever discover a data breach affecting your personal information, we will notify you within 72 hours via the email associated with your Google account.</p>
+<hr />
+<h2 id="7-children">7. Children</h2>
+<p>LinguaNewTab is not directed to children under 13. We do not knowingly collect personal information from children under 13. If you are a parent and believe your child has signed in to LinguaNewTab, contact us at jasonnguyenksp@gmail.com and we will delete the account.</p>
+<p>For users in the EU/UK, the minimum age for using LinguaNewTab is 16.</p>
+<hr />
+<h2 id="8-international-users">8. International users</h2>
+<p>LinguaNewTab is operated from Vietnam by an individual developer. By signing in you understand and agree that your data will be transferred to and processed on Cloudflare infrastructure in the Asia-Pacific region. We do not transfer your data to any country whose data-protection regime is materially weaker than the EU's or Vietnam's.</p>
+<hr />
+<h2 id="9-changes-to-this-policy">9. Changes to this policy</h2>
+<p>We will update this policy when we add features that change how we handle your data. When we make a material change we will:</p>
+<ul>
+<li>Update the "Last Updated" date at the top</li>
+<li>Show a one-time notice inside the extension on the next new-tab open</li>
+<li>Email all signed-in users when the change reduces your privacy (e.g. adds a new third-party recipient)</li>
+</ul>
+<p>The full version history is maintained on our public GitHub repository.</p>
+<hr />
+<h2 id="10-contact">10. Contact</h2>
+<p>Questions, complaints, or data requests:</p>
+<ul>
+<li>Email: <strong>jasonnguyenksp@gmail.com</strong></li>
+<li>GitHub issues: see the extension's README</li>
+</ul>
+<p>We aim to respond within 7 days for general questions and within 30 days for formal data requests.</p>
+<h2 id="-">---</h2>
+<h1 id="chinh-sach-bao-mat-linguanewtab-tieng-viet">🇻🇳 Chính sách Bảo mật — LinguaNewTab (Tiếng Việt)</h1>
+<p><strong>Ngày hiệu lực</strong>: 2 tháng 5, 2026
+<strong>Cập nhật lần cuối</strong>: 2 tháng 5, 2026
+<strong>Liên hệ</strong>: jasonnguyenksp@gmail.com</p>
+<h2 id="tom-tat-nhanh">Tóm tắt nhanh</h2>
+<p>LinguaNewTab là tiện ích Chrome miễn phí để học từ vựng tiếng Trung và tiếng Anh. Chúng tôi chỉ thu thập <strong>dữ liệu tối thiểu</strong> cần thiết để đồng bộ tiến độ học giữa các thiết bị và sinh truyện AI. Chúng tôi không bán dữ liệu, không dùng quảng cáo hay tracking từ bên thứ ba, và bạn có thể xóa tài khoản vĩnh viễn bất cứ lúc nào ngay trong tiện ích.</p>
+<h2 id="1-chung-toi-thu-thap-gi-va-e-lam-gi">1. Chúng tôi thu thập gì và để làm gì</h2>
+<h3 id="11-thong-tin-tai-khoan-khi-ang-nhap-google">1.1 Thông tin tài khoản (khi đăng nhập Google)</h3>
+<p>Khi bạn click "Đăng nhập Google", Google gửi cho chúng tôi:</p>
+<ul>
+<li><strong>Địa chỉ email</strong> — để xác định tài khoản giữa các thiết bị</li>
+<li><strong>Tên hiển thị</strong> — hiển thị trong Cài đặt tài khoản</li>
+<li><strong>URL ảnh đại diện</strong> — hiển thị trong Cài đặt tài khoản</li>
+<li><strong>ID Google account</strong> (claim <code>sub</code> của OAuth) — dùng làm primary key trong database</li>
+</ul>
+<p>Chúng tôi chỉ dùng những thông tin này để cung cấp tài khoản; <strong>không</strong> gửi email marketing và <strong>không</strong> chia sẻ với bên thứ ba.</p>
+<h3 id="12-du-lieu-hoc-tap-ong-bo-len-cloud-khi-ang-nhap">1.2 Dữ liệu học tập (đồng bộ lên cloud khi đăng nhập)</h3>
+<p>Nếu bạn đăng nhập và bật đồng bộ cloud, các dữ liệu sau sẽ được upload lên database Cloudflare D1 (khu vực APAC):</p>
+<ul>
+<li><strong>Tiến độ từ vựng</strong> — từ nào đã học, trạng thái spaced-repetition (FSRS) cho mỗi từ</li>
+<li><strong>Lịch sử ôn tập</strong> — timestamp và rating của mỗi lượt review</li>
+<li><strong>Truyện AI tự tạo</strong> — truyện bạn đã sinh, kèm prompt và nội dung tiếng Trung/Anh</li>
+<li><strong>Cài đặt</strong> — mục tiêu hằng ngày, ngôn ngữ, sở thích khác</li>
+<li><strong>Metadata ảnh flashcard custom</strong> — tên file, kích thước, timestamp. <strong>Bản thân file ảnh được lưu trong thư mục <code>appDataFolder</code> riêng tư của Google Drive (xem §3.2), không trên máy chủ chúng tôi</strong></li>
+</ul>
+<p>Nếu không đăng nhập, không có dữ liệu nào rời khỏi trình duyệt.</p>
+<h3 id="13-prompt-sinh-truyen-tam-thoi">1.3 Prompt sinh truyện (tạm thời)</h3>
+<p>Khi bạn click "Tạo truyện AI", chúng tôi gửi tham số (HSK level, thể loại, mô tả, số câu) đến <strong>Cloudflare Workers AI</strong> (model Qwen 3 30B). Truyện được sinh ra trả về trình duyệt và lưu vào tài khoản. Chúng tôi không lưu lại prompt log ngoài những gì Cloudflare yêu cầu cho billing và chống abuse. Prompt <strong>không</strong> chứa tên, email hoặc bất kỳ thông tin nhận dạng cá nhân nào.</p>
+<h3 id="14-thong-tin-chan-oan-chi-o-dang-tong-hop">1.4 Thông tin chẩn đoán (chỉ ở dạng tổng hợp)</h3>
+<p>Worker đếm số lượng tổng hợp để lập kế hoạch dung lượng và phát hiện abuse: tổng request/ngày, số truyện AI/ngày, số user hoạt động. Các metrics này <strong>không</strong> liên kết với tài khoản cụ thể trong bất kỳ báo cáo nào người dùng có thể xem.</p>
+<h2 id="2-chung-toi-khong-thu-thap">2. Chúng tôi KHÔNG thu thập</h2>
+<ul>
+<li><strong>Lịch sử duyệt web</strong> ngoài trang new-tab</li>
+<li><strong>Địa chỉ IP</strong> — Cloudflare có thể log tạm cho routing nhưng chúng tôi không query hoặc lưu trữ</li>
+<li><strong>Tracking từ bên thứ ba</strong> — không Google Analytics, không Facebook Pixel, không SDK quảng cáo</li>
+<li><strong>Microphone hoặc camera</strong></li>
+<li><strong>Vị trí địa lý</strong></li>
+<li><strong>Danh bạ liên hệ</strong></li>
+<li><strong>Dữ liệu từ các tab trình duyệt khác</strong> — extension chỉ chạy trên trang new-tab</li>
+</ul>
+<h2 id="3-dich-vu-ben-thu-ba">3. Dịch vụ bên thứ ba</h2>
+<h3 id="31-google-oauth-ang-nhap">3.1 Google OAuth (Đăng nhập)</h3>
+<p>Dùng Google OAuth 2.0 để xác minh danh tính. Chính sách bảo mật của Google áp dụng cho luồng đăng nhập: <a href="https://policies.google.com/privacy">https://policies.google.com/privacy</a>.</p>
+<p><strong>Các OAuth scope yêu cầu:</strong></p>
+<ul>
+<li><code>userinfo.email</code> — lấy email</li>
+<li><code>userinfo.profile</code> — lấy tên hiển thị + ảnh đại diện</li>
+<li><code>drive.appdata</code> — đọc/ghi thư mục ẩn riêng cho app trong Google Drive của bạn</li>
+</ul>
+<p>Chúng tôi <strong>không</strong> yêu cầu Gmail, Calendar, Contacts, hoặc toàn bộ Google Drive.</p>
+<h3 id="32-google-drive-anh-flashcard-custom">3.2 Google Drive (ảnh flashcard custom)</h3>
+<p>Ảnh custom bạn upload cho flashcard được lưu trong <strong><code>appDataFolder</code></strong> của Google Drive — thư mục ẩn:</p>
+<ul>
+<li><strong>Chỉ LinguaNewTab</strong> đọc/ghi được</li>
+<li><strong>Không</strong> xuất hiện trong Drive UI bình thường</li>
+<li>Tính vào dung lượng Drive của bạn</li>
+<li>Tự động bị xóa khi bạn gỡ extension và thu hồi quyền truy cập trong cài đặt Google account</li>
+</ul>
+<p>Chúng tôi không bao giờ đọc/ghi file nào nằm ngoài thư mục ẩn này.</p>
+<h3 id="33-cloudflare-hosting-database-ai_1">3.3 Cloudflare (hosting + database + AI)</h3>
+<p>Backend chạy hoàn toàn trên Cloudflare:</p>
+<ul>
+<li><strong>Cloudflare Workers</strong> — xử lý mọi API request</li>
+<li><strong>Cloudflare D1</strong> — lưu thông tin tài khoản và dữ liệu học (khu vực APAC)</li>
+<li><strong>Cloudflare KV</strong> — counter giới hạn rate limit</li>
+<li><strong>Cloudflare Workers AI</strong> (Qwen 3 30B) — sinh truyện từ prompt</li>
+</ul>
+<p>Privacy policy của Cloudflare: <a href="https://www.cloudflare.com/privacypolicy/">https://www.cloudflare.com/privacypolicy/</a>.</p>
+<h3 id="34-lemon-squeezy-thanh-toan-chi-khi-nang-cap-pro">3.4 Lemon Squeezy (thanh toán, chỉ khi nâng cấp Pro)</h3>
+<p>Nếu bạn đăng ký LinguaNewTab Pro, thanh toán được xử lý bởi <strong>Lemon Squeezy</strong> (LLC tại Mỹ, merchant of record). Lemon Squeezy thu thập thông tin thanh toán trực tiếp — chúng tôi <strong>không bao giờ</strong> thấy số thẻ. Chúng tôi chỉ nhận:</p>
+<ul>
+<li>Trạng thái subscription (<code>active</code>, <code>cancelled</code>, <code>expired</code>, ...)</li>
+<li>ID subscription / customer (để link webhook về tài khoản đúng)</li>
+<li>Ngày gia hạn / hết hạn</li>
+</ul>
+<p>Nếu không nâng cấp, không có dữ liệu nào của bạn được gửi đến Lemon Squeezy.</p>
+<p>Privacy policy của Lemon Squeezy: <a href="https://www.lemonsqueezy.com/privacy">https://www.lemonsqueezy.com/privacy</a>.</p>
+<h3 id="35-file-audio-bundled">3.5 File audio bundled</h3>
+<p>Audio bản ngữ cho HSK và Oxford 500 được bundled với extension lúc cài đặt. Không có request mạng nào khi bạn tap "Nghe" — MP3 phát từ Chrome storage local.</p>
+<h3 id="36-khong-analytics-khong-quang-cao">3.6 Không analytics, không quảng cáo</h3>
+<p>Chúng tôi <strong>không</strong> dùng Google Analytics, Mixpanel, Segment, Facebook Pixel, hoặc bất kỳ provider analytics / attribution / quảng cáo nào.</p>
+<h2 id="4-thoi-gian-luu-tru-du-lieu">4. Thời gian lưu trữ dữ liệu</h2>
+<table>
+<thead>
+<tr>
+<th>Dữ liệu</th>
+<th>Thời gian lưu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hồ sơ tài khoản</td>
+<td>Đến khi bạn xóa, sau đó vĩnh viễn xóa trong 30 ngày</td>
+</tr>
+<tr>
+<td>Tiến độ học, truyện, cài đặt</td>
+<td>Đến khi xóa tài khoản, vĩnh viễn xóa trong 30 ngày</td>
+</tr>
+<tr>
+<td>Ảnh flashcard custom</td>
+<td>Trong Google Drive của bạn — bạn kiểm soát; thu hồi quyền app sẽ xóa</td>
+</tr>
+<tr>
+<td>Audit log thanh toán (nếu Pro)</td>
+<td>7 năm (yêu cầu pháp lý / thuế)</td>
+</tr>
+<tr>
+<td>Log request AI của Cloudflare</td>
+<td>Theo policy của Cloudflare, thường &lt;30 ngày, không link với tài khoản</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-quyen-cua-ban">5. Quyền của bạn</h2>
+<p>Bạn có thể thực hiện các quyền sau bất cứ lúc nào ngay trong extension:</p>
+<h3 id="51-xem-du-lieu-chung-toi-giu-ve-ban">5.1 Xem dữ liệu chúng tôi giữ về bạn</h3>
+<p>Settings → Tài khoản &amp; Đồng bộ. Section "Dữ liệu trên cloud" hiển thị số lượng của mọi loại record (từ đã học, truyện AI, ảnh custom, review log).</p>
+<h3 id="52-xuat-du-lieu">5.2 Xuất dữ liệu</h3>
+<p>Settings → Tài khoản &amp; Đồng bộ → "Force download (lấy từ cloud)" — kéo snapshot đầy đủ từ cloud về máy. Sau đó dùng developer tools để inspect IndexedDB nếu muốn raw copy.</p>
+<h3 id="53-sua-hoac-cap-nhat">5.3 Sửa hoặc cập nhật</h3>
+<p>Tự re-rate flashcard, edit/xóa truyện AI, hoặc đổi cài đặt — mọi thay đổi sync lên cloud tự động. Để cập nhật tên/email, đổi trong Google account; sync tới sẽ tự kéo về.</p>
+<h3 id="54-xoa-du-lieu">5.4 Xóa dữ liệu</h3>
+<p>Settings → Tài khoản &amp; Đồng bộ → "Xóa tài khoản &amp; toàn bộ data". <strong>Vĩnh viễn:</strong></p>
+<ul>
+<li>Hồ sơ tài khoản bị xóa trong DB (trong 30 ngày, thường &lt;24h)</li>
+<li>Mọi dữ liệu học, truyện AI, cài đặt, metadata ảnh — xóa</li>
+<li>Bytes ảnh trong appDataFolder vẫn còn — để xóa, thu hồi quyền app tại <a href="https://myaccount.google.com/permissions">https://myaccount.google.com/permissions</a></li>
+<li>Nếu có Pro, <strong>không</strong> tự cancel — cancel qua link email Lemon Squeezy hoặc email cho chúng tôi trước</li>
+</ul>
+<h3 id="55-ang-xuat-khong-xoa">5.5 Đăng xuất không xóa</h3>
+<p>Settings → Tài khoản &amp; Đồng bộ → "Đăng xuất". Dừng sync, đăng xuất Google, dữ liệu vẫn còn trên server để đăng nhập lại sau. Có thể chọn xóa cache local kèm theo.</p>
+<h3 id="56-rut-lai-ong-y">5.6 Rút lại đồng ý</h3>
+<p>Đăng xuất như trên. Sau khi đăng xuất, không có dữ liệu nào rời khỏi trình duyệt.</p>
+<h3 id="57-quyen-gdpr-cho-euuk">5.7 Quyền GDPR cho EU/UK</h3>
+<p>Người dùng EU/UK còn có quyền:</p>
+<ul>
+<li>Khiếu nại với cơ quan bảo vệ dữ liệu của quốc gia</li>
+<li>Yêu cầu bản sao dữ liệu ở định dạng máy đọc được (chúng tôi phản hồi trong 30 ngày qua jasonnguyenksp@gmail.com)</li>
+<li>Phản đối xử lý (đăng xuất — không có cơ sở pháp lý nào khác sau khi đăng xuất)</li>
+</ul>
+<p>Chúng tôi xử lý dữ liệu trên cơ sở pháp lý: (a) <strong>hợp đồng</strong> — cung cấp tính năng cloud sync khi bạn đăng nhập; (b) <strong>lợi ích chính đáng</strong> — chống abuse cơ bản.</p>
+<h2 id="6-bao-mat-du-lieu">6. Bảo mật dữ liệu</h2>
+<ul>
+<li>Mọi API request dùng HTTPS</li>
+<li>Dữ liệu tài khoản lưu trong Cloudflare D1, mã hóa khi nghỉ</li>
+<li>Không lưu refresh token Google OAuth; chỉ giữ access token ngắn hạn trong lúc xử lý request</li>
+<li>Không bao giờ thấy thông tin thẻ thanh toán; Lemon Squeezy xử lý mọi data thẻ</li>
+<li>Webhook từ Lemon Squeezy được verify HMAC-SHA256 chống giả mạo</li>
+</ul>
+<p>Nếu phát hiện vi phạm dữ liệu ảnh hưởng thông tin cá nhân của bạn, sẽ thông báo trong 72h qua email Google.</p>
+<h2 id="7-tre-em">7. Trẻ em</h2>
+<p>LinguaNewTab không hướng đến trẻ dưới 13 tuổi. Chúng tôi không cố ý thu thập thông tin cá nhân từ trẻ dưới 13. Nếu là phụ huynh và tin con mình đã đăng nhập, liên hệ jasonnguyenksp@gmail.com để xóa tài khoản.</p>
+<p>Người dùng EU/UK: tuổi tối thiểu là 16.</p>
+<h2 id="8-nguoi-dung-quoc-te">8. Người dùng quốc tế</h2>
+<p>LinguaNewTab được vận hành từ Việt Nam bởi cá nhân lập trình viên. Khi đăng nhập bạn hiểu và đồng ý dữ liệu sẽ được chuyển và xử lý trên hạ tầng Cloudflare khu vực Châu Á - Thái Bình Dương. Chúng tôi không chuyển dữ liệu đến bất kỳ quốc gia nào có chế độ bảo vệ dữ liệu yếu hơn EU hoặc Việt Nam.</p>
+<h2 id="9-thay-oi-chinh-sach">9. Thay đổi chính sách</h2>
+<p>Cập nhật policy khi thêm tính năng thay đổi cách xử lý dữ liệu. Khi có thay đổi quan trọng:</p>
+<ul>
+<li>Cập nhật ngày "Last Updated" ở đầu trang</li>
+<li>Hiển thị thông báo 1 lần trong extension lần mở new-tab tiếp theo</li>
+<li>Email mọi user đã đăng nhập khi thay đổi giảm quyền riêng tư (ví dụ thêm bên thứ ba mới)</li>
+</ul>
+<p>Lịch sử phiên bản đầy đủ trên GitHub repo công khai.</p>
+<h2 id="10-lien-he">10. Liên hệ</h2>
+<p>Câu hỏi, khiếu nại, hoặc yêu cầu dữ liệu:</p>
+<ul>
+<li>Email: <strong>jasonnguyenksp@gmail.com</strong></li>
+<li>GitHub issues: xem README của extension</li>
+</ul>
+<p>Chúng tôi cố gắng phản hồi trong 7 ngày cho câu hỏi chung, 30 ngày cho yêu cầu dữ liệu chính thức.</p>
+  </div>
+</body>
+</html>

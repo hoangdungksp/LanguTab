@@ -1,0 +1,329 @@
+{
+  "_comment": "Pedagogical syllable for each pinyin phoneme. Uses real Chinese characters instead of isolated pinyin syllables — Kokoro TTS was trained on full sentences and produces correct prosody/tones only with real hanzi input. Tones use classic ma-quintet (妈/麻/马/骂/吗). Finals use common hanzi with clear tone-1 or tone-4 (avoiding tone-3 which TTS often flattens).",
+  "initials": [
+    {
+      "id": "zh_init_b",
+      "symbol": "b",
+      "syllable": "波"
+    },
+    {
+      "id": "zh_init_p",
+      "symbol": "p",
+      "syllable": "坡"
+    },
+    {
+      "id": "zh_init_m",
+      "symbol": "m",
+      "syllable": "妈"
+    },
+    {
+      "id": "zh_init_f",
+      "symbol": "f",
+      "syllable": "发"
+    },
+    {
+      "id": "zh_init_d",
+      "symbol": "d",
+      "syllable": "都"
+    },
+    {
+      "id": "zh_init_t",
+      "symbol": "t",
+      "syllable": "他"
+    },
+    {
+      "id": "zh_init_n",
+      "symbol": "n",
+      "syllable": "拿"
+    },
+    {
+      "id": "zh_init_l",
+      "symbol": "l",
+      "syllable": "拉"
+    },
+    {
+      "id": "zh_init_g",
+      "symbol": "g",
+      "syllable": "哥"
+    },
+    {
+      "id": "zh_init_k",
+      "symbol": "k",
+      "syllable": "科"
+    },
+    {
+      "id": "zh_init_h",
+      "symbol": "h",
+      "syllable": "喝"
+    },
+    {
+      "id": "zh_init_j",
+      "symbol": "j",
+      "syllable": "家"
+    },
+    {
+      "id": "zh_init_q",
+      "symbol": "q",
+      "syllable": "七"
+    },
+    {
+      "id": "zh_init_x",
+      "symbol": "x",
+      "syllable": "西"
+    },
+    {
+      "id": "zh_init_zh",
+      "symbol": "zh",
+      "syllable": "知"
+    },
+    {
+      "id": "zh_init_ch",
+      "symbol": "ch",
+      "syllable": "吃"
+    },
+    {
+      "id": "zh_init_sh",
+      "symbol": "sh",
+      "syllable": "师"
+    },
+    {
+      "id": "zh_init_r",
+      "symbol": "r",
+      "syllable": "日"
+    },
+    {
+      "id": "zh_init_z",
+      "symbol": "z",
+      "syllable": "资"
+    },
+    {
+      "id": "zh_init_c",
+      "symbol": "c",
+      "syllable": "擦"
+    },
+    {
+      "id": "zh_init_s",
+      "symbol": "s",
+      "syllable": "三"
+    }
+  ],
+  "finals": [
+    {
+      "id": "zh_fin_a",
+      "symbol": "a",
+      "syllable": "啊"
+    },
+    {
+      "id": "zh_fin_o",
+      "symbol": "o",
+      "syllable": "噢"
+    },
+    {
+      "id": "zh_fin_e",
+      "symbol": "e",
+      "syllable": "鹅"
+    },
+    {
+      "id": "zh_fin_i",
+      "symbol": "i",
+      "syllable": "一"
+    },
+    {
+      "id": "zh_fin_u",
+      "symbol": "u",
+      "syllable": "屋"
+    },
+    {
+      "id": "zh_fin_u_umlaut",
+      "symbol": "ü",
+      "syllable": "女"
+    },
+    {
+      "id": "zh_fin_ai",
+      "symbol": "ai",
+      "syllable": "爱"
+    },
+    {
+      "id": "zh_fin_ei",
+      "symbol": "ei",
+      "syllable": "黑"
+    },
+    {
+      "id": "zh_fin_ao",
+      "symbol": "ao",
+      "syllable": "要"
+    },
+    {
+      "id": "zh_fin_ou",
+      "symbol": "ou",
+      "syllable": "都"
+    },
+    {
+      "id": "zh_fin_an",
+      "symbol": "an",
+      "syllable": "安"
+    },
+    {
+      "id": "zh_fin_en",
+      "symbol": "en",
+      "syllable": "恩"
+    },
+    {
+      "id": "zh_fin_ang",
+      "symbol": "ang",
+      "syllable": "昂"
+    },
+    {
+      "id": "zh_fin_eng",
+      "symbol": "eng",
+      "syllable": "能"
+    },
+    {
+      "id": "zh_fin_ing",
+      "symbol": "ing",
+      "syllable": "英"
+    },
+    {
+      "id": "zh_fin_ong",
+      "symbol": "ong",
+      "syllable": "工"
+    },
+    {
+      "id": "zh_fin_ia",
+      "symbol": "ia",
+      "syllable": "呀"
+    },
+    {
+      "id": "zh_fin_ie",
+      "symbol": "ie",
+      "syllable": "谢"
+    },
+    {
+      "id": "zh_fin_iao",
+      "symbol": "iao",
+      "syllable": "要"
+    },
+    {
+      "id": "zh_fin_iou",
+      "symbol": "iou",
+      "syllable": "有"
+    },
+    {
+      "id": "zh_fin_ian",
+      "symbol": "ian",
+      "syllable": "年"
+    },
+    {
+      "id": "zh_fin_in",
+      "symbol": "in",
+      "syllable": "因"
+    },
+    {
+      "id": "zh_fin_iang",
+      "symbol": "iang",
+      "syllable": "样"
+    },
+    {
+      "id": "zh_fin_iong",
+      "symbol": "iong",
+      "syllable": "用"
+    },
+    {
+      "id": "zh_fin_ua",
+      "symbol": "ua",
+      "syllable": "花"
+    },
+    {
+      "id": "zh_fin_uo",
+      "symbol": "uo",
+      "syllable": "多"
+    },
+    {
+      "id": "zh_fin_uai",
+      "symbol": "uai",
+      "syllable": "快"
+    },
+    {
+      "id": "zh_fin_uei",
+      "symbol": "uei",
+      "syllable": "对"
+    },
+    {
+      "id": "zh_fin_uan",
+      "symbol": "uan",
+      "syllable": "完"
+    },
+    {
+      "id": "zh_fin_uen",
+      "symbol": "uen",
+      "syllable": "问"
+    },
+    {
+      "id": "zh_fin_uang",
+      "symbol": "uang",
+      "syllable": "王"
+    },
+    {
+      "id": "zh_fin_ueng",
+      "symbol": "ueng",
+      "syllable": "翁"
+    },
+    {
+      "id": "zh_fin_ue",
+      "symbol": "üe",
+      "syllable": "月"
+    },
+    {
+      "id": "zh_fin_uan_u",
+      "symbol": "üan",
+      "syllable": "元"
+    },
+    {
+      "id": "zh_fin_un_u",
+      "symbol": "ün",
+      "syllable": "云"
+    },
+    {
+      "id": "zh_fin_er",
+      "symbol": "er",
+      "syllable": "二"
+    },
+    {
+      "id": "zh_fin_i_retroflex",
+      "symbol": "-i (zh/ch/sh/r)",
+      "syllable": "是"
+    },
+    {
+      "id": "zh_fin_i_apical",
+      "symbol": "-i (z/c/s)",
+      "syllable": "四"
+    }
+  ],
+  "tones": [
+    {
+      "id": "zh_tone_1",
+      "symbol": "1st tone (mā)",
+      "syllable": "妈"
+    },
+    {
+      "id": "zh_tone_2",
+      "symbol": "2nd tone (má)",
+      "syllable": "麻"
+    },
+    {
+      "id": "zh_tone_3",
+      "symbol": "3rd tone (mǎ)",
+      "syllable": "马"
+    },
+    {
+      "id": "zh_tone_4",
+      "symbol": "4th tone (mà)",
+      "syllable": "骂"
+    },
+    {
+      "id": "zh_tone_0",
+      "symbol": "neutral (ma)",
+      "syllable": "妈妈"
+    }
+  ]
+}

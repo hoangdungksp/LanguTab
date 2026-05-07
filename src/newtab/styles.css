@@ -1,0 +1,335 @@
+/* Sprint 4.8.1: Sour Gummy for kid-friendly English headings.
+   Wobbly variable font with playful "gummy" vibe — perfect for kid content.
+   Latin only (no Vietnamese diacritics); used via `font-heading` Tailwind
+   class for STARTERS, MOVERS, FLYERS, etc.
+   The display=swap directive ensures text renders in fallback font while
+   Google Fonts is fetching, then swaps in once loaded.
+   Loading variable axes: weight 100-900, width 75-125 — gives flexibility
+   for hierarchy without loading multiple files. */
+@import url('https://fonts.googleapis.com/css2?family=Sour+Gummy:wght@100..900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --coral: #ff6b35;
+    --coral-dark: #b83c12;
+    --mint: #2ec4b6;
+    --mint-dark: #196c66;
+    --sun: #ffd23f;
+    --sun-dark: #bf9200;
+    --ink: #1a1a2e;
+    --cream: #fff8e7;
+    --paper: #fffdf7;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    width: 100%;
+  }
+
+  body {
+    font-family: 'Nunito', system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--cream);
+    background-image:
+      radial-gradient(circle at 15% 20%, rgba(255, 107, 53, 0.08) 0, transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(46, 196, 182, 0.08) 0, transparent 40%),
+      radial-gradient(circle at 50% 50%, rgba(255, 210, 63, 0.04) 0, transparent 60%);
+    background-attachment: fixed;
+    overflow-x: hidden;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+
+  /* Subtle paper grain */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.1 0 0 0 0 0.2 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.5;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  #root {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  /* Chunky Duolingo-style button */
+  .btn-chunky {
+    @apply relative inline-flex items-center justify-center gap-2 rounded-chunk px-6 py-3
+      font-display font-semibold uppercase tracking-wide text-white
+      shadow-chunky-ink transition-all duration-100
+      active:translate-y-1 active:shadow-none
+      disabled:cursor-not-allowed disabled:opacity-50 disabled:active:translate-y-0;
+  }
+
+  .btn-coral {
+    @apply btn-chunky bg-coral-500 shadow-chunky-coral hover:bg-coral-400;
+  }
+
+  .btn-mint {
+    @apply btn-chunky bg-mint-500 shadow-chunky-mint hover:bg-mint-400;
+  }
+
+  .btn-sun {
+    @apply btn-chunky bg-sun-300 text-ink-700 shadow-chunky-sun hover:bg-sun-200;
+  }
+
+  .btn-ink {
+    @apply btn-chunky bg-ink-700 shadow-chunky-ink hover:bg-ink-600;
+  }
+
+  .btn-ghost {
+    @apply relative inline-flex items-center justify-center gap-2 rounded-chunk
+      border-2 border-ink-200 bg-paper px-6 py-3 font-display font-semibold
+      uppercase tracking-wide text-ink-600 shadow-chunky-soft transition-all
+      duration-100 hover:border-ink-300 hover:bg-cream
+      active:translate-y-1 active:shadow-none;
+  }
+
+  /* Chunky card — signature look */
+  .card-chunky {
+    @apply rounded-chunk border-2 border-ink-700 bg-paper shadow-chunky-ink;
+  }
+
+  .card-soft {
+    @apply rounded-chunk border-2 border-ink-100 bg-paper shadow-card;
+  }
+
+  /* Pill tag */
+  .tag {
+    @apply inline-flex items-center gap-1 rounded-pill border-2 px-3 py-1
+      font-display text-xs font-semibold uppercase tracking-wider;
+  }
+
+  /* Scrollbar prettification */
+  .pretty-scroll::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  .pretty-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .pretty-scroll::-webkit-scrollbar-thumb {
+    background: rgba(26, 26, 46, 0.15);
+    border-radius: 10px;
+    border: 2px solid var(--cream);
+  }
+  .pretty-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(26, 26, 46, 0.25);
+  }
+}
+
+@layer utilities {
+  /* Speaker animation when playing */
+  @keyframes speaker-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+  }
+  .is-speaking {
+    animation: speaker-pulse 0.6s ease-in-out infinite;
+  }
+
+  /* Flashcard 3D flip
+     ─────────────────────────────────────────────────────────────
+     Both faces stack into the SAME 1×1 grid cell. Container auto-
+     sizes to whichever face is tallest — no more back-face overflow
+     clipping the example sentence behind the rating buttons. */
+  .flip-container {
+    perspective: 1200px;
+  }
+  .flip-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    min-height: 420px;
+  }
+  .flip-cell {
+    grid-column: 1 / -1;
+    grid-row: 1 / -1;
+  }
+  .flip-inner {
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .flip-inner.flipped {
+    transform: rotateY(180deg);
+  }
+  .flip-face {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .flip-back {
+    transform: rotateY(180deg);
+  }
+
+  /* Streak flame wiggle */
+  .streak-flame {
+    display: inline-block;
+    animation: streak-wiggle 2s ease-in-out infinite;
+  }
+  @keyframes streak-wiggle {
+    0%, 100% { transform: rotate(-4deg) scale(1); }
+    50% { transform: rotate(4deg) scale(1.05); }
+  }
+
+  /* Chinese-specific font boost */
+  .text-zh {
+    font-family: 'Noto Sans SC', 'Nunito', system-ui, sans-serif;
+    font-feature-settings: 'palt';
+  }
+
+  .font-mono-ipa {
+    font-family: 'JetBrains Mono', 'Menlo', monospace;
+    font-feature-settings: 'ss01', 'zero';
+  }
+}
+
+/* ─── Exam audio seek slider ────────────────────────────────────────────
+ * Native <input type="range"> with cross-browser custom thumb + track.
+ * Used in ExamPartView's AudioPlayer so kids can scrub through audio.
+ * Track shows mint-purple gradient, thumb is a chunky coral circle.
+ * - WebKit (Safari/Chrome/Edge): -webkit-* pseudo-elements
+ * - Firefox: -moz-* pseudo-elements
+ * Needs both because they don't share a styling spec for native range.
+ */
+.exam-audio-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  height: 24px; /* tap target ≥ 24px so thumbs are easy to grab */
+  outline: none;
+}
+
+/* WebKit track */
+.exam-audio-slider::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    #a855f7 0%,
+    #c084fc var(--progress, 0%),
+    #e5e7eb var(--progress, 0%),
+    #e5e7eb 100%
+  );
+  border: 1px solid #d1d5db;
+}
+
+/* WebKit thumb — coral circle with chunky shadow */
+.exam-audio-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #FF6B35;
+  border: 2px solid #1f2937;
+  box-shadow: 0 2px 0 #1f2937;
+  margin-top: -6px; /* center vertically on 8px track */
+  cursor: grab;
+  transition: transform 0.1s ease;
+}
+.exam-audio-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+.exam-audio-slider::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.05);
+}
+
+/* Firefox track */
+.exam-audio-slider::-moz-range-track {
+  height: 8px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  border: 1px solid #d1d5db;
+}
+
+/* Firefox progress (Mozilla-only — fills before thumb) */
+.exam-audio-slider::-moz-range-progress {
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(to right, #a855f7, #c084fc);
+}
+
+/* Firefox thumb */
+.exam-audio-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #FF6B35;
+  border: 2px solid #1f2937;
+  box-shadow: 0 2px 0 #1f2937;
+  cursor: grab;
+}
+.exam-audio-slider::-moz-range-thumb:hover {
+  transform: scale(1.15);
+}
+.exam-audio-slider::-moz-range-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.05);
+}
+
+/* Disabled state — grayer + no interaction cursor */
+.exam-audio-slider:disabled::-webkit-slider-runnable-track {
+  background: #f3f4f6;
+}
+.exam-audio-slider:disabled::-webkit-slider-thumb {
+  background: #d1d5db;
+  border-color: #9ca3af;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+.exam-audio-slider:disabled::-moz-range-track {
+  background: #f3f4f6;
+}
+.exam-audio-slider:disabled::-moz-range-thumb {
+  background: #d1d5db;
+  border-color: #9ca3af;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* Focus ring for keyboard navigation */
+.exam-audio-slider:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid #FF6B35;
+  outline-offset: 2px;
+}
+.exam-audio-slider:focus-visible::-moz-range-thumb {
+  outline: 2px solid #FF6B35;
+  outline-offset: 2px;
+}
+
+/* ─── Full-bleed utility (Sprint 4.8.2) ─────────────────────────────────
+ * Escape parent container constraints to span full viewport width.
+ * Used by PlanetsScreen so the cosmic background fills edge-to-edge,
+ * regardless of the outer LinguTab container's max-width or padding.
+ *
+ * Mechanism:
+ *   - position: relative + left/right anchors at viewport center
+ *   - margin-left/right: pull element back to viewport edges
+ *   - width: 100vw — span the full viewport
+ *
+ * Caveat: 100vw includes scrollbar width on some browsers. If the page
+ * has a vertical scrollbar, this can cause horizontal overflow. Mitigate
+ * via `overflow-x: hidden` on body if needed.
+ */
+.full-bleed {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}

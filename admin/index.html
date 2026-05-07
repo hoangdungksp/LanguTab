@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LinguTab Admin</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f9fafb;
+    color: #1f2937;
+    line-height: 1.5;
+  }
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px 20px; }
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid #e5e7eb; padding-bottom: 16px; margin-bottom: 24px;
+  }
+  h1 { margin: 0; font-size: 22px; font-weight: 500; }
+  .subtitle { color: #6b7280; font-size: 13px; margin-top: 4px; }
+  .btn {
+    background: white; border: 1px solid #d1d5db; padding: 8px 14px;
+    border-radius: 6px; font-size: 13px; cursor: pointer; color: #374151;
+  }
+  .btn:hover { background: #f9fafb; border-color: #9ca3af; }
+  .btn-primary { background: #4f46e5; border-color: #4f46e5; color: white; }
+  .btn-primary:hover { background: #4338ca; }
+
+  /* Login modal */
+  .login-card {
+    max-width: 420px; margin: 80px auto; background: white; padding: 32px;
+    border-radius: 12px; border: 1px solid #e5e7eb;
+  }
+  .login-card h2 { margin: 0 0 8px; font-size: 20px; font-weight: 500; }
+  .login-card p { margin: 0 0 16px; color: #6b7280; font-size: 13px; }
+  .login-card input {
+    width: 100%; padding: 10px 12px; border: 1px solid #d1d5db;
+    border-radius: 6px; font-size: 14px; font-family: ui-monospace, Menlo, monospace;
+  }
+  .login-card input:focus { outline: none; border-color: #4f46e5; }
+  .login-card button { width: 100%; padding: 10px; margin-top: 12px; }
+
+  /* Tabs */
+  .tabs {
+    display: flex; gap: 4px; border-bottom: 1px solid #e5e7eb; margin-bottom: 24px;
+  }
+  .tab {
+    padding: 10px 16px; cursor: pointer; font-size: 14px;
+    color: #6b7280; border-bottom: 2px solid transparent;
+  }
+  .tab.active { color: #1f2937; border-bottom-color: #4f46e5; font-weight: 500; }
+  .tab:hover { color: #1f2937; }
+
+  /* Quota cards */
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+  .card {
+    background: white; border: 1px solid #e5e7eb; border-radius: 8px;
+    padding: 16px;
+  }
+  .card-label { font-size: 12px; color: #6b7280; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .card-value { font-size: 24px; font-weight: 500; }
+  .card-sub { font-size: 12px; color: #9ca3af; margin-top: 2px; }
+  .progress-bar {
+    margin-top: 12px; background: #f3f4f6; border-radius: 4px; height: 8px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; transition: width 0.3s, background 0.3s;
+  }
+  .progress-fill.healthy { background: #10b981; }
+  .progress-fill.warning { background: #f59e0b; }
+  .progress-fill.critical { background: #ef4444; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; }
+  .badge.healthy { background: #d1fae5; color: #065f46; }
+  .badge.warning { background: #fef3c7; color: #92400e; }
+  .badge.critical { background: #fee2e2; color: #991b1b; }
+
+  /* Stats grid (smaller) */
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+  .stat {
+    background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px 16px;
+  }
+  .stat-label { font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat-value { font-size: 20px; font-weight: 500; margin-top: 4px; }
+
+  /* Tables */
+  .data-card {
+    background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px;
+    margin-bottom: 16px;
+  }
+  .data-card h3 { margin: 0 0 12px; font-size: 15px; font-weight: 500; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 8px 12px; background: #f9fafb; font-weight: 500;
+       border-bottom: 1px solid #e5e7eb; color: #6b7280; }
+  td { padding: 8px 12px; border-bottom: 1px solid #f3f4f6; }
+  tr:hover td { background: #f9fafb; }
+
+  /* Severity colors */
+  .sev-info { color: #2563eb; }
+  .sev-warning { color: #d97706; }
+  .sev-critical { color: #dc2626; font-weight: 500; }
+
+  /* Chart container */
+  .chart-container {
+    position: relative; width: 100%; height: 300px; margin-top: 12px;
+  }
+
+  /* Loading state */
+  .loading { color: #9ca3af; font-size: 13px; padding: 32px; text-align: center; }
+  .error-box { background: #fee2e2; border: 1px solid #fecaca; color: #991b1b;
+               padding: 12px; border-radius: 6px; font-size: 13px; margin-bottom: 16px; }
+
+  @media (max-width: 768px) {
+    .grid-3 { grid-template-columns: 1fr; }
+    .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div id="login" style="display:none">
+  <div class="login-card">
+    <h2>LinguTab Admin</h2>
+    <p>Enter your admin token to continue.</p>
+    <input id="token-input" type="password" placeholder="Bearer token" autocomplete="current-password" />
+    <button class="btn btn-primary" onclick="login()">Sign in</button>
+    <p id="login-error" style="color:#dc2626;display:none;margin-top:8px"></p>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+  <div class="container">
+    <header>
+      <div>
+        <h1>LinguTab Admin</h1>
+        <div class="subtitle" id="last-refresh">Loading...</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn" onclick="refresh()">Refresh</button>
+        <button class="btn" onclick="testAlert()">Test alert</button>
+        <button class="btn" onclick="logout()">Sign out</button>
+      </div>
+    </header>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="overview" onclick="switchTab('overview')">Overview</div>
+      <div class="tab" data-tab="history" onclick="switchTab('history')">History</div>
+      <div class="tab" data-tab="alerts" onclick="switchTab('alerts')">Alerts</div>
+      <div class="tab" data-tab="users" onclick="switchTab('users')">Users</div>
+    </div>
+
+    <div id="error-display"></div>
+
+    <!-- Overview tab -->
+    <div id="tab-overview" class="tab-content">
+      <div class="grid-3" id="quota-cards"></div>
+      <div class="grid-4" id="business-stats"></div>
+      <div class="data-card">
+        <h3>AI generation health</h3>
+        <div id="ai-health"></div>
+      </div>
+    </div>
+
+    <!-- History tab -->
+    <div id="tab-history" class="tab-content" style="display:none">
+      <div class="data-card">
+        <h3>Workers AI Neurons (last 7 days)</h3>
+        <div class="chart-container">
+          <canvas id="chart-neurons" role="img" aria-label="Time-series of Workers AI Neurons usage">
+            Workers AI Neurons usage over time.
+          </canvas>
+        </div>
+      </div>
+      <div class="data-card">
+        <h3>Daily Active Users (last 7 days)</h3>
+        <div class="chart-container">
+          <canvas id="chart-dau" role="img" aria-label="Time-series of daily active users">
+            Daily active users over time.
+          </canvas>
+        </div>
+      </div>
+      <div class="data-card">
+        <h3>AI generation success rate (last 7 days)</h3>
+        <div class="chart-container">
+          <canvas id="chart-success" role="img" aria-label="AI generation success rate over time">
+            AI success rate over time.
+          </canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alerts tab -->
+    <div id="tab-alerts" class="tab-content" style="display:none">
+      <div class="data-card">
+        <h3>Recent alerts (last 50)</h3>
+        <div id="alerts-table"></div>
+      </div>
+    </div>
+
+    <!-- Users tab -->
+    <div id="tab-users" class="tab-content" style="display:none">
+      <div class="data-card">
+        <h3>Users</h3>
+        <p style="font-size:13px;color:#6b7280">After multi-user infrastructure ships in Phase 1, this tab will list signups, tier breakdown, and last activity.</p>
+        <div id="users-table"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+// ─── Config ─────────────────────────────────────────────────────────────
+const WORKER_URL = 'https://lingua-newtab-worker.kspstudio.workers.dev';
+const TOKEN_KEY = 'lingu_admin_token';
+
+// ─── Auth ────────────────────────────────────────────────────────────────
+function getToken() { return localStorage.getItem(TOKEN_KEY); }
+function setToken(t) { localStorage.setItem(TOKEN_KEY, t); }
+
+async function login() {
+  const token = document.getElementById('token-input').value.trim();
+  if (!token) return;
+  // Test token by calling /admin/metrics
+  try {
+    const res = await fetch(`${WORKER_URL}/admin/metrics`, {
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+    if (res.status === 401) {
+      const err = document.getElementById('login-error');
+      err.textContent = 'Invalid token. Check ADMIN_TOKEN in wrangler secrets.';
+      err.style.display = 'block';
+      return;
+    }
+    setToken(token);
+    showApp();
+  } catch (err) {
+    document.getElementById('login-error').textContent = `Network error: ${err.message}`;
+    document.getElementById('login-error').style.display = 'block';
+  }
+}
+
+function logout() {
+  localStorage.removeItem(TOKEN_KEY);
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login').style.display = 'block';
+}
+
+async function fetchAdmin(path) {
+  const token = getToken();
+  const res = await fetch(`${WORKER_URL}${path}`, {
+    headers: { 'Authorization': `Bearer ${token}` },
+  });
+  if (res.status === 401) {
+    logout();
+    throw new Error('Token expired');
+  }
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`HTTP ${res.status}: ${text.slice(0, 200)}`);
+  }
+  return res.json();
+}
+
+// ─── App init ────────────────────────────────────────────────────────────
+function init() {
+  if (getToken()) {
+    showApp();
+  } else {
+    document.getElementById('login').style.display = 'block';
+  }
+}
+
+function showApp() {
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  refresh();
+}
+
+// ─── Tab switching ───────────────────────────────────────────────────────
+let currentTab = 'overview';
+function switchTab(name) {
+  currentTab = name;
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === name);
+  });
+  document.querySelectorAll('.tab-content').forEach(c => {
+    c.style.display = c.id === `tab-${name}` ? 'block' : 'none';
+  });
+  // Lazy-load tab data
+  if (name === 'history') loadHistory();
+  if (name === 'alerts') loadAlerts();
+  if (name === 'users') loadUsers();
+}
+
+// ─── Refresh ─────────────────────────────────────────────────────────────
+async function refresh() {
+  document.getElementById('last-refresh').textContent = 'Refreshing...';
+  document.getElementById('error-display').innerHTML = '';
+  try {
+    const metrics = await fetchAdmin('/admin/metrics');
+    renderOverview(metrics);
+    document.getElementById('last-refresh').textContent =
+      `Last refreshed: ${new Date().toLocaleTimeString()}`;
+  } catch (err) {
+    document.getElementById('error-display').innerHTML =
+      `<div class="error-box">Error: ${err.message}</div>`;
+  }
+}
+
+// ─── Overview rendering ──────────────────────────────────────────────────
+function renderOverview(m) {
+  // Quota cards
+  const quotaHtml = [
+    quotaCard('Workers AI Neurons', m.neurons.used, m.neurons.limit, m.neurons.percentUsed),
+    quotaCard('Workers requests', m.workers.requests, m.workers.limit, m.workers.percentUsed),
+    quotaCard('KV writes', m.kv.writes, m.kv.limit, m.kv.percentUsed),
+  ].join('');
+  document.getElementById('quota-cards').innerHTML = quotaHtml;
+
+  // Business stats
+  document.getElementById('business-stats').innerHTML = [
+    statCard('DAU', m.users.dau),
+    statCard('MAU', m.users.mau),
+    statCard('Total users', m.users.total),
+    statCard('Pro users', m.users.pro),
+  ].join('');
+
+  // AI health
+  const successPct = (m.ai.successRate * 100).toFixed(1);
+  document.getElementById('ai-health').innerHTML = `
+    <div style="display:flex;gap:32px;flex-wrap:wrap">
+      <div><div class="stat-label">Stories today</div><div class="stat-value">${m.ai.storiesGenerated}</div></div>
+      <div><div class="stat-label">Success rate</div><div class="stat-value">${successPct}%</div></div>
+      <div><div class="stat-label">Avg latency</div><div class="stat-value">${m.ai.avgLatencyMs}ms</div></div>
+      <div><div class="stat-label">Errors today</div><div class="stat-value">${m.errors.count}</div></div>
+    </div>
+  `;
+}
+
+function quotaCard(label, used, limit, pct) {
+  const pctNum = (pct * 100).toFixed(0);
+  let status = 'healthy', badge = 'Healthy';
+  if (pct >= 0.9) { status = 'critical'; badge = 'Critical'; }
+  else if (pct >= 0.7) { status = 'warning'; badge = 'Warning'; }
+  return `
+    <div class="card">
+      <div class="card-label">${label}</div>
+      <div class="card-value">${used.toLocaleString()} <span style="font-size:14px;color:#9ca3af">/ ${limit.toLocaleString()}</span></div>
+      <div class="card-sub">${pctNum}% used <span class="badge ${status}">${badge}</span></div>
+      <div class="progress-bar"><div class="progress-fill ${status}" style="width:${Math.min(100, pctNum)}%"></div></div>
+    </div>
+  `;
+}
+
+function statCard(label, value) {
+  return `<div class="stat"><div class="stat-label">${label}</div><div class="stat-value">${value.toLocaleString()}</div></div>`;
+}
+
+// ─── History (charts) ────────────────────────────────────────────────────
+let chartInstances = {};
+async function loadHistory() {
+  try {
+    const data = await fetchAdmin('/admin/metrics/history?days=7');
+    if (data.length === 0) {
+      ['chart-neurons', 'chart-dau', 'chart-success'].forEach(id => {
+        const ctx = document.getElementById(id).getContext('2d');
+        ctx.font = '14px sans-serif';
+        ctx.fillStyle = '#9ca3af';
+        ctx.textAlign = 'center';
+        ctx.fillText('No data yet — wait for cron to run (every 15 min)', 200, 100);
+      });
+      return;
+    }
+    const labels = data.map(m => new Date(m.timestamp).toLocaleString('en-US', {
+      month: 'short', day: 'numeric', hour: 'numeric',
+    }));
+    drawChart('chart-neurons', labels, data.map(m => m.neurons.used), '#4f46e5', 'Neurons');
+    drawChart('chart-dau', labels, data.map(m => m.users.dau), '#10b981', 'DAU');
+    drawChart('chart-success', labels, data.map(m => m.ai.successRate * 100), '#f59e0b', 'Success %');
+  } catch (err) {
+    document.getElementById('error-display').innerHTML =
+      `<div class="error-box">History error: ${err.message}</div>`;
+  }
+}
+
+function drawChart(canvasId, labels, data, color, label) {
+  if (chartInstances[canvasId]) chartInstances[canvasId].destroy();
+  const canvas = document.getElementById(canvasId);
+  chartInstances[canvasId] = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label, data, borderColor: color, backgroundColor: color + '20',
+        tension: 0.3, pointRadius: 2, fill: true,
+      }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { maxRotation: 45, autoSkip: true, maxTicksLimit: 8 } },
+        y: { beginAtZero: true },
+      },
+    },
+  });
+}
+
+// ─── Alerts ──────────────────────────────────────────────────────────────
+async function loadAlerts() {
+  try {
+    const alerts = await fetchAdmin('/admin/alerts?limit=50');
+    if (alerts.length === 0) {
+      document.getElementById('alerts-table').innerHTML =
+        '<p style="color:#6b7280;font-size:13px">No alerts yet.</p>';
+      return;
+    }
+    const rows = alerts.map(a => `
+      <tr>
+        <td><span class="sev-${a.severity}">${a.severity.toUpperCase()}</span></td>
+        <td>${a.title}</td>
+        <td>${a.resource}</td>
+        <td>${new Date(a.sent_at).toLocaleString()}</td>
+        <td>${a.email_status || 'unknown'}</td>
+      </tr>
+    `).join('');
+    document.getElementById('alerts-table').innerHTML = `
+      <table>
+        <thead><tr><th>Severity</th><th>Title</th><th>Resource</th><th>Sent at</th><th>Status</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+  } catch (err) {
+    document.getElementById('alerts-table').innerHTML =
+      `<div class="error-box">Error: ${err.message}</div>`;
+  }
+}
+
+// ─── Users ───────────────────────────────────────────────────────────────
+async function loadUsers() {
+  try {
+    const data = await fetchAdmin('/admin/users?limit=50');
+    if (!data.users || data.users.length === 0) {
+      document.getElementById('users-table').innerHTML =
+        '<p style="color:#6b7280;font-size:13px">No users yet (multi-user infrastructure not deployed).</p>';
+      return;
+    }
+    const rows = data.users.map(u => `
+      <tr>
+        <td>${u.email || u.id}</td>
+        <td>${u.tier || 'free'}</td>
+        <td>${u.created_at ? new Date(u.created_at).toLocaleDateString() : '-'}</td>
+        <td>${u.last_active_at ? new Date(u.last_active_at).toLocaleString() : '-'}</td>
+      </tr>
+    `).join('');
+    document.getElementById('users-table').innerHTML = `
+      <p style="font-size:13px;color:#6b7280">Total: ${data.total}</p>
+      <table>
+        <thead><tr><th>Email</th><th>Tier</th><th>Created</th><th>Last active</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+  } catch (err) {
+    document.getElementById('users-table').innerHTML =
+      `<div class="error-box">Error: ${err.message}</div>`;
+  }
+}
+
+// ─── Test alert ──────────────────────────────────────────────────────────
+async function testAlert() {
+  const token = getToken();
+  try {
+    const res = await fetch(`${WORKER_URL}/admin/test-alert`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+    const data = await res.json();
+    alert(data.ok ? '✅ Test alert sent. Check your email.' : '❌ Failed. Check Resend setup + Worker logs.');
+  } catch (err) {
+    alert('Error: ' + err.message);
+  }
+}
+
+// Allow Enter key for login
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('token-input').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') login();
+  });
+  init();
+});
+</script>
+
+</body>
+</html>

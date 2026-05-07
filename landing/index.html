@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LinguaNewTab — Học tiếng Trung & tiếng Anh mỗi tab mới</title>
+  <meta name="description" content="Tiện ích Chrome biến mỗi tab mới thành một buổi học. HSK 1-6, Oxford 500, audio bản ngữ, FSRS spaced repetition, AI sinh truyện, đồng bộ cloud." />
+  <meta property="og:title" content="LinguaNewTab — Học mỗi tab" />
+  <meta property="og:description" content="Mỗi ngày một chút. Học HSK và Oxford 500 với flashcard, audio bản ngữ, và truyện AI." />
+  <meta property="og:image" content="./icon-128.png" />
+  <link rel="icon" href="./icon-128.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --coral: #FF6B35;
+      --coral-dark: #B83C12;
+      --coral-50: #FFF1EC;
+      --mint: #2EC4B6;
+      --sun: #FFD23F;
+      --ink: #1A1A2E;
+      --ink-500: #3D3D5C;
+      --ink-400: #666690;
+      --ink-200: #CACADA;
+      --ink-100: #E9E9EF;
+      --paper: #FFFDF7;
+      --cream: #FFF8E7;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: 'Nunito', system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3, .display { font-family: 'Be Vietnam Pro', system-ui, sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+    a { color: var(--coral-dark); }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+    /* ─── Hero ─── */
+    .hero {
+      padding: 64px 0 48px;
+      background: linear-gradient(180deg, var(--cream) 0%, var(--paper) 100%);
+      text-align: center;
+    }
+    .hero-logo {
+      width: 88px; height: 88px;
+      background: var(--coral);
+      border-radius: 20px;
+      box-shadow: 0 4px 0 0 var(--coral-dark);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 48px;
+      margin: 0 auto 24px;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      margin: 0 0 12px;
+      color: var(--ink);
+    }
+    .hero .tagline {
+      color: var(--ink-500);
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      max-width: 620px;
+      margin: 0 auto 32px;
+    }
+    .cta-row {
+      display: flex; gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .cta {
+      display: inline-block;
+      padding: 14px 28px;
+      border-radius: 999px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform 0.15s ease;
+      border: 2px solid transparent;
+    }
+    .cta:hover { transform: translateY(-2px); }
+    .cta-primary {
+      background: var(--coral);
+      color: white;
+      border-color: var(--coral-dark);
+      box-shadow: 0 4px 0 0 var(--coral-dark);
+    }
+    .cta-secondary {
+      background: white;
+      color: var(--ink);
+      border-color: var(--ink-200);
+    }
+
+    /* ─── Sections ─── */
+    section { padding: 56px 0; }
+    section h2 {
+      font-size: clamp(1.5rem, 3vw, 2.25rem);
+      text-align: center;
+      margin: 0 0 36px;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .feature {
+      background: white;
+      border: 2px solid var(--ink-100);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 2px 0 0 rgba(26,26,46,0.08);
+    }
+    .feature .emoji { font-size: 32px; display: block; margin-bottom: 12px; }
+    .feature h3 { margin: 0 0 8px; font-size: 1.125rem; }
+    .feature p { margin: 0; color: var(--ink-500); font-size: 0.95rem; }
+
+    .pricing {
+      background: var(--cream);
+    }
+    .price-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      max-width: 880px;
+      margin: 0 auto;
+    }
+    .price-card {
+      background: var(--paper);
+      border: 2px solid var(--ink-200);
+      border-radius: 20px;
+      padding: 28px 24px;
+      text-align: left;
+    }
+    .price-card.highlight {
+      border-color: var(--coral);
+      background: var(--coral-50);
+      box-shadow: 0 4px 0 0 var(--coral-dark);
+    }
+    .price-card h3 { margin: 0 0 8px; }
+    .price-card .price { font-family: 'Be Vietnam Pro', sans-serif; font-size: 2rem; font-weight: 800; }
+    .price-card .price small { font-size: 0.875rem; color: var(--ink-400); font-weight: 400; }
+    .price-card ul { padding-left: 18px; margin: 16px 0 0; color: var(--ink-500); }
+    .price-card li { margin: 4px 0; font-size: 0.9rem; }
+
+    .faq summary {
+      cursor: pointer;
+      padding: 16px 0;
+      font-weight: 700;
+      border-bottom: 1px solid var(--ink-100);
+    }
+    .faq summary:hover { color: var(--coral-dark); }
+    .faq p { padding: 8px 0 16px; color: var(--ink-500); }
+    .faq-list { max-width: 760px; margin: 0 auto; }
+
+    /* ─── Footer ─── */
+    footer {
+      background: var(--ink);
+      color: var(--cream);
+      padding: 48px 0;
+    }
+    footer a { color: var(--sun); }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 32px;
+    }
+    footer h4 { color: white; margin: 0 0 12px; font-family: 'Be Vietnam Pro', sans-serif; }
+    footer ul { padding: 0; margin: 0; list-style: none; }
+    footer li { margin: 6px 0; }
+    .copyright {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      text-align: center;
+      font-size: 0.875rem;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── Hero ─── -->
+  <header class="hero">
+    <div class="container">
+      <div class="hero-logo">🦉</div>
+      <h1>LinguaNewTab</h1>
+      <p class="tagline">
+        Mỗi tab mới là một buổi học. HSK 1–6 và Oxford 500 với flashcard FSRS,
+        audio bản ngữ, và truyện AI tự sinh — tất cả trên trang new-tab.
+      </p>
+      <div class="cta-row">
+        <a class="cta cta-primary" href="https://chromewebstore.google.com/" rel="noopener">
+          Cài cho Chrome
+        </a>
+        <a class="cta cta-secondary" href="#features">
+          Xem tính năng ↓
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ─── Features ─── -->
+  <section id="features">
+    <div class="container">
+      <h2>Học mỗi tab · Mỗi ngày một chút</h2>
+      <div class="features">
+        <div class="feature">
+          <span class="emoji">🇨🇳</span>
+          <h3>HSK 1 → 6</h3>
+          <p>Hơn 5,000 từ Tiếng Trung từ HSK 1 đến HSK 6, kèm pinyin, audio bản ngữ và nghĩa tiếng Việt.</p>
+        </div>
+        <div class="feature">
+          <span class="emoji">🇬🇧</span>
+          <h3>Oxford 500 (English)</h3>
+          <p>500 từ tiếng Anh phổ biến nhất với phát âm IPA và audio chuẩn Anh-Mỹ.</p>
+        </div>
+        <div class="feature">
+          <span class="emoji">🧠</span>
+          <h3>FSRS Spaced Repetition</h3>
+          <p>Thuật toán SRS mới nhất (FSRS-4.5) tối ưu lịch ôn để bạn nhớ lâu mà ôn ít.</p>
+        </div>
+        <div class="feature">
+          <span class="emoji">✨</span>
+          <h3>Truyện AI cá nhân hóa</h3>
+          <p>Mỗi ngày 3 truyện AI miễn phí (30 với Pro), tự chọn HSK level và thể loại.</p>
+        </div>
+        <div class="feature">
+          <span class="emoji">☁️</span>
+          <h3>Đồng bộ Cloud</h3>
+          <p>Đăng nhập Google → tiến độ học sync giữa các máy. Anki-style một-chiều khi cần.</p>
+        </div>
+        <div class="feature">
+          <span class="emoji">🎨</span>
+          <h3>Flashcard ảnh tùy chỉnh</h3>
+          <p>Upload ảnh riêng cho từng từ — nhớ từ qua hình ảnh dễ hơn nhiều.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Pricing ─── -->
+  <section class="pricing" id="pricing">
+    <div class="container">
+      <h2>Gói cước</h2>
+      <div class="price-grid">
+        <div class="price-card">
+          <h3>Free</h3>
+          <div class="price">$0 <small>mãi mãi</small></div>
+          <ul>
+            <li>Toàn bộ HSK 1–6 + Oxford 500</li>
+            <li>FSRS spaced repetition</li>
+            <li>Đồng bộ cloud không giới hạn</li>
+            <li>Ảnh flashcard custom</li>
+            <li><strong>3 truyện AI / ngày</strong></li>
+          </ul>
+        </div>
+        <div class="price-card highlight">
+          <h3>Pro</h3>
+          <div class="price">$4.99 <small>/ tháng</small></div>
+          <ul>
+            <li>Mọi thứ trong Free</li>
+            <li><strong>30 truyện AI / ngày</strong> (10× nhiều hơn)</li>
+            <li>Hủy bất cứ lúc nào</li>
+            <li>14 ngày hoàn tiền</li>
+          </ul>
+        </div>
+        <div class="price-card">
+          <h3>Lifetime</h3>
+          <div class="price">$99 <small>một lần</small></div>
+          <ul>
+            <li>Mọi thứ trong Pro</li>
+            <li>Trả 1 lần, dùng mãi mãi</li>
+            <li>Phiên bản giới hạn ra mắt</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FAQ ─── -->
+  <section>
+    <div class="container">
+      <h2>Câu hỏi thường gặp</h2>
+      <div class="faq-list">
+        <details class="faq">
+          <summary>LinguaNewTab thu thập dữ liệu gì của tôi?</summary>
+          <p>Khi bạn đăng nhập Google, chúng tôi nhận email, tên hiển thị, và Google account ID — không hơn. Tiến độ học và truyện AI được sync lên Cloudflare D1 nếu bạn bật. Không có analytics, không có quảng cáo. Chi tiết đầy đủ trong <a href="./privacy.html">Privacy Policy</a>.</p>
+        </details>
+        <details class="faq">
+          <summary>Nếu không đăng nhập, có dùng được không?</summary>
+          <p>Được — toàn bộ tính năng học (HSK, Oxford, FSRS, audio, ảnh custom local) đều hoạt động không cần đăng nhập. Chỉ cloud sync và AI sinh truyện cần đăng nhập.</p>
+        </details>
+        <details class="faq">
+          <summary>Audio bản ngữ có yêu cầu kết nối mạng không?</summary>
+          <p>Không — tất cả MP3 audio HSK 1 và Oxford 500 được bundled trong extension. Click "Nghe" phát từ máy bạn, không có request mạng.</p>
+        </details>
+        <details class="faq">
+          <summary>Có thể hủy Pro bất cứ lúc nào không?</summary>
+          <p>Có. Hủy qua link trong email Lemon Squeezy hoặc email jasonnguyenksp@gmail.com. Hoàn tiền 14 ngày không hỏi lý do cho lần đăng ký đầu.</p>
+        </details>
+        <details class="faq">
+          <summary>Tôi muốn xóa toàn bộ dữ liệu của mình?</summary>
+          <p>Vào Settings → Tài khoản & Đồng bộ → Xóa tài khoản & toàn bộ data. Xóa vĩnh viễn trên server trong 30 ngày (thường &lt;24h). Để xóa cả ảnh trong Google Drive, vào <a href="https://myaccount.google.com/permissions">myaccount.google.com/permissions</a> thu hồi quyền LinguaNewTab.</p>
+        </details>
+        <details class="faq">
+          <summary>Mã nguồn mở không?</summary>
+          <p>Một phần. Các module quan trọng (vocabulary, FSRS, audio pipeline) được publish trên GitHub. Phần backend giữ private để tránh abuse.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Footer ─── -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h4>LinguaNewTab</h4>
+          <p style="opacity:0.7;font-size:0.9rem;margin:0">
+            Tiện ích Chrome học từ vựng tiếng Trung và tiếng Anh.
+          </p>
+        </div>
+        <div>
+          <h4>Pháp lý</h4>
+          <ul>
+            <li><a href="./privacy.html">Privacy Policy</a></li>
+            <li><a href="./terms.html">Terms of Service</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Liên hệ</h4>
+          <ul>
+            <li><a href="mailto:jasonnguyenksp@gmail.com">jasonnguyenksp@gmail.com</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Công ty</h4>
+          <ul>
+            <li>KSP Studio</li>
+            <li>Việt Nam</li>
+          </ul>
+        </div>
+      </div>
+      <div class="copyright">
+        © 2026 KSP Studio. Made with 🦉 in Vietnam.
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
