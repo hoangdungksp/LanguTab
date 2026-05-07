@@ -1,32 +1,19 @@
-# Dependencies
 node_modules/
 worker/node_modules/
-
-# Build output
 dist/
 worker/dist/
 *.tsbuildinfo
-
-# Generated assets (large binaries — backup separately)
 public/audio/
 public/images/
-
-# Secrets / local config
 .env
 .env.local
 .env.*.local
 *.bak
 key.pem
 worker/.dev.vars
-
-# IDE
 .vscode/
 .idea/
 .DS_Store
-
-# Logs
 *.log
 npm-debug.log*
-
-# Claude/AI specific
 .wrangler/
