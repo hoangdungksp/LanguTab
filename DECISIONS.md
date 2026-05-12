@@ -184,10 +184,65 @@ Mỗi entry là decision đã chốt + lý do. Claude KHÔNG re-litigate những
 
 ---
 
+## D-13: Vision Auto-Caption — PARKED, chờ Jason quyết
+
+**Vấn đề gốc**: Flux Schnell không tạo được 3×2 grid → vision describe không match. Đã thử Llama → Llava → Gemini 2.5 Flash. Gemini code đã ship ở v1.7.7 nhưng Jason chưa test thực tế với GEMINI_API_KEY.
+
+**4 options chưa quyết**:
+
+- **A. Pragmatic** (recommend cho MVP): Manual edit textarea + ship beta
+- **B. Workers AI SDXL**: Better composition than Flux Schnell, vẫn free tier
+- **C. DALL-E 3**: $2.40 once-off, accuracy cao nhất
+- **D. Architecture pivot**: Bỏ ý tưởng grid, dùng natural scene + calibration tool
+
+**Status**: PARKED. Jason cần test Gemini caption với API key trước, rồi mới quyết.
+
+**Claude rule**: KHÔNG tự ý ship Option B/C/D. Nếu task touch vision pipeline, hỏi Jason đã quyết option nào chưa.
+
+---
+
+## D-14: Sync Backend = Cloudflare D1
+
+**Decision**: Multi-user sync backend = Cloudflare D1 (SQLite-on-edge).
+
+**Why**:
+- Worker đã chạy ở Cloudflare → D1 cùng platform, zero extra deploy/auth wiring
+- SQL native, schema migrations đơn giản (file-based ở `worker/src/db/migrations/`)
+- Free tier đủ cho pre-launch + early users
+- Đã wire-up production từ Sprint 4.7+ (drop_zone_overrides, exam_audio_scripts, users, sync state, billing)
+
+**Rejected**:
+- Firebase Firestore — cùng concerns như Firebase Storage tại D-6 (CORS phức tạp với extension origin, cost scale-up)
+- Supabase — extra platform để maintain + auth bridge, không tận dụng Worker đã có
+
+**Status**: LOCKED. D1 ID = `9729612b-2b94-4ad0-a708-2dfda0a379db`. Migrations hiện tại 01_users → 11_exam_audio_scripts. Sprint 4.12 sẽ thêm `12_exam_attempts.sql`.
+
+---
+
+## D-15: Multi-user Sync Conflict Resolution = Last-Write-Wins
+
+**Decision**: Conflict resolution strategy cho multi-user sync = Last-Write-Wins (LWW), Anki-style.
+
+**Why**:
+- LinguTab là personal learning tool — single user across multiple devices, không phải collab realtime
+- Risk thực tế của conflict thấp: 1 user khó edit cùng card từ 2 device cùng lúc
+- LWW đơn giản, dễ debug, dễ test
+- Anki dùng LWW từ ngày đầu, proven tại scale lớn hơn LinguTab nhiều
+
+**Rejected**:
+- CRDT — overkill, schema complexity tăng đáng kể cho payoff không rõ
+- Operational Transforms — cần persistent operation log, không phù hợp model offline-first
+
+**Mitigation cho conflict edge case**:
+- First-time sync popup cho phép user chọn upload-all hoặc download-all (4 scenarios trong syncService)
+- Force one-way sync option cho restore scenario
+
+**Status**: LOCKED. Implementation ở `src/services/syncService.ts`. Worker side tại `worker/src/sync/handlers.ts`.
+
+---
+
 ## Decisions Pending (chưa chốt — chat sau sẽ resolve)
 
-- [ ] Sync backend cụ thể: Firebase / Cloudflare D1 / Supabase? (xem `src/services/syncService.ts` để verify)
-- [ ] Conflict resolution strategy cho multi-user sync: last-write-wins / CRDT / OT?
 - [ ] Exam image-description-audio mismatch fix approach (single source of truth vs validation step)
 - [ ] Pricing tier breakdown (free vs paid feature gating)
 
