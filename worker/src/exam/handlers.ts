@@ -46,6 +46,7 @@
 import type { Env } from '../index';
 import type { VerifiedUser } from '../sync/handlers';
 import { SCENE_PROMPTS, isValidSceneId } from './scenes';
+import { adminRunSemanticCheck } from './semanticCheck';
 
 const TTS_MODEL = '@cf/myshell-ai/melotts';
 /** Image generation model — Flux-1-Schnell, free, ~5-10s per 1024×1024 JPEG. */
@@ -588,6 +589,20 @@ export async function handleAdminExamRequest(
     return adminScenesStatus(env);
   }
 
+  // ─── D-18: Admin manual scene image workflow ───────────────────────
+  // GET  /admin/exam/scenes/:id/prompt  → canonical image-gen prompt to
+  //   copy into an external AI tool (DALL·E / Midjourney / Imagen).
+  // POST /admin/exam/scenes/:id/upload  → upload the generated image (raw
+  //   bytes) → overwrites the R2-cached scene so it matches the audio.
+  const promptMatch = url.pathname.match(/^\/admin\/exam\/scenes\/([^/]+)\/prompt$/);
+  if (promptMatch && req.method === 'GET') {
+    return adminGetScenePrompt(decodeURIComponent(promptMatch[1]));
+  }
+  const uploadMatch = url.pathname.match(/^\/admin\/exam\/scenes\/([^/]+)\/upload$/);
+  if (uploadMatch && req.method === 'POST') {
+    return adminUploadScene(env, decodeURIComponent(uploadMatch[1]), req);
+  }
+
   // ─── Sprint 4.9: Calibration override endpoints ────────────────────
   // POST   /admin/exam/calibration/:levelId/:partId  → save zones
   // DELETE /admin/exam/calibration/:levelId/:partId  → reset to default
@@ -614,6 +629,15 @@ export async function handleAdminExamRequest(
     if (req.method === 'DELETE') {
       return adminDeleteAudioScript(env, decodeURIComponent(levelId), decodeURIComponent(partId));
     }
+  }
+
+  // ─── D-16 Phase 2: Semantic check endpoint ─────────────────────────
+  // POST /admin/exam/semantic-check/:levelId/:partId
+  //   → run Gemini-powered image vs script validation, persist to D1
+  const semMatch = url.pathname.match(/^\/admin\/exam\/semantic-check\/([^/]+)\/([^/]+)$/);
+  if (semMatch && req.method === 'POST') {
+    const [, levelId, partId] = semMatch;
+    return adminRunSemanticCheck(env, decodeURIComponent(levelId), decodeURIComponent(partId), req);
   }
 
   // ─── Sprint 4.9.5: Vision auto-caption endpoint ────────────────────
@@ -730,6 +754,73 @@ async function adminGenerateScene(env: Env, sceneId: string): Promise<Response> 
       { status: 502, headers: { 'Content-Type': 'application/json' } },
     );
   }
+}
+
+/**
+ * D-18: Return the canonical image-generation prompt for a scene so an admin
+ * can paste it into an external AI image tool. This is the SAME prompt Flux
+ * uses, which is derived from the audio script source — so an image generated
+ * from it will match what the audio describes.
+ */
+function adminGetScenePrompt(sceneId: string): Response {
+  if (!isValidSceneId(sceneId)) {
+    return new Response(
+      JSON.stringify({ error: `Unknown sceneId: ${sceneId}` }),
+      { status: 404, headers: { 'Content-Type': 'application/json' } },
+    );
+  }
+  const spec = SCENE_PROMPTS[sceneId];
+  return new Response(
+    JSON.stringify({ sceneId, prompt: spec.prompt, aspect: spec.aspect ?? 'landscape' }),
+    { status: 200, headers: { 'Content-Type': 'application/json' } },
+  );
+}
+
+/**
+ * D-18: Admin uploads a manually-generated image for a scene. Raw image bytes
+ * in the request body (Content-Type image/*). Overwrites the R2-cached scene
+ * at the same key getSceneFromCache reads, so every user immediately sees the
+ * admin-provided image instead of the Flux output.
+ */
+async function adminUploadScene(env: Env, sceneId: string, req: Request): Promise<Response> {
+  if (!isValidSceneId(sceneId)) {
+    return new Response(
+      JSON.stringify({ error: `Unknown sceneId: ${sceneId}` }),
+      { status: 404, headers: { 'Content-Type': 'application/json' } },
+    );
+  }
+  if (!env.IMAGES) {
+    return new Response(
+      JSON.stringify({ error: 'R2 not configured' }),
+      { status: 503, headers: { 'Content-Type': 'application/json' } },
+    );
+  }
+
+  const bytes = await req.arrayBuffer();
+  if (!bytes || bytes.byteLength === 0) {
+    return new Response(
+      JSON.stringify({ error: 'Empty image body' }),
+      { status: 400, headers: { 'Content-Type': 'application/json' } },
+    );
+  }
+  // Sanity cap — exam scenes are small JPEGs; reject anything huge.
+  if (bytes.byteLength > 8_000_000) {
+    return new Response(
+      JSON.stringify({ error: 'Image too large (max 8MB)', bytes: bytes.byteLength }),
+      { status: 413, headers: { 'Content-Type': 'application/json' } },
+    );
+  }
+
+  const contentType = req.headers.get('Content-Type') || 'image/jpeg';
+  const cacheVersion = env.SCENE_CACHE_VERSION || 'v1';
+  const r2Key = `exam-scenes/${cacheVersion}/${sceneId}.jpg`;
+  await env.IMAGES.put(r2Key, bytes, { httpMetadata: { contentType } });
+  console.log(`[admin-upload] ${sceneId} → ${r2Key} (${bytes.byteLength} bytes, ${contentType})`);
+
+  return new Response(
+    JSON.stringify({ ok: true, sceneId, bytes: bytes.byteLength, r2Key, contentType }),
+    { status: 200, headers: { 'Content-Type': 'application/json' } },
+  );
 }
 
 /** List all scenes + their R2 cache status (cached or missing). */

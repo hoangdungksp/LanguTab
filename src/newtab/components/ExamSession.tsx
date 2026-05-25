@@ -121,7 +121,10 @@ export function ExamSession({ level, onExit }: Props) {
   const timeWarning = remainingSec < 60;
   const totalPages = pages.length;
   const completedPages = answers.length;
-  const progressPct = (currentPageIndex / Math.max(1, totalPages - 1)) * 100;
+  // Sprint UI: Bar fill + rocket follow ELAPSED TIME (visual time pressure).
+  // Capped at 100 so when time hits zero, rocket parks at the right edge
+  // next to the timer card instead of overshooting.
+  const timeProgressPct = Math.min(100, (elapsedSec / Math.max(1, level.timeLimitSec)) * 100);
   const isLastPage = currentPageIndex === totalPages - 1;
 
   // Sprint 4.8.7: Restored white card wrapper around exam content to
@@ -138,7 +141,7 @@ export function ExamSession({ level, onExit }: Props) {
             rounded corners, soft shadow, contains all exam UI. */}
         <div className="rounded-3xl bg-white p-4 shadow-xl sm:p-6">
           {/* ─── Top bar ───────────────────────────────────────────────── */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-[30px]">
             {/* Exit button (left) */}
             <button
               onClick={() => {
@@ -168,13 +171,13 @@ export function ExamSession({ level, onExit }: Props) {
           <div className="h-5 overflow-hidden rounded-pill border-2 border-ink-700 bg-coral-200">
             <div
               className="h-full rounded-pill bg-gradient-to-r from-coral-400 to-coral-600 transition-all duration-300"
-              style={{ width: `${progressPct}%` }}
+              style={{ width: `${timeProgressPct}%` }}
             />
           </div>
           {/* Rocket icon at the progress tip */}
           <div
             className="pointer-events-none absolute top-1/2 -translate-y-1/2 transition-all duration-300"
-            style={{ left: `calc(${progressPct}% - 16px)` }}
+            style={{ left: `calc(${timeProgressPct}% - 16px)` }}
           >
             <span className="text-2xl">🚀</span>
           </div>

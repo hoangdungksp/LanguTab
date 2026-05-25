@@ -1,71 +1,166 @@
 # LinguTab Handoff
 
 > **Mục đích**: File này là context bridge giữa các chat sessions với Claude.
-> Khi mở chat mới, paste toàn bộ file này vào message đầu tiên + link GitHub repo.
-> Mình sẽ đọc + `git log` + tiếp tục mà không lặp lại sai lầm cũ.
+> Khi mở chat mới, paste toàn bộ file này vào message đầu tiên + đảm bảo source zip + DECISIONS.md đã upload Project Knowledge.
 
 ---
 
-**Last updated**: 2026-05-07
+**Last updated**: 2026-05-25 (D-18 Phase 3 Movers L21-L30 done + icon library expanded)
 **Repo**: https://github.com/hoangdungksp/LanguTab
 **Latest tag**: v1.7.7-audio-restored
-**Current branch**: main
-**Manifest version**: 1.7.7
+**Current branch**: main (working tree has uncommitted D-18 work)
+**Manifest version**: 1.7.7 (chưa bump — Jason rule "bump chậm")
 
 ---
 
-## ✅ Đã xong
+## 🎯 Active commitment: D-18 — 60 unique levels (4 parts each)
 
-### Audio recovery (sau v1.7.x mishap)
-- **Anki Native**: 4,333 word audio + 2,647 sentence audio + 2,273 images (HSK1-6, ~94% HSK1 coverage)
-- **Pinyin chart**: ~1,500+ files từ DigMandarin (initials/finals/tones)
-- **CosyVoice AI**: ❌ MẤT — chưa regen (Jason để sau)
+Path A locked. Mỗi level (60 total) phải có **4 parts hoàn toàn unique** — không lặp scene, audio, questions, colors với bất kỳ level nào khác. Estimate **2-3 tháng dev content**, ~20-30 sessions, plus 3-4 ElevenLabs subscription renewals.
 
-### Infrastructure
-- Git repo: github.com/hoangdungksp/LanguTab (private)
-- update.sh v2 với multi-layer safeguards (~/Documents/lingua-newtab/update.sh)
-- backup-audio.sh manual backup tool (~/Documents/lingua-newtab/backup-audio.sh)
-- Backup snapshots trong ~/Documents/lingua-newtab/backups/ (giữ 5 gần nhất)
-- Backup cũng đã copy lên Google Drive
+**Phase progress**:
 
-### Bugs fixed gần đây
-- Flashcard "Ví dụ 2" (Anki sentence) — Native button đã move xuống đúng chỗ (v1.7.7)
-- Auto-caption Failed to fetch — fixed (v1.7.2-1.7.3)
-- Worker D1 binding commented out — fixed (v1.7.3)
-- Llama Vision license 5016 — auto-accept implemented (v1.7.5)
+| Phase | Scope | Status |
+|-------|-------|--------|
+| 2.1 | Starters L1-L10 Part 2 (Write) + Part 3 (Tick) | ✅ DONE |
+| 2.2 | Starters L11-L20 Part 2 + Part 3 | ✅ DONE |
+| 5 | Starters L1-L20 Part 1 (Drag) sceneCharacters per-level + 20 sceneId | ✅ DONE |
+| 6 | Starters L1-L20 Part 4 (Colour) outline scenes per-level + 20 sceneId | ✅ DONE |
+| 5b | Worker registry: 40 new scene prompts (drag + outline) | ✅ DONE (code), DEPLOY pending |
+| 3 | Movers L21-L40 ALL 4 parts unique + icon library expand | ✅ DONE (code), DEPLOY pending |
+| 4 | Flyers L41-L60 ALL 4 parts unique | ⏳ NEXT (6-8 sessions) |
+| 7 | Asset gen 240 audio (ElevenLabs renewals) | ⏳ parallel |
+| 8 | Admin: nút Sinh prompt + Upload ảnh (đã làm) / Gen audio per-level | 🔶 ảnh DONE, audio pending |
+
+**Progress**: 160/240 sub-tests CONTENT unique done (Starters L1-L20 + Movers L21-L40, 4 parts each). Còn Flyers L41-L60.
 
 ---
 
-## 🚧 Pending decisions / chưa quyết
+## ✅ Đã xong trong session 2026-05-25
 
-### Vision auto-caption strategy (parked)
+### D-18 Phase 3a — Movers L21-L30 (4 parts unique) + icon library
 
-Vấn đề gốc: Flux Schnell không tạo được 3×2 grid → vision describe không match. Đã thử Llama → Llava → Gemini 2.5 Flash. Gemini code đã ship ở v1.7.7 nhưng **Jason chưa test thực tế** với GEMINI_API_KEY.
+- **10 themes**: Summer camp / Music lesson / Football match / Dance class / Restaurant / Bus journey / Zoo trip / Museum tour / Fire station / Pet competition
+- Mỗi level: Part 1 (drag) + 2 (write, past simple) + 3 (tick) + 4 (colour) khác nội dung hoàn toàn
+- **Files changed**:
+  - `src/data/exam/sceneCharacters.ts`: `MOVERS_L21..L30_CHARS` + `MOVERS_CHARS_BY_LEVEL` + `MOVERS_SCENE_IDS_BY_LEVEL`
+  - `src/data/exam/levels.ts`: `makeMoverDragPart`, 10×write/tick/colour + 3 dispatcher `makeMover*ByLevel`, wire `makeLevel` (L31-L40 vẫn fallback rotation)
+  - `src/data/exam/examIcons.tsx`: **+~52 icon mới** (camp/music/sport/dance/food/transport/zoo/museum/fire/pet) + **fix 13 icon broken cũ** (`car_*`, `doll_*`, `pet_*`, `apple_2/3/4`, `clock_5`) → Mover/Flyer tick rotation không còn render "?"
+  - `worker/src/exam/scenes.ts`: +20 scene (10 drag `mover_lN_*` + 10 outline `mover_lN_*_outline`)
+- **Self-test PASS**: frontend `tsc` 0, worker `tsc` 0, validator D-16 = 0 errors / 0 warnings / 72/72 scenes resolve, mọi iconId resolve
 
-4 options Jason chưa quyết:
-- **A. Pragmatic**: Manual edit textarea + ship beta. Recommend cho MVP.
-- **B. Workers AI SDXL**: Better composition than Flux Schnell, vẫn free tier.
-- **C. DALL-E 3**: $2.40 once-off, accuracy cao nhất.
-- **D. Architecture pivot**: Bỏ ý tưởng grid, dùng natural scene + calibration tool.
+### D-18 Phase 2.1, 2.2, 5, 6 (Starters L1-L20)
 
-### CosyVoice regen
-- Chờ Jason có DashScope budget ($5-10) hoặc account mới với free tier.
-- Scripts đã có sẵn: `scripts/gen_words_cosyvoice_mac.py`, `scripts/gen_phoneme_examples_cosyvoice_mac.py`, `scripts/gen_qwen_tts_mac.py`.
+- **20 unique themes**: PetShop / FamilyDinner / WeekendPark / BirthdayParty / SchoolDay / Beach / Garden / ToyShop / Sports / Picnic / Library / Bicycle / Cooking / Swimming / Farm / PetsHome / Sleepover / GardenPlay / Train / Snow
+- **Each level**: Part 1 (drag) + Part 2 (write) + Part 3 (tick) + Part 4 (colour) hoàn toàn khác nội dung
+- **Files changed**:
+  - `src/data/exam/levels.ts` 898 → 3245 lines (+2347 lines)
+  - `src/data/exam/sceneCharacters.ts` 205 → 547 lines (+342 lines)
+  - `src/newtab/components/ExamScene.tsx` 171 → 201 lines (+30 lines UI warning)
+  - `worker/src/exam/scenes.ts` (+40 SceneIds + 40 SCENE_PROMPTS)
+
+### Session 5b — Worker registry update
+
+- Add 20 drag scene prompts: `starter_l1_petshop` → `starter_l20_snow`
+- Add 20 outline scene prompts: `starter_lN_*_outline`
+- Total SCENE_IDS: 12 → 52
+- TypeScript compile: PASS (self-tested)
+- Validator (D-16 Phase 1): expected PASS after apply
+
+### UI warnings (when scene not yet generated)
+
+- ExamScene.tsx SceneFallback enhanced
+- Shows banner "📸 Hình chưa được tạo cho bài thi này" cho sceneId bắt đầu `starter_l`
+- Hint cho user: text + audio đã sẵn để luyện thi
+- themeFor extended với 11 new categories (petshop, toyshop, library, etc.)
+
+### Other session work
+
+- **Admin emails**: removed `dungthichvar@gmail.com` từ `adminModeService.ts` → chỉ `jasonnguyenksp@gmail.com` là admin (Profile 2 test user view)
+- **ExamSession UI**: gap-3 → gap-[30px] top bar + rocket + bar fill follow elapsed time (timeProgressPct)
+- **Chrome Profile setup**: alternative cho Incognito (extension new-tab override không work in Incognito without manifest `"incognito": "split"`)
+- **D-18 locked** trong DECISIONS.md với 60-theme list
+
+---
+
+## 📋 IMMEDIATE ACTIONS Jason cần làm sau session này
+
+Session này đổi 4 files (Starters L1-L20 ở session trước + Movers L21-L30 mới). Nếu apply qua patch zip, gồm:
+```bash
+# Files thay đổi tích lũy (đã self-test PASS trong source):
+#   src/data/exam/sceneCharacters.ts   (Starters + Movers chars)
+#   src/data/exam/levels.ts            (Starters + Movers parts)
+#   src/data/exam/examIcons.tsx        (NEW: +52 icon + fix 13 broken)
+#   worker/src/exam/scenes.ts          (92 scenes total: 12 base + 40 starter + 40 mover)
+#   src/data/exam/examIcons.tsx        (icon library: +52 L21-30, +45 L31-40, fix 13 broken)
+#   src/newtab/components/ExamPartView.tsx + src/services/examSceneService.ts (admin upload tool)
+#   worker/src/exam/handlers.ts        (GET prompt + POST upload endpoints)
+#   src/newtab/components/ExamScene.tsx (UI warning từ session trước)
+
+# 1. Rebuild frontend (validator runs prebuild)
+cd ~/Downloads/lingua-newtab && npm run build
+
+# 2. Deploy worker (CRITICAL — production hiện thiếu 20 scene Movers L21-L30)
+cd ~/Downloads/lingua-newtab/worker && npx wrangler deploy
+
+# 3. Warm-all scenes (Flux gen — 20 scene Movers mới + bất kỳ scene chưa cache)
+curl -sS -X POST "https://lingua-newtab-worker.kspstudio.workers.dev/admin/exam/scenes/warm-all" \
+  -H "Authorization: Bearer 5320a30ce78e85f9edb69bc4596944fd4743ae4e601a2150d8553fb59a120212" \
+  --max-time 600 | jq
+
+# 4. Reload extension 2 Chrome profiles, test L21-L30
+```
+
+**Expected result sau apply**:
+- ✅ Validator PASS (92 sceneIds resolve)
+- ✅ Build PASS
+- ✅ Worker deployed với 40 scene Movers mới (L21-L40)
+- ✅ L21-L40 hiển thị scene images + 4 parts mỗi level khác nhau
+- ✅ Part 3 (tick) Movers hiển thị icon thật, KHÔNG còn dấu "?"
+
+**Audio note**: 144 MP3 cached cho L1-L36 từ Phase B (Jan 2026) là content CŨ. UI hiển thị text mới nhưng Play vẫn nghe content cũ → cache miss vì hash khác → worker on-demand gen ElevenLabs nhưng quota ~1k chars còn lại không đủ → fallback Aura-2 (free, kém Dorothy). Audio chuẩn ElevenLabs cho L1-L20 chờ renew tháng sau.
+
+---
+
+## 🚧 Pending / chưa quyết
+
+### Vision auto-caption (D-13 RE-FRAMING needed)
+
+D-13 đã lock Gemini 2.5 Flash, NHƯNG smoke test session 2026-05-25 confirm Gemini geo-fences Cloudflare-edge IPs ("User location is not supported"). Code shipped v1.7.7 broken in production. 3 paths:
+- Path 1: Llama Vision via Workers AI (free, accuracy 15-20% lower) — rewrite `semanticCheckGemini` → `semanticCheckLlamaVision`
+- Path 2: External proxy (Vercel/Render) → Gemini
+- Path 3: Client-side Gemini call (leak API key, không recommend)
+
+D-16 Phase 2 (semantic check) code shipped nhưng broken cùng lý do. Cần re-frame trước khi proceed Movers/Flyers.
+
+### CosyVoice Chinese audio regen
+
+Chờ Jason có DashScope budget ($5-10) hoặc account mới với free tier. Scripts ready: `scripts/gen_words_cosyvoice_mac.py`.
+
+### English audio re-gen for L1-L60
+
+ElevenLabs quota:
+- 65k chars/tháng
+- 60 levels × 4 parts × ~300-500 chars/part = 80-100k chars total
+- Cần **2-3 tháng renewals** để gen full 60 levels English audio
+- Plus SSML pause additions (~3s between sentences) = thêm ~20k chars
+
+### Pricing / Lemon Squeezy
+
+Built but not active (D-8). Activate post-launch.
 
 ---
 
 ## 📋 Workflow agreements (CRITICAL — đừng quên)
 
 ### Branch strategy
-- Mỗi sprint = 1 branch tên `sprint-X.Y-short-name`
-- Bug fix nhỏ = `fix/<name>`
-- UI updates = `ui/<name>`
-- Khi sprint xong → merge vào main + tag
+- Mỗi sprint = 1 branch `sprint-X.Y-short-name`
+- Bug fix = `fix/<name>`, UI = `ui/<name>`
+- Sprint xong → merge main + tag
 
 ### Ship process
-- Ship **patch zip nhỏ** (chỉ files thay đổi), KHÔNG full source zip mỗi version
-- Full source zip CHỈ khi: first setup, major refactor, recovery
-- Filename pattern: `sprint-X.Y-name.zip`, `fix-<name>.zip`
+- Default: patch zip nhỏ (files thay đổi)
+- Full source zip CHỈ khi first setup / major refactor / recovery
+- Filename: `sprint-X.Y-name.zip`, `fix-<name>.zip`
 
 ### Commit conventions
 ```
@@ -77,25 +172,32 @@ Chore: <ngắn gọn>
 Release: vX.Y.Z — <description>
 ```
 
-### Handoff
-- Cuối session, Claude update file này (`docs/HANDOFF.md`)
-- Đầu chat mới, Jason paste full content vào message + link GitHub
-- Claude đọc HANDOFF + `conversation_search` nếu cần + confirm trước khi action
+### Self-test BEFORE shipping code (rule confirmed Jason 2026-05-25)
+1. Grep verify patterns không nên tồn tại đã bị xoá
+2. Run `npx tsc --noEmit` trong container nếu có TypeScript
+3. Show output verify cho Jason xem TRƯỚC khi present file
+4. Browser save naming `(1)` `(2)` luôn — verify file path trong workflow apply
 
-### Mình KHÔNG được phép
+### Handoff
+- Cuối session, Claude update HANDOFF.md + present
+- Đầu chat mới, Jason paste content + có source zip trong Project Knowledge
+- Claude đọc HANDOFF + view source + confirm trước khi action
+
+### Claude KHÔNG được phép
 - ❌ Hướng dẫn `rm -rf lingua-newtab` (đã gây mất audio v1.7.x)
 - ❌ Touch `public/audio/` hoặc `public/images/` trong bất kỳ script nào
 - ❌ Push trực tiếp lên GitHub (Jason apply zip + commit)
-- ❌ Bump version nhanh (tránh v1.7.0 → v1.7.7 trong 1 ngày như đã làm)
+- ❌ Bump version nhanh (KHÔNG v1.7.0 → v1.7.7 trong 1 ngày)
 - ❌ Ship feature lớn không confirm với Jason trước
+- ❌ Ship code không tự test (rule mới 2026-05-25 sau ExamSession.tsx bug)
 
 ---
 
 ## 💬 User preferences (Jason)
 
-- Tiếng Việt là primary language, English code/comment OK
+- Tiếng Việt primary, English code/comment OK
 - Format **minimal**: ít bullet, ít heading lồng nhau, ít emoji decoration
-- Thích **1-line bash command** thay vì hướng dẫn từng bước (ví dụ Bước 1, Bước 2 dài)
+- Thích **1-line bash command** chained với `&&`
 - Confirm trước khi ship lớn, KHÔNG tự ý ship features
 - Bug → diagnose → 1 fix targeted, không rewrite cả module
 - Cần explicit warning khi action có thể destroy data
@@ -106,27 +208,26 @@ Release: vX.Y.Z — <description>
 ## 🎯 Sprint roadmap
 
 ### 🔴 Critical (block launch)
+- **D-18 Phase 3b+4**: Movers L31-L40 + Flyers L41-L60 ALL 4 parts unique (9-12 sessions) — L21-L30 ✅ done
+- **D-13 re-frame**: Vision caption từ Gemini → Llama Vision (Workers AI fallback)
 - **Sprint 4.12 — D1 sync exam attempts** (1.5 ngày)
-  - Hiện tại progress ở localStorage `linguanewtab.exam.progress.v1`
-  - Cần migration `12_exam_attempts.sql` + endpoint POST/GET sync
+  - localStorage `linguanewtab.exam.progress.v1` → D1
+  - Migration `13_exam_attempts.sql` (slot 12 đã dùng cho semantic_checks)
   - Track stats cho Settings → Stats section
 - **Sprint 4.13 — Sound effects** (1 ngày)
   - CC0 sources: freesound.org, mixkit.co, pixabay
   - Effects: correct ✓, wrong ✗, level complete 🎉, button click, drag pickup/drop
 - **Sprint 5.0 — CWS submission** (1 ngày + Google review 4-6 weeks)
-  - OAuth verification
-  - Privacy policy + Terms
-  - Screenshots, demo video
+  - OAuth verification, Privacy policy + Terms, Screenshots, demo video
   - Replace static ADMIN_TOKEN → Google ID token verification
 
 ### 🟡 Quan trọng (sau Critical)
-- Vision auto-caption strategy decision (4 options A/B/C/D)
-- CosyVoice regen
+- Audio re-gen 60 levels x 4 parts SSML pauses (3-4 tháng ElevenLabs)
+- CosyVoice Chinese regen (waiting DashScope budget)
 - Phòng thi: attempt history, audio speed 0.5/1/1.5x
-- UI updates Jason đã đề cập (chưa specify)
+- Icon library expansion (~30-50 SVG mới cho Part 3)
 
 ### 🟢 Nice-to-have (post-launch)
-- 60 levels → 200 levels (Movers + Flyers)
 - i18n exam content (Vi)
 - Offline PWA, mobile app
 - Teacher dashboard
@@ -134,29 +235,40 @@ Release: vX.Y.Z — <description>
 
 ---
 
-## 🔑 Critical secrets / config (đã ship trong source)
+## 🔑 Critical secrets / config
 
 - **Worker URL**: `https://lingua-newtab-worker.kspstudio.workers.dev`
 - **OAuth Client ID**: `138440772678-72fno6lo0dgtrk3fdfok9466n93fh861.apps.googleusercontent.com`
-- **Admin Token** (sẽ replace ở Sprint 5.0): `5320a30ce78e85f9edb69bc4596944fd4743ae4e601a2150d8553fb59a120212`
+- **Admin Token**: `5320a30ce78e85f9edb69bc4596944fd4743ae4e601a2150d8553fb59a120212`
 - **D1 ID**: `9729612b-2b94-4ad0-a708-2dfda0a379db`
 - **R2 bucket**: `lingua-newtab-images`
 - **KV namespace**: `af60b12941fe4176addf7c707b780301`
-- **Cache version (worker)**: `v4`
+- **Cache version**: `v4`
 
 ### Worker secrets (set qua wrangler secret put)
-- `ADMIN_TOKEN` — đã set
-- `GEMINI_API_KEY` — Jason chưa set, optional cho vision auto-caption
+- `ADMIN_TOKEN` — set
+- `GEMINI_API_KEY` — set (broken: geo-fence)
+- `ELEVENLABS_API_KEY` — set
+- `RESEND_*` — set
+
+### Admin emails (current)
+- `jasonnguyenksp@gmail.com` (ONLY admin)
+- Removed: `dungthichvar@gmail.com` (used Profile 2 for user testing)
 
 ---
 
-## 📚 Critical local files (đừng quên)
+## 📚 Critical local files
 
 ```
 ~/Documents/lingua-newtab/update.sh         # v2 với safeguards
-~/Documents/lingua-newtab/backup-audio.sh   # manual backup tool
+~/Documents/lingua-newtab/backup-audio.sh   # manual backup
 ~/Documents/lingua-newtab/backups/          # 5 backups gần nhất
 ~/Downloads/lingua-newtab/                  # working directory
+~/Downloads/lingua-newtab/scripts/
+  ├── validate-exam-data.ts                 # D-16 Phase 1 (prebuild hook)
+  ├── pregen-exam-audio-en.ts               # Phase B ElevenLabs direct
+  ├── count-exam-en-chars.ts                # Inventory tool
+  └── gen_*_mac.py                          # CosyVoice/Qwen/Azure/Google scripts
 ```
 
 ---
@@ -165,37 +277,45 @@ Release: vX.Y.Z — <description>
 
 ### Mất audio
 ```bash
-# Restore từ backup gần nhất
 bash ~/Documents/lingua-newtab/backup-audio.sh --restore audio-images-YYYYMMDD_HHMMSS.tar.gz
 ```
 
-### Sai code
+### Sai code (rollback)
 ```bash
 cd ~/Downloads/lingua-newtab
-git checkout v1.7.7-audio-restored   # rollback về tag baseline
+git checkout v1.7.7-audio-restored   # baseline
 ```
 
 ### Update gặp issue
 ```bash
-# update.sh v2 tự snapshot public/ trước. Restore:
 cd ~/Downloads/lingua-newtab
-rm -rf public && mv public.snap.YYYYMMDD_HHMMSS public
+rm -rf public && mv public.snap.YYYYMMDD_HHMMSS public   # restore public snapshot
 ```
 
 ---
 
-## 📝 Recent activity log (last 5)
+## 📝 Recent activity log (last 10)
 
-- 2026-05-07 — Tag `v1.7.7-audio-restored` baseline
-- 2026-05-07 — backup-audio.sh tool created + first snapshot taken
-- 2026-05-07 — update.sh v2 deployed với multi-layer safeguards
-- 2026-05-07 — Git repo initialized + push to GitHub
-- 2026-05-07 — Pinyin chart re-downloaded từ DigMandarin
+- 2026-05-25 — Phase 3b: Movers L31-L40 (4 parts unique) + examIcons +45 icon (tree/cinema/bakery/fishing/garage/hospital/post/mountain/art/baby); 20 scene prompts. Phase 3 (L21-L40) HOÀN TẤT. tsc 0/0, validator 0 err, 92/92 scenes
+- 2026-05-25 — Admin tool: nút Sinh prompt + Upload + Lưu/Update ảnh scene (ExamPartView). Worker GET /scenes/:id/prompt + POST /scenes/:id/upload (R2 overwrite). Giải pháp D-13: admin gen ảnh ngoài → upload khớp audio
+- 2026-05-25 — Audio Part 1 polish: viết lại buildDragNameAudioScript — mở đầu mô tả cảnh (scene.setting) + 3 kiểu câu xoay vòng thay cho "wearing..." lặp 5 lần. Áp dụng cả 60 level
+- 2026-05-25 — Phase 3a: Movers L21-L30 (4 parts unique) + examIcons +52 icon, fix 13 broken; 20 scene prompts; tsc + validator PASS
+- 2026-05-25 — Session 5b: 40 scene prompts added to worker/src/exam/scenes.ts
+- 2026-05-25 — Session 2.4: Starters Part 1+4 per-level unique (sceneCharacters + colour functions)
+- 2026-05-25 — Session 2.2: Starters L11-L20 Part 2+3 unique
+- 2026-05-25 — Session 2.1: Starters L1-L10 Part 2+3 unique
+- 2026-05-25 — D-18 locked: 60 unique levels commitment
+- 2026-05-25 — Admin emails: removed dungthichvar (Profile 2 testing)
+- 2026-05-25 — ExamSession UI: gap-30px + rocket follow time
+- 2026-05-25 — Phase B audio: pregen 144 MP3 for L1-L36 (63,826 chars used)
+- 2026-05-25 — D-16 Phase 1 validator shipped (prebuild hook)
+- 2026-05-25 — Backup audio v20260525_001604.tar.gz (433MB) created
 
 ---
 
-> Khi đọc file này, mình (Claude) sẽ:
+> Khi đọc file này, Claude sẽ:
 > 1. Confirm với Jason mình hiểu context đúng
 > 2. Hỏi rõ Jason muốn làm gì tiếp theo
 > 3. KHÔNG tự ý ship code/run command nguy hiểm
-> 4. Update file này ở cuối session
+> 4. Self-test code TRƯỚC khi present file (rule mới)
+> 5. Update HANDOFF.md ở cuối session

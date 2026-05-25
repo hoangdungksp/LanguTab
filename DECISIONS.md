@@ -247,3 +247,77 @@ Mỗi entry là decision đã chốt + lý do. Claude KHÔNG re-litigate những
 - [ ] Pricing tier breakdown (free vs paid feature gating)
 
 **Khi resolve những item này** → move xuống section LOCKED ở trên + update STATE.md.
+## D-18 — 60 unique levels content commitment
+
+**Date**: 2026-05-20
+**Status**: LOCKED. Path A chosen over Path C/D (rotation-based).
+
+### Decision
+
+Commit to writing 60 unique Cambridge YLE practice levels (20 Starters + 20 Movers + 20 Flyers), each with completely distinct content across all 4 parts (drag, write, tick, colour). No rotation, no parameter-variation tricks — each level is its own exam paper with unique narrative, questions, and answers.
+
+### Context (data informing decision)
+
+Commercial Cambridge YLE practice books offer 3-5 unique tests per book:
+- Cambridge Pre A1 Starters 4: 3 papers
+- Oxford YLE Tests Starters: 4 tests
+- Hamilton House: 5 tests
+- Collins Three Practice Tests: 3 tests
+
+LinguTab target (60 unique) **vượt commercial benchmark 4x mỗi tier**. Trade-off accepted: 2-3 tháng dev content vs 1-2 tuần for Path C/D rotation approach.
+
+### Rejected alternatives
+
+- **Path C (5 themes rotate)**: Originally implemented in v1.8.0-dev (current state). 20 Starters had 5 variants × 4 repeats. Rejected by Jason as not matching "60 levels khác hoàn toàn" goal.
+- **Path D (4-5 themes with data variations)**: User would see "Pet shop" 4 times with different names/numbers. Rejected for same reason — themes still repeat.
+- **Path A reduced (30 unique)**: 10 per tier instead of 20. Rejected; Jason wants full 60.
+
+### Implementation plan
+
+| Phase | Scope | Sessions estimated |
+|-------|-------|-------------------|
+| 2.1 | Starters L1-L10 unique (Part 2 + Part 3) | DONE this session |
+| 2.2 | Starters L11-L20 unique | 2-3 sessions |
+| 3 | Movers L21-L40 (20 unique themes) | 4-5 sessions |
+| 4 | Flyers L41-L60 (20 unique themes) | 4-5 sessions |
+| 5 | Part 1 (drag) per-level unique character traits (sceneCharacters expansion) | 3-4 sessions |
+| 6 | Part 4 (colour) per-level outline scenes (~25-30 new Flux scenes) | 3-4 sessions |
+| 7 | Asset gen: 240 audio TTS (ElevenLabs, 3-4 months quota) | parallel |
+| 8 | Icon library expansion (~30-50 new SVG icons) | 2-3 sessions |
+| 9 | QA + manual fix per level | 2-3 sessions |
+
+**Total estimate**: 20-30 dev sessions over 2-3 months. Plus 3-4 ElevenLabs subscription cycles for audio gen.
+
+### 60-theme list (locked)
+
+**Starters 1-20** (Pre-A1, simple present, daily life):
+1. Pet shop · 2. Family dinner · 3. Weekend park · 4. Birthday party · 5. School day
+6. Beach holiday · 7. Garden flowers · 8. Toy shop · 9. Sports day · 10. Picnic park
+11. Library books · 12. Bicycle ride · 13. Cooking kitchen · 14. Swimming pool · 15. Farm visit
+16. Pets at home · 17. Sleepover friend · 18. Garden play · 19. Train ride · 20. Snow day
+
+**Movers 21-40** (A1-A2, past tense + comparatives):
+21. Summer camp · 22. Music lesson · 23. Football match · 24. Dance class · 25. Restaurant menu
+26. Bus journey · 27. Zoo trip · 28. Museum tour · 29. Fire station · 30. Pet competition
+31. Tree planting · 32. Cinema visit · 33. Bakery shopping · 34. Fishing trip · 35. Garage sale
+36. Hospital visit · 37. Post office · 38. Camping mountains · 39. Art exhibition · 40. New baby
+
+**Flyers 41-60** (A2-B1, future + conditionals + abstract):
+41. Science fair · 42. Charity event · 43. Volunteer shelter · 44. Food festival · 45. Eco project
+46. Space exhibition · 47. Cooking competition · 48. Film making · 49. Photography class · 50. Mountain hiking
+51. Sailing course · 52. Ancient museum · 53. Drama festival · 54. News reporter · 55. Job shadowing
+56. Time capsule · 57. Future career · 58. Pen pals · 59. School olympics · 60. Graduation
+
+### Quality bar
+
+- Strict Cambridge YLE vocab tier: Starters ~280 words / Movers ~600 words / Flyers ~1000 words
+- Each level audio script ~250-500 chars (longer for higher tier)
+- 5 questions per Part 2/3, 5+ regions per Part 4
+- Cambridge YLE format preserved: examples block, "Now listen and..." transition, numbered questions
+
+### Risks accepted
+
+- **Time-to-launch delayed 2-3 months** vs Path D quick ship
+- **Asset cost ~$15-30** for ElevenLabs quota renewals across 3-4 cycles
+- **Content writing burnout risk** mitigated by 5 levels/session pacing
+- **Audio cache invalidation**: every new script = new hash = re-gen. Pre-gen Phase 2 (Jan 2026) audio scripts will be obsolete by L11-L60 ship.

@@ -105,6 +105,62 @@ export async function getSceneUrl(sceneId: string): Promise<string> {
 }
 
 /**
+ * D-18 admin tool: fetch the canonical image-generation prompt for a scene.
+ * Admin copies this into an external AI image tool (DALL·E / Midjourney /
+ * Imagen), generates the picture, then uploads it via uploadSceneImage().
+ * The prompt matches the audio script, so the generated image will match.
+ */
+export async function getScenePromptForAdmin(sceneId: string): Promise<string> {
+  const token = sessionStorage.getItem('admin_token');
+  if (!token) throw new ExamSceneError('Thiếu admin_token', 'auth');
+  const res = await fetch(
+    `${WORKER_URL}/admin/exam/scenes/${encodeURIComponent(sceneId)}/prompt`,
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  if (!res.ok) {
+    throw new ExamSceneError(`Không lấy được prompt (HTTP ${res.status})`, 'server');
+  }
+  const data = (await res.json()) as { prompt: string };
+  return data.prompt;
+}
+
+/**
+ * D-18 admin tool: upload a manually-generated image for a scene. Overwrites
+ * the R2-cached scene so all users see the admin image (matching the audio).
+ * Sends raw bytes with the file's content type. Returns the stored byte size.
+ */
+export async function uploadSceneImage(
+  sceneId: string,
+  file: File,
+): Promise<{ bytes: number }> {
+  const token = sessionStorage.getItem('admin_token');
+  if (!token) throw new ExamSceneError('Thiếu admin_token', 'auth');
+  const res = await fetch(
+    `${WORKER_URL}/admin/exam/scenes/${encodeURIComponent(sceneId)}/upload`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': file.type || 'image/jpeg',
+      },
+      body: file,
+    },
+  );
+  if (!res.ok) {
+    let msg = `Upload thất bại (HTTP ${res.status})`;
+    try {
+      const body = (await res.json()) as { error?: string };
+      if (body.error) msg = body.error;
+    } catch { /* keep generic */ }
+    throw new ExamSceneError(msg, 'server');
+  }
+  const data = (await res.json()) as { bytes: number };
+  // New image in R2 → drop the stale session blob so re-render refetches.
+  invalidateScene(sceneId);
+  return { bytes: data.bytes };
+}
+
+/**
  * Free all cached blob URLs. Call when leaving the exam tab to release
  * memory. Subsequent fetches re-download from R2 (which is fast).
  */

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, type ChangeEvent } from 'react';
 import type {
   ExamAnswer,
   DragNamePart,
@@ -24,7 +24,11 @@ import {
 } from '../../services/examCalibrationService';
 import { getIcon } from '../../data/exam/examIcons';
 import { ExamScene } from './ExamScene';
-import { invalidateScene } from '../../services/examSceneService';
+import {
+  invalidateScene,
+  getScenePromptForAdmin,
+  uploadSceneImage,
+} from '../../services/examSceneService';
 import type { ExamPage } from './ExamSession';
 
 interface Props {
@@ -376,6 +380,182 @@ function AudioPlayer({
           }}
           onSceneRegenerated={onSceneRegenerated}
         />
+      )}
+
+      {/* D-18: Admin manual scene image — generate prompt → external AI →
+          upload the matching image. Only for parts that have a sceneId
+          (drag + colour + write). */}
+      {adminMode && 'sceneId' in page.part && (
+        <AdminScenePanel
+          sceneId={page.part.sceneId}
+          onUploaded={onSceneRegenerated}
+        />
+      )}
+    </div>
+  );
+}
+
+// ─── D-18: Admin manual scene image panel ───────────────────────────────
+
+/**
+ * Admin workflow to make the Part 1 (and colour/write) image MATCH the audio:
+ *   1. "Sinh prompt" — fetch the canonical scene prompt (same source as the
+ *      audio) to copy into an external AI image tool.
+ *   2. Pick the generated image file.
+ *   3. "Lưu / Update" — upload to R2; overwrites the scene for all users.
+ *
+ * Sidesteps Flux's weak grid composition and the geo-fenced vision pipeline:
+ * the admin generates externally (DALL·E / Midjourney / Imagen) and uploads
+ * a verified image.
+ */
+function AdminScenePanel({
+  sceneId,
+  onUploaded,
+}: {
+  sceneId: string;
+  onUploaded?: () => void;
+}) {
+  const [expanded, setExpanded] = useState(true);
+  const [prompt, setPrompt] = useState<string>('');
+  const [loadingPrompt, setLoadingPrompt] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
+
+  // Revoke the preview object URL when it changes / unmounts.
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
+
+  async function handleGenPrompt() {
+    setLoadingPrompt(true);
+    setMsg(null);
+    try {
+      const p = await getScenePromptForAdmin(sceneId);
+      setPrompt(p);
+    } catch (err) {
+      setMsg('❌ ' + (err instanceof Error ? err.message : String(err)));
+    } finally {
+      setLoadingPrompt(false);
+    }
+  }
+
+  async function handleCopy() {
+    if (!prompt) return;
+    try {
+      await navigator.clipboard.writeText(prompt);
+      setMsg('✓ Đã copy prompt');
+      setTimeout(() => setMsg(null), 2500);
+    } catch {
+      setMsg('❌ Không copy được — bôi đen để copy tay');
+    }
+  }
+
+  function handlePickFile(e: ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0] ?? null;
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setFile(f);
+    setPreviewUrl(f ? URL.createObjectURL(f) : null);
+    setMsg(null);
+  }
+
+  async function handleUpload() {
+    if (!file) return;
+    if (!confirm(`Lưu ảnh này cho scene "${sceneId}"?\n\nẢnh trong R2 sẽ bị ghi đè và mọi người sẽ thấy ảnh mới.`)) return;
+    setUploading(true);
+    setMsg('⏳ Đang upload...');
+    try {
+      const { bytes } = await uploadSceneImage(sceneId, file);
+      setMsg(`✓ Đã lưu (${(bytes / 1024).toFixed(0)} KB). Ảnh đã cập nhật.`);
+      setFile(null);
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(null);
+      onUploaded?.();
+    } catch (err) {
+      setMsg('❌ ' + (err instanceof Error ? err.message : String(err)));
+    } finally {
+      setUploading(false);
+      setTimeout(() => setMsg(null), 6000);
+    }
+  }
+
+  return (
+    <div className="mt-2 rounded-md border-2 border-sky-500 bg-sky-50 p-2">
+      <div className="flex items-center justify-between gap-2">
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="font-display text-xs font-bold text-sky-800 hover:underline"
+        >
+          {expanded ? '▾' : '▸'} 🖼️ ADMIN: Tạo & upload ảnh (khớp audio)
+        </button>
+        <span className="font-mono text-[10px] text-sky-700">scene: {sceneId}</span>
+      </div>
+
+      {expanded && (
+        <div className="mt-2 space-y-2">
+          <p className="text-[11px] text-sky-700">
+            Bấm <b>Sinh prompt</b> → copy dán vào AI tạo ảnh (DALL·E / Midjourney / Imagen) →
+            tải ảnh về → <b>Chọn ảnh</b> → <b>Lưu / Update</b>. Ảnh sẽ khớp với audio.
+          </p>
+
+          {/* Step 1: prompt */}
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={handleGenPrompt}
+              disabled={loadingPrompt}
+              className="rounded border-2 border-sky-700 bg-sky-500 px-2.5 py-1 font-display text-xs font-bold text-white shadow-chunky-soft hover:bg-sky-600 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {loadingPrompt ? '⏳ Đang lấy...' : '📋 Sinh prompt'}
+            </button>
+            {prompt && (
+              <button
+                onClick={handleCopy}
+                className="rounded border-2 border-sky-700 bg-white px-2.5 py-1 font-display text-xs font-bold text-sky-800 shadow-chunky-soft hover:bg-sky-100"
+              >
+                ⧉ Copy
+              </button>
+            )}
+          </div>
+          {prompt && (
+            <textarea
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              rows={5}
+              className="w-full rounded border-2 border-sky-300 bg-white p-2 font-mono text-[11px] text-ink-700 focus:border-sky-500 focus:outline-none"
+            />
+          )}
+
+          {/* Step 2: pick file + preview */}
+          <div className="flex flex-wrap items-center gap-2">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handlePickFile}
+              disabled={uploading}
+              className="text-[11px] text-ink-700 file:mr-2 file:rounded file:border-2 file:border-sky-700 file:bg-sky-100 file:px-2 file:py-1 file:font-display file:text-xs file:font-bold file:text-sky-800"
+            />
+            {/* Step 3: save/update */}
+            <button
+              onClick={handleUpload}
+              disabled={uploading || !file}
+              className="rounded border-2 border-emerald-700 bg-emerald-500 px-2.5 py-1 font-display text-xs font-bold text-white shadow-chunky-soft hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {uploading ? '⏳ Đang lưu...' : '💾 Lưu / Update ảnh'}
+            </button>
+          </div>
+          {previewUrl && (
+            <img
+              src={previewUrl}
+              alt="preview"
+              className="max-h-40 rounded border-2 border-sky-300"
+            />
+          )}
+
+          {msg && <p className="font-display text-xs text-sky-800">{msg}</p>}
+        </div>
       )}
     </div>
   );

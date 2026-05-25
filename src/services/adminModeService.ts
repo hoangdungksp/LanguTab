@@ -27,7 +27,6 @@
  */
 const ADMIN_EMAILS: string[] = [
   'jasonnguyenksp@gmail.com',
-  'dungthichvar@gmail.com',
 ];
 
 /**

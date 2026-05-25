@@ -130,17 +130,35 @@ function SceneFallback({
   className?: string;
 }) {
   const theme = themeFor(sceneId);
+  // D-18 Phase 5+6: Starters per-level scenes (starter_lN_*) are admin-triggered.
+  // Until generated, show a clear "image not yet created" message so users
+  // (and admin) know it's expected, not a bug.
+  const isPerLevelStarterScene = sceneId.startsWith('starter_l');
   return (
     <div
       className={`flex flex-col items-center justify-center gap-2 ${theme.bg} ${className}`}
     >
       <div className="text-6xl opacity-50">{theme.emoji}</div>
-      {error && (
-        <div className="max-w-md px-4 text-center text-xs text-coral-700">
-          ⚠️ {error}
-        </div>
+      {isPerLevelStarterScene ? (
+        <>
+          <div className="max-w-md px-4 text-center text-sm font-medium text-amber-700">
+            📸 Hình chưa được tạo cho bài thi này
+          </div>
+          <div className="max-w-md px-4 text-center text-xs text-ink-500">
+            Admin cần bấm <span className="font-semibold">Gen hình</span> để tạo ảnh.
+            Nội dung text + audio đã sẵn sàng để luyện thi.
+          </div>
+        </>
+      ) : (
+        <>
+          {error && (
+            <div className="max-w-md px-4 text-center text-xs text-coral-700">
+              ⚠️ {error}
+            </div>
+          )}
+          <div className="text-xs text-ink-400">Tranh sẽ tải lại lần sau</div>
+        </>
       )}
-      <div className="text-xs text-ink-400">Tranh sẽ tải lại lần sau</div>
     </div>
   );
 }
@@ -149,14 +167,27 @@ function SceneFallback({
 
 /** Theme emoji + bg color per scene category. Used in skeletons/fallbacks. */
 function themeFor(sceneId: string): { emoji: string; bg: string } {
+  // D-18 Phase 5+6 Starters per-level scenes
+  if (sceneId.includes('petshop')) return { emoji: '🐾', bg: 'bg-gradient-to-br from-blue-100 to-pink-100' };
+  if (sceneId.includes('toyshop')) return { emoji: '🧸', bg: 'bg-gradient-to-br from-yellow-100 to-orange-100' };
+  if (sceneId.includes('sports')) return { emoji: '🏃', bg: 'bg-gradient-to-br from-red-100 to-orange-100' };
+  if (sceneId.includes('picnic')) return { emoji: '🧺', bg: 'bg-gradient-to-br from-green-100 to-yellow-100' };
+  if (sceneId.includes('library')) return { emoji: '📚', bg: 'bg-gradient-to-br from-amber-100 to-brown-100' };
+  if (sceneId.includes('bicycle')) return { emoji: '🚲', bg: 'bg-gradient-to-br from-sky-100 to-mint-100' };
+  if (sceneId.includes('cooking')) return { emoji: '🍰', bg: 'bg-gradient-to-br from-orange-100 to-rose-100' };
+  if (sceneId.includes('swimming')) return { emoji: '🏊', bg: 'bg-gradient-to-br from-cyan-100 to-blue-100' };
+  if (sceneId.includes('sleepover')) return { emoji: '🌙', bg: 'bg-gradient-to-br from-indigo-100 to-pink-100' };
+  if (sceneId.includes('train')) return { emoji: '🚂', bg: 'bg-gradient-to-br from-slate-100 to-blue-100' };
+  if (sceneId.includes('snow')) return { emoji: '❄️', bg: 'bg-gradient-to-br from-sky-100 to-white' };
+  // Existing categories
   if (sceneId.includes('park')) return { emoji: '🌳', bg: 'bg-gradient-to-br from-green-100 to-blue-100' };
   if (sceneId.includes('beach')) return { emoji: '🏖️', bg: 'bg-gradient-to-br from-sky-100 to-amber-100' };
-  if (sceneId.includes('classroom')) return { emoji: '🏫', bg: 'bg-gradient-to-br from-amber-100 to-yellow-100' };
+  if (sceneId.includes('classroom') || sceneId.includes('school')) return { emoji: '🏫', bg: 'bg-gradient-to-br from-amber-100 to-yellow-100' };
   if (sceneId.includes('playground')) return { emoji: '🎢', bg: 'bg-gradient-to-br from-pink-100 to-purple-100' };
   if (sceneId.includes('kitchen')) return { emoji: '🍳', bg: 'bg-gradient-to-br from-rose-100 to-orange-100' };
   if (sceneId.includes('birthday')) return { emoji: '🎂', bg: 'bg-gradient-to-br from-pink-100 to-purple-100' };
   if (sceneId.includes('pet')) return { emoji: '🐱', bg: 'bg-gradient-to-br from-blue-100 to-indigo-100' };
-  if (sceneId.includes('family_dinner')) return { emoji: '🍽️', bg: 'bg-gradient-to-br from-orange-100 to-amber-100' };
+  if (sceneId.includes('family_dinner') || sceneId.includes('dinner')) return { emoji: '🍽️', bg: 'bg-gradient-to-br from-orange-100 to-amber-100' };
   if (sceneId.includes('weekend')) return { emoji: '🎨', bg: 'bg-gradient-to-br from-purple-100 to-pink-100' };
   if (sceneId.includes('garden')) return { emoji: '🌷', bg: 'bg-gradient-to-br from-green-100 to-yellow-100' };
   if (sceneId.includes('bedroom')) return { emoji: '🛏️', bg: 'bg-gradient-to-br from-indigo-100 to-purple-100' };
