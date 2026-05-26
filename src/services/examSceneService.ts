@@ -53,14 +53,32 @@ export class ExamSceneError extends Error {
  * This protects Workers AI Neuron budget — 1 generation per scene total,
  * not 1 generation per first-time user.
  */
-export async function getSceneUrl(sceneId: string): Promise<string> {
-  const cached = blobCache.get(sceneId);
-  if (cached) return cached;
+export async function getSceneUrl(
+  sceneId: string,
+  opts?: { bust?: boolean },
+): Promise<string> {
+  // `bust` skips both the session blob cache AND the browser HTTP cache.
+  // Needed after an admin uploads/regenerates the image — the worker serves
+  // scene images with `Cache-Control: immutable`, so a plain refetch would
+  // return the stale picture. We add a cache-busting query + `cache: reload`.
+  if (!opts?.bust) {
+    const cached = blobCache.get(sceneId);
+    if (cached) return cached;
+  }
+
+  // Scene images can be overwritten by admin upload, so never trust a stale
+  // (possibly `immutable`-cached) copy:
+  //   - bust  → full bypass (reload) + unique query, for instant in-session refresh
+  //   - normal → `no-cache` forces revalidation against the worker ETag, which
+  //     also defeats any legacy `immutable` entry cached before this fix.
+  const bustQs = opts?.bust ? `?cb=${Date.now()}` : '';
+  const fetchInit: RequestInit = { cache: opts?.bust ? 'reload' : 'no-cache' };
 
   let res: Response;
   try {
     res = await authedFetch(
-      `${WORKER_URL}/exam/scene/${encodeURIComponent(sceneId)}`,
+      `${WORKER_URL}/exam/scene/${encodeURIComponent(sceneId)}${bustQs}`,
+      fetchInit,
     );
   } catch (err) {
     if (err instanceof Error && err.message.startsWith('AUTH_REQUIRED')) {

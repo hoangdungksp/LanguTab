@@ -44,7 +44,9 @@ export function ExamScene({ sceneId, className = '', refreshKey = 0 }: Props) {
     setError(null);
     setUrl(null);
 
-    getSceneUrl(sceneId)
+    // refreshKey > 0 means an admin action (upload / regenerate) bumped it —
+    // bypass blob + HTTP cache so the freshly stored R2 image shows at once.
+    getSceneUrl(sceneId, { bust: refreshKey > 0 })
       .then((u) => {
         if (!cancelled) {
           setUrl(u);
@@ -108,9 +110,8 @@ function SceneSkeleton({ sceneId, className = '' }: { sceneId: string; className
         <div className="text-6xl">{theme.emoji}</div>
         <div className="flex items-center gap-2 text-sm font-semibold text-ink-600">
           <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-ink-400 border-t-transparent" />
-          Đang tạo tranh...
+          Đang tải tranh...
         </div>
-        <div className="text-xs text-ink-400">Lần đầu mất 5-10 giây</div>
       </div>
       {/* Animated shimmer overlay */}
       <div className="pointer-events-none absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/30 to-transparent" />

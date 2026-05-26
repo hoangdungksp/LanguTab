@@ -141,7 +141,7 @@ export function ExamSession({ level, onExit }: Props) {
             rounded corners, soft shadow, contains all exam UI. */}
         <div className="rounded-3xl bg-white p-4 shadow-xl sm:p-6">
           {/* ─── Top bar ───────────────────────────────────────────────── */}
-          <div className="flex items-center gap-[30px]">
+          <div className="mb-10 flex items-center gap-[30px]">
             {/* Exit button (left) */}
             <button
               onClick={() => {

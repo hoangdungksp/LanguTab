@@ -117,6 +117,41 @@ export async function getAudioUrl(
 }
 
 /**
+ * D-18 admin tool: generate + cache the audio for a (audioKey, audioScript)
+ * via the admin-only worker endpoint. Normal users can only READ audio
+ * (GET-only /exam/audio); this is the single path that spends TTS budget.
+ * Returns the provider that produced the audio. Drops any stale in-session
+ * blob so the next playback streams the freshly cached file.
+ */
+export async function adminGenerateAudio(
+  audioKey: string,
+  audioScript: string,
+): Promise<string> {
+  const token = sessionStorage.getItem('admin_token');
+  if (!token) throw new ExamAudioError('Thiếu admin_token', 'auth');
+  const res = await fetch(`${WORKER_URL}/admin/exam/audio/generate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ audioKey, audioScript }),
+  });
+  if (!res.ok) {
+    let msg = `Gen audio thất bại (HTTP ${res.status})`;
+    try {
+      const b = (await res.json()) as { error?: string };
+      if (b.error) msg = b.error;
+    } catch { /* keep generic */ }
+    throw new ExamAudioError(msg, 'server');
+  }
+  const cacheKey = `${audioKey}::${await scriptHash(audioScript)}`;
+  const old = blobCache.get(cacheKey);
+  if (old) {
+    URL.revokeObjectURL(old);
+    blobCache.delete(cacheKey);
+  }
+  return res.headers.get('X-Audio-Provider') ?? 'unknown';
+}
+
+/**
  * Free all cached blob URLs. Call when leaving the exam tab to release
  * memory. Subsequent fetches will re-download from R2 (which is fast).
  */

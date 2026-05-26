@@ -296,6 +296,8 @@ rm -rf public && mv public.snap.YYYYMMDD_HHMMSS public   # restore public snapsh
 
 ## 📝 Recent activity log (last 10)
 
+- 2026-05-26 — Read-only assets cho user: /exam/audio → chỉ đọc R2 (miss=404), thêm /admin/exam/audio/generate + nút 🎙️ Gen audio. Ảnh & text vốn đã read-only. ⚠️ level chưa pre-gen audio sẽ 404 tới khi admin Gen
+- 2026-05-26 — Fix ảnh upload bị mất khi mở lại: worker dùng ETag + must-revalidate (bỏ immutable) cho /exam/scene; client cache:no-cache. Fix ảnh upload không refresh ngay (cache-busting). 3 nút save có spinner + "Đã lưu". Top bar +mb-10. Skeleton "Đang tạo"→"Đang tải"
 - 2026-05-25 — Phase 3b: Movers L31-L40 (4 parts unique) + examIcons +45 icon (tree/cinema/bakery/fishing/garage/hospital/post/mountain/art/baby); 20 scene prompts. Phase 3 (L21-L40) HOÀN TẤT. tsc 0/0, validator 0 err, 92/92 scenes
 - 2026-05-25 — Admin tool: nút Sinh prompt + Upload + Lưu/Update ảnh scene (ExamPartView). Worker GET /scenes/:id/prompt + POST /scenes/:id/upload (R2 overwrite). Giải pháp D-13: admin gen ảnh ngoài → upload khớp audio
 - 2026-05-25 — Audio Part 1 polish: viết lại buildDragNameAudioScript — mở đầu mô tả cảnh (scene.setting) + 3 kiểu câu xoay vòng thay cho "wearing..." lặp 5 lần. Áp dụng cả 60 level

@@ -70,7 +70,10 @@ export async function handleExamRequest(
 ): Promise<Response | null> {
   const url = new URL(req.url);
 
-  // POST /exam/audio — fetch (or generate + cache) audio for a question
+  // POST /exam/audio — READ-ONLY for normal users. Returns cached audio from
+  // R2 if present, else 404. NEVER generates TTS (no API spend by users).
+  // Only admin generates audio via POST /admin/exam/audio/generate. This
+  // mirrors the scene-image model: admin creates, all users read.
   if (url.pathname === '/exam/audio' && req.method === 'POST') {
     if (!user) {
       return new Response(
@@ -78,12 +81,7 @@ export async function handleExamRequest(
         { status: 401, headers: { 'Content-Type': 'application/json' } },
       );
     }
-    if (!env.IMAGES) {
-      // R2 binding missing — extension still works, but no audio caching.
-      // Generate every time (slow + expensive).
-      return generateAudioWithoutCache(req, env);
-    }
-    return getOrGenerateAudio(req, env);
+    return getAudioFromCacheReadOnly(req, env);
   }
 
   // GET /exam/scene/:sceneId — fetch scene image from R2 cache.
@@ -100,7 +98,7 @@ export async function handleExamRequest(
       );
     }
     const sceneId = url.pathname.replace('/exam/scene/', '');
-    return getSceneFromCache(env, sceneId);
+    return getSceneFromCache(env, sceneId, req);
   }
 
   // Sprint 4.9: GET /exam/calibration/:levelId/:partId — public read of
@@ -150,6 +148,64 @@ export async function handleExamRequest(
  * plays — by same user, by other users, after Cloudflare deployments,
  * after browser refreshes — all hit R2 cache. Zero recurring cost.
  */
+/**
+ * READ-ONLY audio lookup for normal users. Checks R2 cache across providers;
+ * returns the cached MP3 or 404. Never calls TTS — generation is admin-only.
+ */
+async function getAudioFromCacheReadOnly(req: Request, env: Env): Promise<Response> {
+  let body: AudioRequestBody;
+  try {
+    body = (await req.json()) as AudioRequestBody;
+  } catch {
+    return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
+      status: 400, headers: { 'Content-Type': 'application/json' },
+    });
+  }
+  if (!body.audioKey || !body.audioScript) {
+    return new Response(
+      JSON.stringify({ error: 'audioKey and audioScript required' }),
+      { status: 400, headers: { 'Content-Type': 'application/json' } },
+    );
+  }
+  if (!env.IMAGES) {
+    return new Response(
+      JSON.stringify({ error: 'R2 not configured' }),
+      { status: 503, headers: { 'Content-Type': 'application/json' } },
+    );
+  }
+
+  const cacheVersion = env.AUDIO_CACHE_VERSION || 'v1';
+  const scriptHash = await sha256Short(body.audioScript);
+
+  for (const provider of preferredProvidersForLookup(env)) {
+    const r2Key = `exam-audio/${cacheVersion}/${provider}/${body.audioKey}.${scriptHash}`;
+    const cached = await env.IMAGES.get(r2Key);
+    if (cached) {
+      return new Response(cached.body, {
+        status: 200,
+        headers: {
+          'Content-Type': 'audio/mpeg',
+          // Audio for a given (key+scriptHash) is content-addressed and never
+          // changes — safe to cache immutably on the client.
+          'Cache-Control': 'public, max-age=31536000, immutable',
+          'X-Audio-Source': 'r2-cache',
+          'X-Audio-Provider': provider,
+        },
+      });
+    }
+  }
+
+  // Not generated yet — admin must create it. No TTS here.
+  return new Response(
+    JSON.stringify({
+      error: 'Audio chưa được tạo cho bài thi này',
+      hint: 'Admin must POST /admin/exam/audio/generate',
+      audioKey: body.audioKey,
+    }),
+    { status: 404, headers: { 'Content-Type': 'application/json' } },
+  );
+}
+
 async function getOrGenerateAudio(req: Request, env: Env): Promise<Response> {
   let body: AudioRequestBody;
   try {
@@ -512,7 +568,7 @@ async function generateMeloTTS(env: Env, text: string): Promise<ArrayBuffer> {
  * "scene not yet ready" fallback. Admin warms via:
  *   POST /admin/exam/scenes/warm-all  (Bearer ADMIN_TOKEN)
  */
-async function getSceneFromCache(env: Env, sceneId: string): Promise<Response> {
+async function getSceneFromCache(env: Env, sceneId: string, req?: Request): Promise<Response> {
   if (!isValidSceneId(sceneId)) {
     return new Response(
       JSON.stringify({ error: `Unknown sceneId: ${sceneId}` }),
@@ -543,12 +599,29 @@ async function getSceneFromCache(env: Env, sceneId: string): Promise<Response> {
     );
   }
 
+  // Cache strategy: the R2 object can be OVERWRITTEN by admin upload, so we
+  // must NOT use `immutable` (that made the browser keep the old default for
+  // up to a year — the "image reverts on reopen" bug). Instead use the R2
+  // object's ETag + must-revalidate so the browser revalidates every load:
+  //   - unchanged → worker returns 304 (tiny), browser reuses cached bytes
+  //   - changed (admin uploaded) → worker returns 200 with the new image
+  const etag = cached.httpEtag;
+  const ifNoneMatch = req?.headers.get('If-None-Match');
+  const cacheControl = 'public, max-age=0, must-revalidate';
+  if (ifNoneMatch && etag && ifNoneMatch === etag) {
+    return new Response(null, {
+      status: 304,
+      headers: { ETag: etag, 'Cache-Control': cacheControl, 'X-Scene-Source': 'r2-304' },
+    });
+  }
+
   console.log('[exam-scene] cache hit:', r2Key);
   return new Response(cached.body, {
     status: 200,
     headers: {
-      'Content-Type': 'image/jpeg',
-      'Cache-Control': 'public, max-age=31536000, immutable',
+      'Content-Type': cached.httpMetadata?.contentType || 'image/jpeg',
+      'Cache-Control': cacheControl,
+      ...(etag ? { ETag: etag } : {}),
       'X-Scene-Source': 'r2-cache',
     },
   });
@@ -601,6 +674,19 @@ export async function handleAdminExamRequest(
   const uploadMatch = url.pathname.match(/^\/admin\/exam\/scenes\/([^/]+)\/upload$/);
   if (uploadMatch && req.method === 'POST') {
     return adminUploadScene(env, decodeURIComponent(uploadMatch[1]), req);
+  }
+
+  // D-18: POST /admin/exam/audio/generate — admin-only TTS generation.
+  // Body { audioKey, audioScript }. Generates (if not cached) + stores in R2
+  // so normal users can then read it via GET-only /exam/audio. This is the
+  // only path that spends TTS budget.
+  if (url.pathname === '/admin/exam/audio/generate' && req.method === 'POST') {
+    if (!env.IMAGES) {
+      return new Response(JSON.stringify({ error: 'R2 not configured' }), {
+        status: 503, headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    return getOrGenerateAudio(req, env);
   }
 
   // ─── Sprint 4.9: Calibration override endpoints ────────────────────

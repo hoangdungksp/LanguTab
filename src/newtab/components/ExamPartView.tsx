@@ -9,6 +9,7 @@ import type {
 import {
   getAudioUrl,
   ExamAudioError,
+  adminGenerateAudio,
 } from '../../services/examAudioService';
 import {
   getEffectiveAudioScript,
@@ -83,6 +84,7 @@ export function ExamPartView({ page, currentAnswers, onAnswer, levelId }: Props)
             part={page.part}
             answers={currentAnswers}
             onAnswer={onAnswer}
+            sceneRefreshKey={sceneRefreshKey}
           />
         )}
         {page.kind === 'tick' && (
@@ -359,6 +361,7 @@ function AudioPlayer({
         <AdminAudioScriptEditor
           levelId={levelId}
           partId={partId}
+          audioKey={audioKey}
           defaultScript={audioScript}
           recaptionContext={
             page.kind === 'drag'
@@ -392,6 +395,59 @@ function AudioPlayer({
         />
       )}
     </div>
+  );
+}
+
+// ─── Shared save button (spinner while saving → "Đã lưu" when done) ─────
+
+/** Small inline spinner for buttons. */
+function Spinner() {
+  return (
+    <span className="mr-1 inline-block h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent align-[-2px]" />
+  );
+}
+
+/**
+ * Save button with 3 visual states so admin always knows the result:
+ *   - saving  → spinner + "Đang lưu..."
+ *   - saved   → green "✓ Đã lưu" (until the form becomes dirty again)
+ *   - idle    → the given idleLabel
+ */
+function SaveButton({
+  tone,
+  idleLabel,
+  saving,
+  saved,
+  disabled,
+  onClick,
+}: {
+  tone: 'amber' | 'purple';
+  idleLabel: string;
+  saving: boolean;
+  saved: boolean;
+  disabled: boolean;
+  onClick: () => void;
+}) {
+  const showSaved = saved && !saving;
+  const toneCls =
+    tone === 'amber'
+      ? 'border-amber-700 bg-amber-500 hover:bg-amber-600'
+      : 'border-purple-700 bg-purple-500 hover:bg-purple-600';
+  const savedCls = 'border-emerald-700 bg-emerald-500 hover:bg-emerald-600';
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`rounded-md border-2 px-3 py-1 font-display text-xs font-bold text-white shadow-chunky-soft disabled:cursor-not-allowed disabled:opacity-50 ${showSaved ? savedCls : toneCls}`}
+    >
+      {saving ? (
+        <><Spinner /> Đang lưu...</>
+      ) : showSaved ? (
+        '✓ Đã lưu'
+      ) : (
+        idleLabel
+      )}
+    </button>
   );
 }
 
@@ -591,6 +647,7 @@ interface RecaptionContext {
 function AdminAudioScriptEditor({
   levelId,
   partId,
+  audioKey,
   defaultScript,
   recaptionContext,
   onSaved,
@@ -598,6 +655,7 @@ function AdminAudioScriptEditor({
 }: {
   levelId: string;
   partId: string;
+  audioKey: string;
   defaultScript: string;
   recaptionContext: RecaptionContext | null;
   onSaved: () => void;
@@ -610,7 +668,9 @@ function AdminAudioScriptEditor({
   const [override, setOverride] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [recaptioning, setRecaptioning] = useState(false);
+  const [genningAudio, setGenningAudio] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   // Sprint 4.9.5.1: auto-expand by default so admin sees the vision auto-
   // caption button without having to click "expand". Less hidden = better
@@ -631,12 +691,16 @@ function AdminAudioScriptEditor({
 
   const dirty = script.trim() !== (override ?? defaultScript).trim();
 
+  // Once the admin edits again, drop the "Đã lưu" confirmation.
+  useEffect(() => { if (dirty) setSaved(false); }, [dirty]);
+
   async function handleSave() {
     setSaving(true);
     setMsg(null);
     try {
       const result = await saveAudioScript(levelId, partId, script);
       setOverride(script);
+      setSaved(true);
       setMsg(`✓ Đã lưu (${result.length} ký tự). Audio sẽ generate lại.`);
       onSaved();
     } catch (err) {
@@ -644,6 +708,32 @@ function AdminAudioScriptEditor({
     } finally {
       setSaving(false);
       setTimeout(() => setMsg(null), 4000);
+    }
+  }
+
+  /**
+   * D-18: Admin generates the audio (TTS) for the current script and caches
+   * it in R2. After this, normal users can READ it (GET-only /exam/audio).
+   * Generate for the SAVED script — users fetch the saved/override script,
+   * so gen the same text or their hash won't match.
+   */
+  async function handleGenAudio() {
+    if (
+      !confirm(
+        'Tạo audio cho script hiện tại?\n\nChỉ admin — sẽ gọi TTS và lưu vào R2 để user nghe.\nNên bấm "💾 Lưu script" TRƯỚC nếu vừa sửa, để audio khớp cái user sẽ nghe.',
+      )
+    ) return;
+    setGenningAudio(true);
+    setMsg('🎙️ Đang tạo audio (TTS)...');
+    try {
+      const provider = await adminGenerateAudio(audioKey, script);
+      setMsg(`✓ Đã tạo audio (${provider}). User giờ nghe được.`);
+      onSaved(); // force AudioPlayer to reload — now a cache hit
+    } catch (err) {
+      setMsg('❌ ' + (err instanceof Error ? err.message : String(err)));
+    } finally {
+      setGenningAudio(false);
+      setTimeout(() => setMsg(null), 6000);
     }
   }
 
@@ -811,12 +901,25 @@ function AdminAudioScriptEditor({
                   🗑 Xóa override
                 </button>
               )}
-              <button
+              <SaveButton
+                tone="amber"
+                idleLabel="💾 Lưu script"
+                saving={saving}
+                saved={saved}
+                disabled={saving || recaptioning || genningAudio || !dirty || !script.trim()}
                 onClick={handleSave}
-                disabled={saving || recaptioning || !dirty || !script.trim()}
-                className="rounded border-2 border-amber-700 bg-amber-500 px-3 py-1 font-display text-xs font-bold text-white shadow-chunky-soft hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
+              />
+              <button
+                onClick={handleGenAudio}
+                disabled={saving || recaptioning || genningAudio || !script.trim()}
+                title="Admin tạo audio (TTS) + lưu R2 để user nghe. Lưu script trước nếu vừa sửa."
+                className="rounded border-2 border-emerald-700 bg-emerald-500 px-3 py-1 font-display text-xs font-bold text-white shadow-chunky-soft hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {saving ? 'Đang lưu...' : '💾 Lưu script'}
+                {genningAudio ? (
+                  <><Spinner /> Đang tạo...</>
+                ) : (
+                  '🎙️ Gen audio'
+                )}
               </button>
             </div>
           </div>
@@ -880,8 +983,11 @@ function DragNameView({
   const [overrides, setOverrides] = useState<Record<string, ZoneOverride> | null>(null);
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
   const adminMode = isAdminMode();
+
+  useEffect(() => { if (dirty) setSaved(false); }, [dirty]);
 
   useEffect(() => {
     let cancelled = false;
@@ -956,6 +1062,7 @@ function DragNameView({
       const result = await saveCalibration(levelId, part.partId, toSave);
       setSaveMsg(`✓ Đã lưu ${result.saved} zones`);
       setDirty(false);
+      setSaved(true);
     } catch (err) {
       setSaveMsg('❌ ' + (err instanceof Error ? err.message : String(err)));
     } finally {
@@ -979,13 +1086,14 @@ function DragNameView({
             </span>
             <div className="flex items-center gap-2">
               {saveMsg && <span className="font-display text-xs text-purple-700">{saveMsg}</span>}
-              <button
-                onClick={handleSaveCalibration}
+              <SaveButton
+                tone="purple"
+                idleLabel="Lưu calibration"
+                saving={saving}
+                saved={saved}
                 disabled={saving || !dirty}
-                className="rounded-md border-2 border-purple-700 bg-purple-500 px-3 py-1 font-display text-xs font-bold text-white shadow-chunky-soft hover:bg-purple-600 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {saving ? 'Đang lưu...' : 'Lưu calibration'}
-              </button>
+                onClick={handleSaveCalibration}
+              />
             </div>
           </div>
           {/* Sprint 4.9.1: Quick reference of which zone belongs to which
@@ -1307,17 +1415,19 @@ function WriteView({
   part,
   answers,
   onAnswer,
+  sceneRefreshKey = 0,
 }: {
   part: WritePart;
   answers: ExamAnswer[];
   onAnswer: (a: ExamAnswer) => void;
+  sceneRefreshKey?: number;
 }) {
   return (
     <div className="grid h-full gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
       {/* Left: shared scene + examples */}
       <div className="space-y-3">
         <div className="aspect-video overflow-hidden rounded-chunk border-2 border-coral-300">
-          <ExamScene sceneId={part.sceneId} className="h-full w-full" />
+          <ExamScene sceneId={part.sceneId} className="h-full w-full" refreshKey={sceneRefreshKey} />
         </div>
         <div className="rounded-chunk border-2 border-ink-200 bg-cream p-3">
           <div className="text-xs font-bold uppercase tracking-wide text-ink-400">
@@ -1601,8 +1711,11 @@ function ColourView({
   const [overrides, setOverrides] = useState<Record<string, ZoneOverride> | null>(null);
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
   const adminMode = isAdminMode();
+
+  useEffect(() => { if (dirty) setSaved(false); }, [dirty]);
 
   useEffect(() => {
     let cancelled = false;
@@ -1679,6 +1792,7 @@ function ColourView({
       const result = await saveCalibration(levelId, part.partId, toSave);
       setSaveMsg(`✓ Đã lưu ${result.saved} regions`);
       setDirty(false);
+      setSaved(true);
     } catch (err) {
       setSaveMsg('❌ ' + (err instanceof Error ? err.message : String(err)));
     } finally {
@@ -1710,13 +1824,14 @@ function ColourView({
             </span>
             <div className="flex items-center gap-2">
               {saveMsg && <span className="font-display text-xs text-purple-700">{saveMsg}</span>}
-              <button
-                onClick={handleSaveCalibration}
+              <SaveButton
+                tone="purple"
+                idleLabel="Lưu calibration"
+                saving={saving}
+                saved={saved}
                 disabled={saving || !dirty}
-                className="rounded-md border-2 border-purple-700 bg-purple-500 px-3 py-1 font-display text-xs font-bold text-white shadow-chunky-soft hover:bg-purple-600 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {saving ? 'Đang lưu...' : 'Lưu calibration'}
-              </button>
+                onClick={handleSaveCalibration}
+              />
             </div>
           </div>
           <div className="flex flex-wrap gap-1.5 text-[11px]">
