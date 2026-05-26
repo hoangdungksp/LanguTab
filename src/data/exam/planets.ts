@@ -16,7 +16,11 @@ import { countCompletedInRange } from '../../services/examProgressService';
  * Threshold of 12/20 is intentionally moderate — kids don't have to
  * 100% Starters to advance, but enough to demonstrate baseline skill.
  */
-export type PlanetId = 'starters' | 'movers' | 'flyers';
+export type PlanetId =
+  | 'starters' | 'movers' | 'flyers'   // English (Cambridge YLE)
+  | 'hsk1' | 'hsk2' | 'hsk3';          // Chinese (HSK) — D-23
+
+export type ExamLang = 'en' | 'zh';
 
 export interface Planet {
   id: PlanetId;
@@ -140,9 +144,93 @@ export const PLANETS: Planet[] = [
   },
 ];
 
-/** Get a planet by its ID. */
+// ─── D-23: Chinese (HSK) planets ───────────────────────────────────────
+// Chinese exam uses level numbers 101+ so progress never collides with the
+// English 1-60 range. Pilot ships HSK1 (101-120); HSK2/HSK3 gated like the
+// English tiers. Panda 🐼 theme, warm red/gold (Chinese visual identity).
+export const PLANETS_ZH: Planet[] = [
+  {
+    id: 'hsk1',
+    name: 'HSK 1',
+    subtitle: 'Sơ cấp tiếng Trung — HSK 1',
+    description: 'Bắt đầu tiếng Trung với 150 từ và câu cơ bản!',
+    levelStart: 101,
+    levelEnd: 120,
+    cefrBadges: ['HSK1'],
+    theme: {
+      border: 'border-red-700',
+      bg: 'from-red-100 to-amber-50',
+      heading: 'text-red-700',
+      subtitle: 'text-red-800',
+      emoji: '🐼',
+      emojiLabel: 'panda',
+      bodyGradient: 'radial-gradient(circle at 35% 30%, #fca5a5 0%, #ef4444 40%, #b91c1c 80%, #7f1d1d 100%)',
+      glowColor: '#f87171',
+      badgeBg: 'bg-red-600',
+      buttonBg: 'bg-gradient-to-b from-red-500 to-red-700 hover:from-red-400 hover:to-red-600',
+      pageBg: 'bg-gradient-to-b from-red-200 via-amber-100 to-amber-50',
+    },
+    unlockRequirement: null,
+  },
+  {
+    id: 'hsk2',
+    name: 'HSK 2',
+    subtitle: 'Sơ-trung cấp — HSK 2',
+    description: 'Mở rộng lên ~300 từ với câu dài hơn!',
+    levelStart: 121,
+    levelEnd: 140,
+    cefrBadges: ['HSK2'],
+    theme: {
+      border: 'border-amber-700',
+      bg: 'from-amber-100 to-yellow-50',
+      heading: 'text-amber-700',
+      subtitle: 'text-amber-800',
+      emoji: '🏮',
+      emojiLabel: 'lantern',
+      bodyGradient: 'radial-gradient(circle at 35% 30%, #fcd34d 0%, #f59e0b 40%, #b45309 80%, #78350f 100%)',
+      glowColor: '#fbbf24',
+      badgeBg: 'bg-amber-600',
+      buttonBg: 'bg-gradient-to-b from-amber-500 to-amber-700 hover:from-amber-400 hover:to-amber-600',
+      pageBg: 'bg-gradient-to-b from-amber-200 via-yellow-100 to-yellow-50',
+    },
+    unlockRequirement: { planetId: 'hsk1', minCompleted: 12 },
+  },
+  {
+    id: 'hsk3',
+    name: 'HSK 3',
+    subtitle: 'Trung cấp — HSK 3',
+    description: 'Thử thách ~600 từ và hội thoại thực tế!',
+    levelStart: 141,
+    levelEnd: 160,
+    cefrBadges: ['HSK3'],
+    theme: {
+      border: 'border-rose-700',
+      bg: 'from-rose-100 to-pink-50',
+      heading: 'text-rose-700',
+      subtitle: 'text-rose-800',
+      emoji: '🧧',
+      emojiLabel: 'red envelope',
+      bodyGradient: 'radial-gradient(circle at 35% 30%, #fda4af 0%, #e11d48 40%, #9f1239 80%, #881337 100%)',
+      glowColor: '#fb7185',
+      badgeBg: 'bg-rose-600',
+      buttonBg: 'bg-gradient-to-b from-rose-500 to-rose-700 hover:from-rose-400 hover:to-rose-600',
+      pageBg: 'bg-gradient-to-b from-rose-200 via-pink-100 to-pink-50',
+    },
+    unlockRequirement: { planetId: 'hsk2', minCompleted: 12 },
+  },
+];
+
+/** All planets across languages — used for id lookup + progress. */
+const ALL_PLANETS: Planet[] = [...PLANETS, ...PLANETS_ZH];
+
+/** Planets shown for a given exam language. */
+export function getPlanetsForLang(lang: ExamLang): Planet[] {
+  return lang === 'zh' ? PLANETS_ZH : PLANETS;
+}
+
+/** Get a planet by its ID (across both languages). */
 export function getPlanet(planetId: PlanetId): Planet {
-  const p = PLANETS.find((p) => p.id === planetId);
+  const p = ALL_PLANETS.find((p) => p.id === planetId);
   if (!p) throw new Error(`Unknown planet: ${planetId}`);
   return p;
 }
@@ -194,6 +282,9 @@ export function getPlanetProgress(planetId: PlanetId): PlanetProgress {
  * for "next level" navigation and by the breadcrumb back button.
  */
 export function planetForLevel(levelNumber: number): PlanetId {
+  if (levelNumber >= 141) return 'hsk3';
+  if (levelNumber >= 121) return 'hsk2';
+  if (levelNumber >= 101) return 'hsk1';
   if (levelNumber >= 41) return 'flyers';
   if (levelNumber >= 21) return 'movers';
   return 'starters';

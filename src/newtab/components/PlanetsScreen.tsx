@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import {
-  PLANETS,
   getPlanetProgress,
   type Planet,
   type PlanetId,
@@ -40,19 +39,21 @@ import {
  *   └──────────────────────────────────────────┘
  */
 interface Props {
+  /** Planets to show — varies by exam language (EN tiers vs HSK). */
+  planets: Planet[];
   onSelectPlanet: (planetId: PlanetId) => void;
 }
 
-export function PlanetsScreen({ onSelectPlanet }: Props) {
+export function PlanetsScreen({ planets, onSelectPlanet }: Props) {
   const [centerIdx, setCenterIdx] = useState(0);
-  const totalPlanets = PLANETS.length;
+  const totalPlanets = planets.length;
   const wrap = (i: number) => ((i % totalPlanets) + totalPlanets) % totalPlanets;
   const goPrev = () => setCenterIdx(wrap(centerIdx - 1));
   const goNext = () => setCenterIdx(wrap(centerIdx + 1));
 
-  const centerPlanet = PLANETS[centerIdx];
-  const leftPlanet = PLANETS[wrap(centerIdx - 1)];
-  const rightPlanet = PLANETS[wrap(centerIdx + 1)];
+  const centerPlanet = planets[centerIdx];
+  const leftPlanet = planets[wrap(centerIdx - 1)];
+  const rightPlanet = planets[wrap(centerIdx + 1)];
 
   return (
     <div className="full-bleed relative mt-6 overflow-hidden">
@@ -117,7 +118,7 @@ export function PlanetsScreen({ onSelectPlanet }: Props) {
 
         {/* Pagination dots */}
         <div className="mt-6 flex justify-center gap-2">
-          {PLANETS.map((_, i) => (
+          {planets.map((_, i) => (
             <button
               key={i}
               onClick={() => setCenterIdx(i)}
@@ -331,7 +332,13 @@ function SVGStar({ cx, cy, size }: { cx: number; cy: number; size: number }) {
  * actual rendered size — text-5xl on small planets, text-8xl on big ones.
  */
 function PlanetForegroundIcon({ planetId }: { planetId: PlanetId }) {
-  const emoji = planetId === 'starters' ? '🦕' : planetId === 'movers' ? '🍄' : '🪐';
+  const emoji =
+    planetId === 'starters' ? '🦕'
+    : planetId === 'movers' ? '🍄'
+    : planetId === 'hsk1' ? '🐼'
+    : planetId === 'hsk2' ? '🏮'
+    : planetId === 'hsk3' ? '🧧'
+    : '🪐';
   return (
     <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
       <span className="select-none text-5xl drop-shadow-2xl sm:text-7xl md:text-8xl">

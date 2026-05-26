@@ -1,7 +1,9 @@
 import { useMemo, useEffect, useState } from 'react';
-import { allLevels } from '../../data/exam';
+import { getLevelsForLang } from '../../data/exam';
+import { useAppStore } from '../../stores/useAppStore';
 import {
   getPlanet,
+  getPlanetsForLang,
   type PlanetId,
 } from '../../data/exam/planets';
 import { clearAudioCache } from '../../services/examAudioService';
@@ -30,6 +32,9 @@ import { PlanetsScreen } from './PlanetsScreen';
  * D1 sync in Sprint 5+ once exam_attempts table exists).
  */
 export function TabExam() {
+  // D-23: exam follows the app's target language. English = Cambridge YLE
+  // (Starters/Movers/Flyers); Chinese = HSK (HSK1/2/3).
+  const targetLang = useAppStore((s) => s.targetLang);
   const [selectedPlanet, setSelectedPlanet] = useState<PlanetId | null>(null);
   const [activeLevel, setActiveLevel] = useState<ExamLevel | null>(null);
 
@@ -44,6 +49,12 @@ export function TabExam() {
       clearSceneCache();
     };
   }, []);
+
+  // Switching language resets exam navigation (planet ids differ per lang).
+  useEffect(() => {
+    setSelectedPlanet(null);
+    setActiveLevel(null);
+  }, [targetLang]);
 
   // ─── Active exam session ────────────────────────────────────────────
   if (activeLevel) {
@@ -62,12 +73,12 @@ export function TabExam() {
   // ─── Roadmap within a selected planet ───────────────────────────────
   if (selectedPlanet) {
     const planet = getPlanet(selectedPlanet);
-    const planetLevels = allLevels.filter(
+    const planetLevels = getLevelsForLang(targetLang).filter(
       (l) => l.levelNumber >= planet.levelStart && l.levelNumber <= planet.levelEnd,
     );
     return (
       <Roadmap
-        key={progressBump /* re-mount on completion to refresh stars */}
+        key={`${targetLang}:${progressBump}` /* re-mount on completion / lang switch */}
         planetId={selectedPlanet}
         levels={planetLevels}
         onPickLevel={setActiveLevel}
@@ -76,8 +87,13 @@ export function TabExam() {
     );
   }
 
-  // ─── Landing: 3 planets ─────────────────────────────────────────────
-  return <PlanetsScreen onSelectPlanet={setSelectedPlanet} />;
+  // ─── Landing: planets for the current language ──────────────────────
+  return (
+    <PlanetsScreen
+      planets={getPlanetsForLang(targetLang)}
+      onSelectPlanet={setSelectedPlanet}
+    />
+  );
 }
 
 // ─── Roadmap colour theme per planet ────────────────────────────────────
