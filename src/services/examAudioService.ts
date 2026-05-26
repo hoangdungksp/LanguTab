@@ -126,13 +126,14 @@ export async function getAudioUrl(
 export async function adminGenerateAudio(
   audioKey: string,
   audioScript: string,
+  force = false,
 ): Promise<string> {
   const token = sessionStorage.getItem('admin_token');
   if (!token) throw new ExamAudioError('Thiếu admin_token', 'auth');
   const res = await fetch(`${WORKER_URL}/admin/exam/audio/generate`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-    body: JSON.stringify({ audioKey, audioScript }),
+    body: JSON.stringify({ audioKey, audioScript, force }),
   });
   if (!res.ok) {
     let msg = `Gen audio thất bại (HTTP ${res.status})`;
@@ -149,6 +150,31 @@ export async function adminGenerateAudio(
     blobCache.delete(cacheKey);
   }
   return res.headers.get('X-Audio-Provider') ?? 'unknown';
+}
+
+/**
+ * D-18 admin tool: check whether audio for (audioKey, audioScript) already
+ * exists in R2 — powers the "✓ có audio / ⚠️ chưa có audio" badge. Cheap
+ * (worker uses HEAD). Returns false on any error (treat as "not ready").
+ */
+export async function adminCheckAudio(
+  audioKey: string,
+  audioScript: string,
+): Promise<boolean> {
+  const token = sessionStorage.getItem('admin_token');
+  if (!token) return false;
+  try {
+    const res = await fetch(`${WORKER_URL}/admin/exam/audio/status`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ audioKey, audioScript }),
+    });
+    if (!res.ok) return false;
+    const data = (await res.json()) as { cached?: boolean };
+    return !!data.cached;
+  } catch {
+    return false;
+  }
 }
 
 /**

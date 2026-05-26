@@ -57,6 +57,8 @@ interface AudioRequestBody {
   audioKey: string;
   /** English text to read aloud (used only on cache miss) */
   audioScript: string;
+  /** Admin-only: force re-generation even if already cached (overwrite). */
+  force?: boolean;
 }
 
 /**
@@ -206,6 +208,46 @@ async function getAudioFromCacheReadOnly(req: Request, env: Env): Promise<Respon
   );
 }
 
+/**
+ * Admin-only: report whether audio for (audioKey, audioScript) is cached in
+ * R2, without downloading it. Powers the admin "có audio / chưa có audio"
+ * badge so admin knows which parts still need generating.
+ */
+async function adminAudioStatus(req: Request, env: Env): Promise<Response> {
+  let body: AudioRequestBody;
+  try {
+    body = (await req.json()) as AudioRequestBody;
+  } catch {
+    return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
+      status: 400, headers: { 'Content-Type': 'application/json' },
+    });
+  }
+  if (!body.audioKey || !body.audioScript) {
+    return new Response(JSON.stringify({ error: 'audioKey and audioScript required' }), {
+      status: 400, headers: { 'Content-Type': 'application/json' },
+    });
+  }
+  if (!env.IMAGES) {
+    return new Response(JSON.stringify({ cached: false }), {
+      status: 200, headers: { 'Content-Type': 'application/json' },
+    });
+  }
+  const cacheVersion = env.AUDIO_CACHE_VERSION || 'v1';
+  const scriptHash = await sha256Short(body.audioScript);
+  for (const provider of preferredProvidersForLookup(env)) {
+    const r2Key = `exam-audio/${cacheVersion}/${provider}/${body.audioKey}.${scriptHash}`;
+    const head = await env.IMAGES.head(r2Key);
+    if (head) {
+      return new Response(JSON.stringify({ cached: true, provider }), {
+        status: 200, headers: { 'Content-Type': 'application/json' },
+      });
+    }
+  }
+  return new Response(JSON.stringify({ cached: false }), {
+    status: 200, headers: { 'Content-Type': 'application/json' },
+  });
+}
+
 async function getOrGenerateAudio(req: Request, env: Env): Promise<Response> {
   let body: AudioRequestBody;
   try {
@@ -245,8 +287,9 @@ async function getOrGenerateAudio(req: Request, env: Env): Promise<Response> {
   const scriptHash = await sha256Short(body.audioScript);
 
   // ─── Cache lookup: try each provider in preferred quality order ─────
+  // Skipped when admin requests force re-generation (Regen → overwrite).
   const lookupOrder = preferredProvidersForLookup(env);
-  for (const provider of lookupOrder) {
+  for (const provider of body.force ? [] : lookupOrder) {
     const r2Key = `exam-audio/${cacheVersion}/${provider}/${body.audioKey}.${scriptHash}`;
     const cached = await env.IMAGES!.get(r2Key);
     if (cached) {
@@ -687,6 +730,13 @@ export async function handleAdminExamRequest(
       });
     }
     return getOrGenerateAudio(req, env);
+  }
+
+  // D-18: POST /admin/exam/audio/status — does this (audioKey, audioScript)
+  // already have cached audio in R2? Lets the admin UI show "✓ có audio" vs
+  // "⚠️ chưa có audio". Uses HEAD (no body download).
+  if (url.pathname === '/admin/exam/audio/status' && req.method === 'POST') {
+    return adminAudioStatus(req, env);
   }
 
   // ─── Sprint 4.9: Calibration override endpoints ────────────────────

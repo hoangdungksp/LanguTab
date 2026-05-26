@@ -10,6 +10,7 @@ import {
   getAudioUrl,
   ExamAudioError,
   adminGenerateAudio,
+  adminCheckAudio,
 } from '../../services/examAudioService';
 import {
   getEffectiveAudioScript,
@@ -671,6 +672,8 @@ function AdminAudioScriptEditor({
   const [saved, setSaved] = useState(false);
   const [recaptioning, setRecaptioning] = useState(false);
   const [genningAudio, setGenningAudio] = useState(false);
+  // null = đang kiểm tra; true/false = đã có / chưa có audio trong R2.
+  const [audioCached, setAudioCached] = useState<boolean | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   // Sprint 4.9.5.1: auto-expand by default so admin sees the vision auto-
   // caption button without having to click "expand". Less hidden = better
@@ -693,6 +696,17 @@ function AdminAudioScriptEditor({
 
   // Once the admin edits again, drop the "Đã lưu" confirmation.
   useEffect(() => { if (dirty) setSaved(false); }, [dirty]);
+
+  // Check whether the user-facing audio (saved/effective script) exists in R2.
+  // Re-checks after save (override changes). Users fetch `override ?? default`.
+  useEffect(() => {
+    let cancelled = false;
+    setAudioCached(null);
+    adminCheckAudio(audioKey, override ?? defaultScript).then((c) => {
+      if (!cancelled) setAudioCached(c);
+    });
+    return () => { cancelled = true; };
+  }, [audioKey, override, defaultScript]);
 
   async function handleSave() {
     setSaving(true);
@@ -717,16 +731,16 @@ function AdminAudioScriptEditor({
    * Generate for the SAVED script — users fetch the saved/override script,
    * so gen the same text or their hash won't match.
    */
-  async function handleGenAudio() {
-    if (
-      !confirm(
-        'Tạo audio cho script hiện tại?\n\nChỉ admin — sẽ gọi TTS và lưu vào R2 để user nghe.\nNên bấm "💾 Lưu script" TRƯỚC nếu vừa sửa, để audio khớp cái user sẽ nghe.',
-      )
-    ) return;
+  async function handleGenAudio(force: boolean) {
+    const confirmMsg = force
+      ? 'Tạo LẠI audio (ghi đè bản cũ)?\n\nChỉ admin — gọi TTS lại và ghi đè R2.'
+      : 'Tạo audio cho script hiện tại?\n\nChỉ admin — gọi TTS và lưu R2 để user nghe.\nNên bấm "💾 Lưu script" TRƯỚC nếu vừa sửa, để audio khớp cái user sẽ nghe.';
+    if (!confirm(confirmMsg)) return;
     setGenningAudio(true);
-    setMsg('🎙️ Đang tạo audio (TTS)...');
+    setMsg(force ? '🎙️ Đang tạo lại audio (TTS)...' : '🎙️ Đang tạo audio (TTS)...');
     try {
-      const provider = await adminGenerateAudio(audioKey, script);
+      const provider = await adminGenerateAudio(audioKey, script, force);
+      setAudioCached(true);
       setMsg(`✓ Đã tạo audio (${provider}). User giờ nghe được.`);
       onSaved(); // force AudioPlayer to reload — now a cache hit
     } catch (err) {
@@ -830,6 +844,40 @@ function AdminAudioScriptEditor({
       </div>
       {expanded && (
         <div className="mt-2 space-y-2">
+          {/* D-18: Audio status — warns admin when this part has no audio yet
+              (users can only READ; admin must generate). Gen / Regen here. */}
+          <div
+            className={`flex flex-wrap items-center justify-between gap-2 rounded border-2 p-2 ${
+              audioCached === false
+                ? 'border-coral-400 bg-coral-50'
+                : audioCached === true
+                  ? 'border-emerald-400 bg-emerald-50'
+                  : 'border-ink-200 bg-cream'
+            }`}
+          >
+            <span className="font-display text-xs font-bold">
+              {audioCached === null
+                ? '⏳ Đang kiểm tra audio...'
+                : audioCached
+                  ? '🔊 ✓ Đã có audio'
+                  : '🔇 ⚠️ CHƯA có audio — user sẽ không nghe được. Bấm Gen audio.'}
+            </span>
+            <button
+              onClick={() => handleGenAudio(audioCached === true)}
+              disabled={saving || recaptioning || genningAudio || !script.trim()}
+              title="Admin tạo audio (TTS) + lưu R2. Nhớ Lưu script trước nếu vừa sửa."
+              className="rounded border-2 border-emerald-700 bg-emerald-500 px-2.5 py-1 font-display text-xs font-bold text-white shadow-chunky-soft hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {genningAudio ? (
+                <><Spinner /> Đang tạo...</>
+              ) : audioCached === true ? (
+                '♻️ Regen audio'
+              ) : (
+                '🎙️ Gen audio'
+              )}
+            </button>
+          </div>
+
           {/* Sprint 4.9.5: Auto-caption section — only for drag parts */}
           {recaptionContext && (
             <div className="rounded border-2 border-purple-400 bg-purple-50 p-2">
@@ -909,18 +957,6 @@ function AdminAudioScriptEditor({
                 disabled={saving || recaptioning || genningAudio || !dirty || !script.trim()}
                 onClick={handleSave}
               />
-              <button
-                onClick={handleGenAudio}
-                disabled={saving || recaptioning || genningAudio || !script.trim()}
-                title="Admin tạo audio (TTS) + lưu R2 để user nghe. Lưu script trước nếu vừa sửa."
-                className="rounded border-2 border-emerald-700 bg-emerald-500 px-3 py-1 font-display text-xs font-bold text-white shadow-chunky-soft hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {genningAudio ? (
-                  <><Spinner /> Đang tạo...</>
-                ) : (
-                  '🎙️ Gen audio'
-                )}
-              </button>
             </div>
           </div>
         </div>
