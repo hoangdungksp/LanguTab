@@ -80,6 +80,54 @@ export function TabExam() {
   return <PlanetsScreen onSelectPlanet={setSelectedPlanet} />;
 }
 
+// ─── Roadmap colour theme per planet ────────────────────────────────────
+
+/**
+ * Roadmap visuals (background SVG, snake path, level nodes) are tinted to
+ * match the planet: Starters green, Movers blue, Flyers purple. Node classes
+ * are full static Tailwind strings (so the JIT compiler keeps them).
+ */
+interface RoadmapTheme {
+  groundFrom: string;
+  groundTo: string;
+  foliage: [string, string, string];
+  pathMain: string;
+  pathLight: string;
+  /** Tailwind classes for an incomplete node circle. */
+  nodeIdle: string;
+  /** Tailwind classes for an incomplete node label. */
+  labelIdle: string;
+}
+
+function getRoadmapTheme(planetId: PlanetId): RoadmapTheme {
+  if (planetId === 'movers') {
+    return {
+      groundFrom: '#bfdbfe', groundTo: '#93c5fd',
+      foliage: ['#1e40af', '#2563eb', '#3b82f6'],
+      pathMain: '#2563eb', pathLight: '#bfdbfe',
+      nodeIdle: 'border-blue-700 bg-gradient-to-b from-blue-300 to-blue-500 text-white shadow-chunky-ink hover:from-blue-400 hover:to-blue-600',
+      labelIdle: 'border-blue-700 bg-blue-600 text-white shadow-chunky-soft',
+    };
+  }
+  if (planetId === 'flyers') {
+    return {
+      groundFrom: '#e9d5ff', groundTo: '#d8b4fe',
+      foliage: ['#6b21a8', '#7e22ce', '#9333ea'],
+      pathMain: '#9333ea', pathLight: '#e9d5ff',
+      nodeIdle: 'border-purple-700 bg-gradient-to-b from-purple-300 to-purple-500 text-white shadow-chunky-ink hover:from-purple-400 hover:to-purple-600',
+      labelIdle: 'border-purple-700 bg-purple-600 text-white shadow-chunky-soft',
+    };
+  }
+  // starters (default) — green
+  return {
+    groundFrom: '#86efac', groundTo: '#4ade80',
+    foliage: ['#15803d', '#16a34a', '#22c55e'],
+    pathMain: '#22c55e', pathLight: '#bbf7d0',
+    nodeIdle: 'border-mint-700 bg-gradient-to-b from-mint-300 to-mint-500 text-white shadow-chunky-ink hover:from-mint-400 hover:to-mint-600',
+    labelIdle: 'border-mint-700 bg-mint-600 text-white shadow-chunky-soft',
+  };
+}
+
 // ─── Roadmap (the path with level nodes) ────────────────────────────────
 
 function Roadmap({
@@ -94,6 +142,7 @@ function Roadmap({
   onBack: () => void;
 }) {
   const planet = getPlanet(planetId);
+  const rtheme = getRoadmapTheme(planetId);
   // Compute node positions on a snaking path. Each "row" holds 3 nodes,
   // alternating left-to-right and right-to-left to create the wave shape.
   const layout = useMemo(() => computeLayout(levels), [levels]);
@@ -114,7 +163,7 @@ function Roadmap({
           {/* Back button — floats top-left, no card around it */}
           <button
             onClick={onBack}
-            className={`absolute left-0 top-1/2 flex -translate-y-1/2 items-center gap-1 text-sm font-bold transition-colors hover:opacity-70 ${planet.theme.heading}`}
+            className={`absolute left-0 top-1/2 z-10 flex -translate-y-1/2 items-center gap-1 text-sm font-bold transition-colors hover:opacity-70 ${planet.theme.heading}`}
             aria-label="Quay lại danh sách hành tinh"
           >
             ← <span className="hidden sm:inline">Hành tinh</span>
@@ -140,7 +189,7 @@ function Roadmap({
             }}
           >
             {/* Background decorations (trees, clouds, characters) */}
-            <BackgroundDecorations width={layout.width} height={layout.height} />
+            <BackgroundDecorations width={layout.width} height={layout.height} theme={rtheme} />
 
             {/* SVG path connecting nodes */}
             <svg
@@ -151,7 +200,7 @@ function Roadmap({
               <path
                 d={layout.pathD}
                 fill="none"
-                stroke="#3b82f6"
+                stroke={rtheme.pathMain}
                 strokeWidth="14"
                 strokeLinecap="round"
                 strokeDasharray="0,0"
@@ -160,7 +209,7 @@ function Roadmap({
               <path
                 d={layout.pathD}
                 fill="none"
-                stroke="#bfdbfe"
+                stroke={rtheme.pathLight}
                 strokeWidth="6"
                 strokeLinecap="round"
               />
@@ -176,6 +225,8 @@ function Roadmap({
                   x={node.x}
                   y={node.y}
                   completed={completed}
+                  idleCircle={rtheme.nodeIdle}
+                  idleLabel={rtheme.labelIdle}
                   onClick={() => onPickLevel(node.level)}
                 />
               );
@@ -272,12 +323,16 @@ function LevelNode({
   x,
   y,
   completed,
+  idleCircle,
+  idleLabel,
   onClick,
 }: {
   level: ExamLevel;
   x: number;
   y: number;
   completed: boolean;
+  idleCircle: string;
+  idleLabel: string;
   onClick: () => void;
 }) {
   const num = level.levelNumber;
@@ -296,7 +351,7 @@ function LevelNode({
           'relative flex h-20 w-20 items-center justify-center rounded-full border-[6px] font-display text-3xl font-bold transition-all',
           completed
             ? 'border-amber-500 bg-gradient-to-b from-amber-300 to-amber-500 text-white shadow-chunky-ink'
-            : 'border-mint-700 bg-gradient-to-b from-mint-300 to-mint-500 text-white shadow-chunky-ink hover:from-mint-400 hover:to-mint-600',
+            : idleCircle,
         ].join(' ')}
       >
         {num}
@@ -312,7 +367,7 @@ function LevelNode({
           'mt-1 max-w-[140px] rounded-md border-2 px-2 py-1 text-center text-[11px] font-bold leading-tight',
           completed
             ? 'border-amber-700 bg-amber-500 text-white shadow-chunky-soft'
-            : 'border-mint-700 bg-mint-600 text-white shadow-chunky-soft',
+            : idleLabel,
         ].join(' ')}
       >
         {title}
@@ -328,32 +383,32 @@ function LevelNode({
  * cute critters in fixed positions across the canvas to fill empty space
  * and make the map feel alive (like Cambridge's "STARTERS" map).
  */
-function BackgroundDecorations({ width, height }: { width: number; height: number }) {
+function BackgroundDecorations({ width, height, theme }: { width: number; height: number; theme: RoadmapTheme }) {
   return (
     <svg
       className="pointer-events-none absolute inset-0 h-full w-full"
       viewBox={`0 0 ${width} ${height}`}
       preserveAspectRatio="none"
     >
-      {/* Ground gradient */}
+      {/* Ground gradient — tinted per planet */}
       <defs>
         <linearGradient id="grass" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" stopColor="#86efac" />
-          <stop offset="100%" stopColor="#4ade80" />
+          <stop offset="0%" stopColor={theme.groundFrom} />
+          <stop offset="100%" stopColor={theme.groundTo} />
         </linearGradient>
       </defs>
       <rect x="0" y="0" width={width} height={height} fill="url(#grass)" opacity="0.5" />
 
-      {/* Trees scattered */}
+      {/* Trees/bushes scattered — foliage tinted per planet */}
       {[0.06, 0.18, 0.32, 0.48, 0.62, 0.78, 0.92].map((px, i) => {
         const px2 = (i % 3 === 0 ? px - 0.02 : px + 0.04);
         const py = 0.15 + (i % 3) * 0.25;
         return (
           <g key={`t${i}`} transform={`translate(${width * px2} ${height * py})`}>
             <rect x="-6" y="0" width="12" height="40" fill="#7c3a0e" />
-            <circle cx="0" cy="-10" r="32" fill="#15803d" />
-            <circle cx="-12" cy="-25" r="22" fill="#16a34a" />
-            <circle cx="14" cy="-20" r="20" fill="#22c55e" />
+            <circle cx="0" cy="-10" r="32" fill={theme.foliage[0]} />
+            <circle cx="-12" cy="-25" r="22" fill={theme.foliage[1]} />
+            <circle cx="14" cy="-20" r="20" fill={theme.foliage[2]} />
           </g>
         );
       })}

@@ -154,6 +154,13 @@ export function getPlanet(planetId: PlanetId): Planet {
 export function isPlanetUnlocked(planetId: PlanetId): boolean {
   const planet = getPlanet(planetId);
   if (!planet.unlockRequirement) return true;
+  // Admin bypass: super admin can open any planet to test / generate assets
+  // for all levels without grinding through the progression gate. Normal
+  // users still must meet the unlock requirement. Mirrors isAdminMode()
+  // (presence of admin_token in sessionStorage).
+  if (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('admin_token')) {
+    return true;
+  }
   const req = planet.unlockRequirement;
   const reqPlanet = getPlanet(req.planetId);
   const completed = countCompletedInRange(reqPlanet.levelStart, reqPlanet.levelEnd);

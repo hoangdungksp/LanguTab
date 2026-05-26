@@ -219,7 +219,28 @@ export type IconId =
   | 'photo'
   | 'rope'
   | 'flask'
-  | 'flag';
+  | 'flag'
+  // D-18 Phase 4b: Flyers L51-L60 thematic icons
+  | 'sailboat'
+  | 'sail'
+  | 'life_ring'
+  | 'oar'
+  | 'mummy'
+  | 'mask'
+  | 'fossil'
+  | 'tablet'
+  | 'curtain'
+  | 'laptop'
+  | 'tv'
+  | 'stethoscope'
+  | 'wrench'
+  | 'hammer'
+  | 'tray'
+  | 'plane'
+  | 'globe'
+  | 'torch'
+  | 'graduation_cap'
+  | 'diploma';
 
 const SIZE = 120;
 
@@ -1375,6 +1396,151 @@ export function getIcon(id: string): ReactNode {
       return wrap(<>
         <line x1="38" y1="20" x2="38" y2="98" stroke="#92400e" strokeWidth="4" />
         <path d="M 38 24 L 88 34 L 38 56 Z" fill="#dc2626" stroke="#1f2937" strokeWidth="2" />
+      </>);
+
+    // ─── Sailing ────────────────────────────────────────────────────
+    case 'sailboat':
+      return wrap(<>
+        <path d="M 20 84 L 100 84 L 88 98 L 32 98 Z" fill="#3b82f6" stroke="#1f2937" strokeWidth="2" />
+        <line x1="60" y1="20" x2="60" y2="84" stroke="#1f2937" strokeWidth="3" />
+        <path d="M 60 24 L 90 78 L 60 78 Z" fill="#fff" stroke="#1f2937" strokeWidth="2" />
+        <path d="M 56 30 L 30 78 L 56 78 Z" fill="#e5e7eb" stroke="#1f2937" strokeWidth="2" />
+      </>);
+    case 'sail':
+      return wrap(<>
+        <line x1="42" y1="16" x2="42" y2="100" stroke="#92400e" strokeWidth="4" />
+        <path d="M 46 20 Q 92 56 50 92 L 46 92 Z" fill="#fff" stroke="#1f2937" strokeWidth="2" />
+      </>);
+    case 'life_ring':
+      return wrap(<>
+        <circle cx="60" cy="60" r="34" fill="#f97316" stroke="#1f2937" strokeWidth="2" />
+        <circle cx="60" cy="60" r="16" fill="#fff" stroke="#1f2937" strokeWidth="2" />
+        <path d="M 60 26 L 60 44 M 60 76 L 60 94 M 26 60 L 44 60 M 76 60 L 94 60" stroke="#fff" strokeWidth="6" />
+      </>);
+    case 'oar':
+      return wrap(<>
+        <line x1="30" y1="96" x2="78" y2="34" stroke="#a16207" strokeWidth="6" />
+        <ellipse cx="84" cy="26" rx="10" ry="16" fill="#d6a675" stroke="#1f2937" strokeWidth="2" transform="rotate(40 84 26)" />
+      </>);
+
+    // ─── Ancient museum ─────────────────────────────────────────────
+    case 'mummy':
+      return wrap(<>
+        <rect x="42" y="24" width="36" height="76" rx="18" fill="#fef3c7" stroke="#1f2937" strokeWidth="2" />
+        <line x1="42" y1="44" x2="78" y2="44" stroke="#a16207" strokeWidth="2" />
+        <line x1="42" y1="58" x2="78" y2="58" stroke="#a16207" strokeWidth="2" />
+        <line x1="42" y1="72" x2="78" y2="72" stroke="#a16207" strokeWidth="2" />
+        <circle cx="52" cy="36" r="3" fill="#1f2937" />
+        <circle cx="68" cy="36" r="3" fill="#1f2937" />
+      </>);
+    case 'mask':
+      return wrap(<>
+        <path d="M 38 26 L 82 26 Q 88 60 60 98 Q 32 60 38 26 Z" fill="#facc15" stroke="#1f2937" strokeWidth="2" />
+        <path d="M 46 42 Q 52 38 58 42" fill="none" stroke="#1f2937" strokeWidth="2" />
+        <path d="M 62 42 Q 68 38 74 42" fill="none" stroke="#1f2937" strokeWidth="2" />
+        <path d="M 52 66 Q 60 74 68 66" fill="none" stroke="#1f2937" strokeWidth="2" />
+      </>);
+    case 'fossil':
+      return wrap(<>
+        <circle cx="60" cy="60" r="34" fill="#d6d3d1" stroke="#1f2937" strokeWidth="2" />
+        <path d="M 44 84 Q 40 60 60 56 Q 84 52 76 32" fill="none" stroke="#57534e" strokeWidth="4" />
+        <path d="M 60 56 L 50 48 M 60 56 L 70 48 M 52 66 L 44 62 M 70 60 L 80 58" stroke="#57534e" strokeWidth="3" />
+      </>);
+    case 'tablet':
+      return wrap(<>
+        <path d="M 36 22 L 84 22 L 84 88 Q 60 100 36 88 Z" fill="#d6d3d1" stroke="#1f2937" strokeWidth="2" />
+        <line x1="46" y1="40" x2="74" y2="40" stroke="#57534e" strokeWidth="2" />
+        <line x1="46" y1="52" x2="74" y2="52" stroke="#57534e" strokeWidth="2" />
+        <line x1="46" y1="64" x2="66" y2="64" stroke="#57534e" strokeWidth="2" />
+      </>);
+
+    // ─── Drama ──────────────────────────────────────────────────────
+    case 'curtain':
+      return wrap(<>
+        <rect x="20" y="20" width="80" height="8" fill="#a16207" stroke="#1f2937" strokeWidth="2" />
+        <path d="M 26 28 Q 34 60 28 96 L 44 96 Q 40 60 44 28 Z" fill="#dc2626" stroke="#1f2937" strokeWidth="2" />
+        <path d="M 76 28 Q 80 60 76 96 L 94 96 Q 86 60 94 28 Z" fill="#dc2626" stroke="#1f2937" strokeWidth="2" />
+      </>);
+
+    // ─── News reporter ──────────────────────────────────────────────
+    case 'laptop':
+      return wrap(<>
+        <rect x="30" y="32" width="60" height="40" rx="3" fill="#1f2937" />
+        <rect x="35" y="37" width="50" height="30" fill="#bfdbfe" />
+        <path d="M 22 78 L 98 78 L 92 86 L 28 86 Z" fill="#9ca3af" stroke="#1f2937" strokeWidth="2" />
+      </>);
+    case 'tv':
+      return wrap(<>
+        <rect x="20" y="28" width="80" height="56" rx="5" fill="#1f2937" />
+        <rect x="27" y="35" width="66" height="42" fill="#60a5fa" />
+        <line x1="50" y1="84" x2="44" y2="96" stroke="#1f2937" strokeWidth="3" />
+        <line x1="70" y1="84" x2="76" y2="96" stroke="#1f2937" strokeWidth="3" />
+      </>);
+
+    // ─── Job shadowing ──────────────────────────────────────────────
+    case 'stethoscope':
+      return wrap(<>
+        <path d="M 36 24 L 36 56 Q 36 76 60 76 Q 84 76 84 56 L 84 40" fill="none" stroke="#1f2937" strokeWidth="4" />
+        <circle cx="36" cy="22" r="5" fill="#3b82f6" stroke="#1f2937" strokeWidth="2" />
+        <circle cx="84" cy="36" r="10" fill="#9ca3af" stroke="#1f2937" strokeWidth="2" />
+        <circle cx="60" cy="86" r="9" fill="#3b82f6" stroke="#1f2937" strokeWidth="2" />
+      </>);
+    case 'wrench':
+      return wrap(<>
+        <path d="M 78 28 a 16 16 0 1 0 14 22 L 50 86 a 8 8 0 0 1 -16 -16 L 70 30 a 16 16 0 0 1 8 -2 Z"
+          fill="#9ca3af" stroke="#1f2937" strokeWidth="2" />
+      </>);
+    case 'hammer':
+      return wrap(<>
+        <rect x="40" y="28" width="44" height="18" rx="3" fill="#9ca3af" stroke="#1f2937" strokeWidth="2" transform="rotate(40 62 37)" />
+        <rect x="52" y="44" width="9" height="52" fill="#a16207" stroke="#1f2937" strokeWidth="2" transform="rotate(40 56 70)" />
+      </>);
+    case 'tray':
+      return wrap(<>
+        <ellipse cx="60" cy="66" rx="42" ry="12" fill="#d1d5db" stroke="#1f2937" strokeWidth="2" />
+        <ellipse cx="60" cy="62" rx="42" ry="12" fill="#e5e7eb" stroke="#1f2937" strokeWidth="2" />
+        <circle cx="50" cy="60" r="6" fill="#f59e0b" />
+        <rect x="62" y="54" width="14" height="10" fill="#dc2626" />
+      </>);
+
+    // ─── Future career / transport ──────────────────────────────────
+    case 'plane':
+      return wrap(<>
+        <path d="M 20 60 L 78 50 L 96 44 Q 104 46 98 54 L 84 64 L 60 92 L 52 90 L 62 64 L 40 68 L 32 78 L 26 76 L 30 62 Z"
+          fill="#e5e7eb" stroke="#1f2937" strokeWidth="2" />
+      </>);
+    case 'globe':
+      return wrap(<>
+        <circle cx="60" cy="58" r="34" fill="#3b82f6" stroke="#1f2937" strokeWidth="2" />
+        <path d="M 40 40 Q 58 48 50 64 Q 44 78 62 84" fill="#22c55e" stroke="#15803d" strokeWidth="1" />
+        <path d="M 70 42 Q 82 56 72 74" fill="#22c55e" stroke="#15803d" strokeWidth="1" />
+        <ellipse cx="60" cy="58" rx="34" ry="13" fill="none" stroke="#1e3a8a" strokeWidth="1.5" />
+        <line x1="60" y1="24" x2="60" y2="92" stroke="#1e3a8a" strokeWidth="1.5" />
+        <rect x="54" y="92" width="12" height="6" fill="#92400e" />
+      </>);
+
+    // ─── School olympics ────────────────────────────────────────────
+    case 'torch':
+      return wrap(<>
+        <path d="M 60 22 Q 74 36 60 52 Q 46 36 60 22 Z" fill="#f97316" stroke="#1f2937" strokeWidth="2" />
+        <path d="M 60 32 Q 67 42 60 50 Q 53 42 60 32 Z" fill="#fde047" />
+        <path d="M 50 52 L 70 52 L 64 96 L 56 96 Z" fill="#a16207" stroke="#1f2937" strokeWidth="2" />
+      </>);
+
+    // ─── Graduation ─────────────────────────────────────────────────
+    case 'graduation_cap':
+      return wrap(<>
+        <polygon points="60,34 104,52 60,70 16,52" fill="#1f2937" />
+        <path d="M 38 60 L 38 80 Q 60 92 82 80 L 82 60" fill="none" stroke="#1f2937" strokeWidth="4" />
+        <line x1="104" y1="52" x2="104" y2="80" stroke="#1f2937" strokeWidth="2" />
+        <circle cx="104" cy="82" r="4" fill="#facc15" />
+      </>);
+    case 'diploma':
+      return wrap(<>
+        <rect x="24" y="44" width="72" height="32" rx="4" fill="#fef3c7" stroke="#1f2937" strokeWidth="2" />
+        <path d="M 24 44 Q 16 60 24 76" fill="#fde68a" stroke="#1f2937" strokeWidth="2" />
+        <path d="M 96 44 Q 104 60 96 76" fill="#fde68a" stroke="#1f2937" strokeWidth="2" />
+        <path d="M 50 84 Q 60 92 70 84 L 70 72 L 50 72 Z" fill="#dc2626" stroke="#1f2937" strokeWidth="1.5" />
       </>);
 
     default:

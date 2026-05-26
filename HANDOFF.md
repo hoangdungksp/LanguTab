@@ -27,12 +27,11 @@ Path A locked. Mỗi level (60 total) phải có **4 parts hoàn toàn unique** 
 | 6 | Starters L1-L20 Part 4 (Colour) outline scenes per-level + 20 sceneId | ✅ DONE |
 | 5b | Worker registry: 40 new scene prompts (drag + outline) | ✅ DONE (code), DEPLOY pending |
 | 3 | Movers L21-L40 ALL 4 parts unique + icon library expand | ✅ DONE (code), DEPLOY pending |
-| 4a | Flyers L41-L50 ALL 4 parts unique | ✅ DONE (code), DEPLOY pending |
-| 4b | Flyers L51-L60 ALL 4 parts unique | ⏳ NEXT (3-4 sessions) |
-| 7 | Asset gen 240 audio (ElevenLabs renewals) | ⏳ parallel |
+| 4 | Flyers L41-L60 ALL 4 parts unique | ✅ DONE (code), DEPLOY pending |
+| 7 | Asset gen 240 audio (ElevenLabs renewals) | ⏳ parallel — admin Gen audio per level |
 | 8 | Admin: Sinh prompt + Upload ảnh + Gen/Regen audio + status badge | ✅ DONE |
 
-**Progress**: 200/240 sub-tests CONTENT unique (Starters L1-20 + Movers L21-40 + Flyers L41-50, 4 parts each). Còn **Flyers L51-L60**.
+**Progress**: 🎉 **240/240 sub-tests CONTENT unique — toàn bộ 60 level xong** (Starters 1-20 + Movers 21-40 + Flyers 41-60, 4 parts each). Còn lại: gen ảnh + audio cho từng level (thao tác admin).
 
 ---
 
@@ -297,6 +296,7 @@ rm -rf public && mv public.snap.YYYYMMDD_HHMMSS public   # restore public snapsh
 
 ## 📝 Recent activity log (last 10)
 
+- 2026-05-26 — Phase 4b: Flyers L51-L60 (4 parts unique, B1) + examIcons +20 icon → D-18 CONTENT XONG 60/60. UI: admin mở khóa mọi planet; roadmap SVG + level node đổi màu theo planet (green/blue/purple); back-nav fix (do unlock)
 - 2026-05-26 — Phase 4a: Flyers L41-L50 (4 parts unique, B1) + examIcons +32 icon (science/charity/space/film/photo...); 20 scene prompts. tsc 0/0, validator 0 err, 112/112 scenes
 - 2026-05-26 — Read-only assets cho user: /exam/audio → chỉ đọc R2 (miss=404), thêm /admin/exam/audio/generate + nút 🎙️ Gen audio. Ảnh & text vốn đã read-only. ⚠️ level chưa pre-gen audio sẽ 404 tới khi admin Gen
 - 2026-05-26 — Fix ảnh upload bị mất khi mở lại: worker dùng ETag + must-revalidate (bỏ immutable) cho /exam/scene; client cache:no-cache. Fix ảnh upload không refresh ngay (cache-busting). 3 nút save có spinner + "Đã lưu". Top bar +mb-10. Skeleton "Đang tạo"→"Đang tải"

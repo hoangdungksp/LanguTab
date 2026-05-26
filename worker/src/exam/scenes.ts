@@ -164,6 +164,28 @@ export const SCENE_IDS = [
   'flyer_l48_film_making_outline',
   'flyer_l49_photography_class_outline',
   'flyer_l50_mountain_hiking_outline',
+  // D-18 Phase 4b: Flyers per-level drag scenes (L51-L60)
+  'flyer_l51_sailing_course',
+  'flyer_l52_ancient_museum',
+  'flyer_l53_drama_festival',
+  'flyer_l54_news_reporter',
+  'flyer_l55_job_shadowing',
+  'flyer_l56_time_capsule',
+  'flyer_l57_future_career',
+  'flyer_l58_pen_pals',
+  'flyer_l59_school_olympics',
+  'flyer_l60_graduation',
+  // D-18 Phase 4b: Flyers per-level colour outline scenes (L51-L60)
+  'flyer_l51_sailing_course_outline',
+  'flyer_l52_ancient_museum_outline',
+  'flyer_l53_drama_festival_outline',
+  'flyer_l54_news_reporter_outline',
+  'flyer_l55_job_shadowing_outline',
+  'flyer_l56_time_capsule_outline',
+  'flyer_l57_future_career_outline',
+  'flyer_l58_pen_pals_outline',
+  'flyer_l59_school_olympics_outline',
+  'flyer_l60_graduation_outline',
 ] as const;
 
 export type SceneId = typeof SCENE_IDS[number];
@@ -1177,6 +1199,170 @@ export const SCENE_PROMPTS: Record<SceneId, ScenePromptSpec> = {
   flyer_l50_mountain_hiking_outline: {
     prompt:
       'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of a mountain hiking scene with 6 elements spread across the wide image: a mountain, a tent, a flag, a backpack, a coil of rope, a flask. Each element well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+
+  // ─── D-18 Phase 4b: Flyers per-level drag scenes (L51-L60) ──────────
+  flyer_l51_sailing_course: {
+    prompt:
+      'Wide horizontal cartoon illustration of students learning to sail at a marina. ' +
+      'COMPOSITION: Six students arranged in a clean 3×2 grid. ' +
+      'Top row left to right: student wearing a red life jacket steering a small boat; ' +
+      'student wearing a blue cap raising the sail; student wearing a green shirt tying a rope knot. ' +
+      'Bottom row left to right: student wearing a yellow jacket rowing with an oar; ' +
+      'student wearing a pink hat checking a compass; student wearing an orange vest throwing a life ring. ' +
+      'Marina with sailboats, blue water, a wooden jetty. Wide 16:9. Flat cartoon, no text.',
+    aspect: 'landscape',
+  },
+  flyer_l52_ancient_museum: {
+    prompt:
+      'Wide horizontal cartoon illustration of children touring an ancient history museum. ' +
+      'COMPOSITION: Six children arranged in a clean 3×2 grid. ' +
+      'Top row left to right: child wearing a red jumper looking at a mummy; ' +
+      'child wearing a blue cardigan studying an old pot; child wearing a green shirt drawing a fossil. ' +
+      'Bottom row left to right: child wearing a yellow vest reading a stone tablet; ' +
+      'child wearing a pink scarf pointing at a gold mask; child wearing orange glasses examining an old coin. ' +
+      'Ancient museum with a mummy case, pottery, stone tablets. Wide 16:9. Flat cartoon, no text.',
+    aspect: 'landscape',
+  },
+  flyer_l53_drama_festival: {
+    prompt:
+      'Wide horizontal cartoon illustration of students performing at a drama festival. ' +
+      'COMPOSITION: Six students arranged in a clean 3×2 grid. ' +
+      'Top row left to right: student wearing a red costume acting on the stage; ' +
+      'student wearing a blue cape holding a drama mask; student wearing a green shirt pulling the curtain. ' +
+      'Bottom row left to right: student wearing a yellow dress singing into a microphone; ' +
+      'student wearing a pink tutu dancing on stage; student wearing an orange shirt reading a script. ' +
+      'Theatre stage with red curtains, spotlights, an audience. Wide 16:9. Flat cartoon, no text.',
+    aspect: 'landscape',
+  },
+  flyer_l54_news_reporter: {
+    prompt:
+      'Wide horizontal cartoon illustration of a young news team in a TV studio. ' +
+      'COMPOSITION: Six people arranged in a clean 3×2 grid. ' +
+      'Top row left to right: person wearing a red blazer reading the news; ' +
+      'person wearing a blue shirt holding a microphone; person wearing a green jumper filming with a camera. ' +
+      'Bottom row left to right: person wearing a yellow vest typing on a laptop; ' +
+      'person wearing a pink scarf pointing at a weather map; person wearing an orange tie writing in a notebook. ' +
+      'TV news studio with a desk, screens, a camera. Wide 16:9. Flat cartoon, no text.',
+    aspect: 'landscape',
+  },
+  flyer_l55_job_shadowing: {
+    prompt:
+      'Wide horizontal cartoon illustration of students shadowing different jobs for a day. ' +
+      'COMPOSITION: Six students arranged in a clean 3×2 grid. ' +
+      'Top row left to right: student wearing a red apron baking with a chef; ' +
+      'student wearing a blue coat helping a doctor; student wearing green overalls fixing a car with a mechanic. ' +
+      'Bottom row left to right: student wearing a yellow helmet building with a builder; ' +
+      'student wearing a pink shirt teaching with a teacher; student wearing an orange uniform serving with a waiter. ' +
+      'Split workplace scene — kitchen, clinic, garage, classroom. Wide 16:9. Flat cartoon, no text.',
+    aspect: 'landscape',
+  },
+  flyer_l56_time_capsule: {
+    prompt:
+      'Wide horizontal cartoon illustration of children burying a time capsule in the garden. ' +
+      'COMPOSITION: Six children arranged in a clean 3×2 grid. ' +
+      'Top row left to right: child wearing a red jumper writing a letter; ' +
+      'child wearing a blue shirt putting a toy in a box; child wearing a green cap burying the capsule. ' +
+      'Bottom row left to right: child wearing a yellow dress holding an old photo; ' +
+      'child wearing a pink scarf sealing the lid; child wearing orange gloves digging a hole. ' +
+      'Garden with a metal capsule box, a dug hole, a spade. Wide 16:9. Flat cartoon, no text.',
+    aspect: 'landscape',
+  },
+  flyer_l57_future_career: {
+    prompt:
+      'Wide horizontal cartoon illustration of children dressed up as their future jobs. ' +
+      'COMPOSITION: Six children arranged in a clean 3×2 grid. ' +
+      'Top row left to right: child wearing a red astronaut suit pretending to be an astronaut; ' +
+      'child wearing a blue lab coat pretending to be a scientist; child wearing a green apron pretending to be a chef. ' +
+      'Bottom row left to right: child wearing a yellow helmet pretending to be a firefighter; ' +
+      'child wearing a pink uniform pretending to be a nurse; child wearing an orange vest pretending to be a pilot. ' +
+      'Classroom with a "future jobs" board and drawings. Wide 16:9. Flat cartoon, no text.',
+    aspect: 'landscape',
+  },
+  flyer_l58_pen_pals: {
+    prompt:
+      'Wide horizontal cartoon illustration of children writing to pen pals around the world. ' +
+      'COMPOSITION: Six children arranged in a clean 3×2 grid. ' +
+      'Top row left to right: child wearing a red jumper writing a letter; ' +
+      'child wearing a blue shirt reading a postcard; child wearing a green cardigan sticking on a stamp. ' +
+      'Bottom row left to right: child wearing a yellow scarf opening an envelope; ' +
+      'child wearing a pink hat finding a country on a map; child wearing an orange shirt posting a parcel. ' +
+      'Desk with letters, postcards, a world map, stamps. Wide 16:9. Flat cartoon, no text.',
+    aspect: 'landscape',
+  },
+  flyer_l59_school_olympics: {
+    prompt:
+      'Wide horizontal cartoon illustration of students competing at the school olympics. ' +
+      'COMPOSITION: Six students arranged in a clean 3×2 grid. ' +
+      'Top row left to right: student wearing a red kit running a race; ' +
+      'student wearing blue shorts jumping over a high bar; student wearing a green vest throwing a javelin. ' +
+      'Bottom row left to right: student wearing a yellow shirt winning a gold medal; ' +
+      'student wearing a pink headband cheering for the team; student wearing an orange shirt carrying the olympic torch. ' +
+      'Sports stadium with a running track, flags, a podium. Wide 16:9. Flat cartoon, no text.',
+    aspect: 'landscape',
+  },
+  flyer_l60_graduation: {
+    prompt:
+      'Wide horizontal cartoon illustration of students celebrating their graduation day. ' +
+      'COMPOSITION: Six students arranged in a clean 3×2 grid. ' +
+      'Top row left to right: student wearing a red gown wearing a graduation cap; ' +
+      'student wearing a blue gown holding a diploma; student wearing a green gown throwing a cap in the air. ' +
+      'Bottom row left to right: student wearing a yellow dress carrying flowers; ' +
+      'student wearing a pink scarf taking a photo; student wearing an orange tie shaking hands with the teacher. ' +
+      'School hall with a stage, banners, balloons, a podium. Wide 16:9. Flat cartoon, no text.',
+    aspect: 'landscape',
+  },
+
+  // ─── D-18 Phase 4b: Flyers per-level colour outline scenes (L51-L60) ──
+  flyer_l51_sailing_course_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of a sailing scene with 6 elements spread across the wide image: a sailing boat, a sail, an oar, a life ring, a flag, a fish. Each element well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  flyer_l52_ancient_museum_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of an ancient museum scene with 6 elements spread across the wide image: a mummy, an old vase, a gold mask, a coin, a fossil, a stone tablet. Each element well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  flyer_l53_drama_festival_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of a theatre scene with 6 elements spread across the wide image: a theatre mask, a stage curtain, a microphone, a ticket, a star, a trophy. Each element well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  flyer_l54_news_reporter_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of a TV studio scene with 6 elements spread across the wide image: a television, a video camera, a laptop, a microphone, a map, a pen. Each element well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  flyer_l55_job_shadowing_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of a jobs scene with 6 elements spread across the wide image: a chef hat, a stethoscope, a wrench, a hammer, a safety helmet, a serving tray. Each element well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  flyer_l56_time_capsule_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of a time capsule scene with 6 elements spread across the wide image: a metal box, a teddy bear, a letter, a photo, a spade, a star. Each element well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  flyer_l57_future_career_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of a future jobs scene with 6 elements spread across the wide image: a rocket, an aeroplane, a safety helmet, a stethoscope, a microscope, a chef hat. Each element well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  flyer_l58_pen_pals_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of a pen pals scene with 6 elements spread across the wide image: an envelope, a stamp, a postbox, a parcel, a globe, a pen. Each element well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  flyer_l59_school_olympics_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of a school olympics scene with 6 elements spread across the wide image: an olympic torch, a medal, a trophy, a flag, a ball, a whistle. Each element well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  flyer_l60_graduation_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of a graduation scene with 6 elements spread across the wide image: a graduation cap, a diploma scroll, a flower, a balloon, a camera, a cake. Each element well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
     aspect: 'landscape',
   },
 };

@@ -1036,7 +1036,149 @@ export const FLYERS_L50_CHARS: SceneCharacterSet = {
   ],
 };
 
-/** Per-level Flyers character sets (L41-L50). L51-L60 fall back to rotation. */
+// ─── D-18 Phase 4b: Flyers L51-L60 per-level character sets ────────────
+
+/** L51 Sailing course. */
+export const FLYERS_L51_CHARS: SceneCharacterSet = {
+  setting: 'students learning to sail at a marina',
+  background: 'Marina with sailboats, blue water, a wooden jetty.',
+  characters: [
+    { gridPosition: 'top-left',      zoneId: 'zone_tl', clothing: 'wearing a red life jacket', activity: 'steering a small boat' },
+    { gridPosition: 'top-middle',    zoneId: 'zone_tm', clothing: 'wearing a blue cap',        activity: 'raising the sail' },
+    { gridPosition: 'top-right',     zoneId: 'zone_tr', clothing: 'wearing a green shirt',     activity: 'tying a rope knot' },
+    { gridPosition: 'bottom-left',   zoneId: 'zone_bl', clothing: 'wearing a yellow jacket',   activity: 'rowing with an oar' },
+    { gridPosition: 'bottom-middle', zoneId: 'zone_bm', clothing: 'wearing a pink hat',        activity: 'checking a compass' },
+    { gridPosition: 'bottom-right',  zoneId: 'zone_br', clothing: 'wearing an orange vest',    activity: 'throwing a life ring' },
+  ],
+};
+
+/** L52 Ancient museum. */
+export const FLYERS_L52_CHARS: SceneCharacterSet = {
+  setting: 'children touring an ancient history museum',
+  background: 'Ancient museum with a mummy case, pottery, stone tablets.',
+  characters: [
+    { gridPosition: 'top-left',      zoneId: 'zone_tl', clothing: 'wearing a red jumper',     activity: 'looking at a mummy' },
+    { gridPosition: 'top-middle',    zoneId: 'zone_tm', clothing: 'wearing a blue cardigan',  activity: 'studying an old pot' },
+    { gridPosition: 'top-right',     zoneId: 'zone_tr', clothing: 'wearing a green shirt',    activity: 'drawing a fossil' },
+    { gridPosition: 'bottom-left',   zoneId: 'zone_bl', clothing: 'wearing a yellow vest',    activity: 'reading a stone tablet' },
+    { gridPosition: 'bottom-middle', zoneId: 'zone_bm', clothing: 'wearing a pink scarf',     activity: 'pointing at a gold mask' },
+    { gridPosition: 'bottom-right',  zoneId: 'zone_br', clothing: 'wearing orange glasses',   activity: 'examining an old coin' },
+  ],
+};
+
+/** L53 Drama festival. */
+export const FLYERS_L53_CHARS: SceneCharacterSet = {
+  setting: 'students performing at a drama festival',
+  background: 'Theatre stage with red curtains, spotlights, an audience.',
+  characters: [
+    { gridPosition: 'top-left',      zoneId: 'zone_tl', clothing: 'wearing a red costume',    activity: 'acting on the stage' },
+    { gridPosition: 'top-middle',    zoneId: 'zone_tm', clothing: 'wearing a blue cape',      activity: 'holding a drama mask' },
+    { gridPosition: 'top-right',     zoneId: 'zone_tr', clothing: 'wearing a green shirt',    activity: 'pulling the curtain' },
+    { gridPosition: 'bottom-left',   zoneId: 'zone_bl', clothing: 'wearing a yellow dress',   activity: 'singing into a microphone' },
+    { gridPosition: 'bottom-middle', zoneId: 'zone_bm', clothing: 'wearing a pink tutu',      activity: 'dancing on stage' },
+    { gridPosition: 'bottom-right',  zoneId: 'zone_br', clothing: 'wearing an orange shirt',  activity: 'reading a script' },
+  ],
+};
+
+/** L54 News reporter. */
+export const FLYERS_L54_CHARS: SceneCharacterSet = {
+  setting: 'a young news team in a TV studio',
+  background: 'TV news studio with a desk, screens, a camera.',
+  characters: [
+    { gridPosition: 'top-left',      zoneId: 'zone_tl', clothing: 'wearing a red blazer',     activity: 'reading the news' },
+    { gridPosition: 'top-middle',    zoneId: 'zone_tm', clothing: 'wearing a blue shirt',     activity: 'holding a microphone' },
+    { gridPosition: 'top-right',     zoneId: 'zone_tr', clothing: 'wearing a green jumper',   activity: 'filming with a camera' },
+    { gridPosition: 'bottom-left',   zoneId: 'zone_bl', clothing: 'wearing a yellow vest',    activity: 'typing on a laptop' },
+    { gridPosition: 'bottom-middle', zoneId: 'zone_bm', clothing: 'wearing a pink scarf',     activity: 'pointing at a weather map' },
+    { gridPosition: 'bottom-right',  zoneId: 'zone_br', clothing: 'wearing an orange tie',    activity: 'writing in a notebook' },
+  ],
+};
+
+/** L55 Job shadowing. */
+export const FLYERS_L55_CHARS: SceneCharacterSet = {
+  setting: 'students shadowing different jobs for a day',
+  background: 'Split workplace scene — kitchen, clinic, garage, classroom.',
+  characters: [
+    { gridPosition: 'top-left',      zoneId: 'zone_tl', clothing: 'wearing a red apron',      activity: 'baking with a chef' },
+    { gridPosition: 'top-middle',    zoneId: 'zone_tm', clothing: 'wearing a blue coat',      activity: 'helping a doctor' },
+    { gridPosition: 'top-right',     zoneId: 'zone_tr', clothing: 'wearing green overalls',   activity: 'fixing a car with a mechanic' },
+    { gridPosition: 'bottom-left',   zoneId: 'zone_bl', clothing: 'wearing a yellow helmet',  activity: 'building with a builder' },
+    { gridPosition: 'bottom-middle', zoneId: 'zone_bm', clothing: 'wearing a pink shirt',     activity: 'teaching with a teacher' },
+    { gridPosition: 'bottom-right',  zoneId: 'zone_br', clothing: 'wearing an orange uniform', activity: 'serving with a waiter' },
+  ],
+};
+
+/** L56 Time capsule. */
+export const FLYERS_L56_CHARS: SceneCharacterSet = {
+  setting: 'children burying a time capsule in the garden',
+  background: 'Garden with a metal capsule box, a dug hole, a spade.',
+  characters: [
+    { gridPosition: 'top-left',      zoneId: 'zone_tl', clothing: 'wearing a red jumper',     activity: 'writing a letter to the future' },
+    { gridPosition: 'top-middle',    zoneId: 'zone_tm', clothing: 'wearing a blue shirt',     activity: 'putting a toy in the box' },
+    { gridPosition: 'top-right',     zoneId: 'zone_tr', clothing: 'wearing a green cap',      activity: 'burying the capsule' },
+    { gridPosition: 'bottom-left',   zoneId: 'zone_bl', clothing: 'wearing a yellow dress',   activity: 'holding an old photo' },
+    { gridPosition: 'bottom-middle', zoneId: 'zone_bm', clothing: 'wearing a pink scarf',     activity: 'sealing the lid' },
+    { gridPosition: 'bottom-right',  zoneId: 'zone_br', clothing: 'wearing orange gloves',    activity: 'digging a hole' },
+  ],
+};
+
+/** L57 Future career day. */
+export const FLYERS_L57_CHARS: SceneCharacterSet = {
+  setting: 'children dressing up as their future jobs',
+  background: 'Classroom with a "My future job" board and drawings.',
+  characters: [
+    { gridPosition: 'top-left',      zoneId: 'zone_tl', clothing: 'wearing a red astronaut suit', activity: 'pretending to be an astronaut' },
+    { gridPosition: 'top-middle',    zoneId: 'zone_tm', clothing: 'wearing a blue lab coat',  activity: 'pretending to be a scientist' },
+    { gridPosition: 'top-right',     zoneId: 'zone_tr', clothing: 'wearing a green apron',    activity: 'pretending to be a chef' },
+    { gridPosition: 'bottom-left',   zoneId: 'zone_bl', clothing: 'wearing a yellow helmet',  activity: 'pretending to be a firefighter' },
+    { gridPosition: 'bottom-middle', zoneId: 'zone_bm', clothing: 'wearing a pink uniform',   activity: 'pretending to be a nurse' },
+    { gridPosition: 'bottom-right',  zoneId: 'zone_br', clothing: 'wearing an orange vest',   activity: 'pretending to be a pilot' },
+  ],
+};
+
+/** L58 Pen pals. */
+export const FLYERS_L58_CHARS: SceneCharacterSet = {
+  setting: 'children writing to pen pals around the world',
+  background: 'Desk with letters, postcards, a world map, stamps.',
+  characters: [
+    { gridPosition: 'top-left',      zoneId: 'zone_tl', clothing: 'wearing a red jumper',     activity: 'writing a letter' },
+    { gridPosition: 'top-middle',    zoneId: 'zone_tm', clothing: 'wearing a blue shirt',     activity: 'reading a postcard' },
+    { gridPosition: 'top-right',     zoneId: 'zone_tr', clothing: 'wearing a green cardigan', activity: 'sticking on a stamp' },
+    { gridPosition: 'bottom-left',   zoneId: 'zone_bl', clothing: 'wearing a yellow scarf',   activity: 'opening an envelope' },
+    { gridPosition: 'bottom-middle', zoneId: 'zone_bm', clothing: 'wearing a pink hat',       activity: 'finding a country on a map' },
+    { gridPosition: 'bottom-right',  zoneId: 'zone_br', clothing: 'wearing an orange shirt',  activity: 'posting a parcel' },
+  ],
+};
+
+/** L59 School olympics. */
+export const FLYERS_L59_CHARS: SceneCharacterSet = {
+  setting: 'students competing at the school olympics',
+  background: 'Sports stadium with a running track, flags, a podium.',
+  characters: [
+    { gridPosition: 'top-left',      zoneId: 'zone_tl', clothing: 'wearing a red kit',        activity: 'running a race' },
+    { gridPosition: 'top-middle',    zoneId: 'zone_tm', clothing: 'wearing blue shorts',      activity: 'jumping over a high bar' },
+    { gridPosition: 'top-right',     zoneId: 'zone_tr', clothing: 'wearing a green vest',     activity: 'throwing a javelin' },
+    { gridPosition: 'bottom-left',   zoneId: 'zone_bl', clothing: 'wearing a yellow shirt',   activity: 'winning a gold medal' },
+    { gridPosition: 'bottom-middle', zoneId: 'zone_bm', clothing: 'wearing a pink headband',  activity: 'cheering for the team' },
+    { gridPosition: 'bottom-right',  zoneId: 'zone_br', clothing: 'wearing an orange shirt',  activity: 'carrying the olympic torch' },
+  ],
+};
+
+/** L60 Graduation. */
+export const FLYERS_L60_CHARS: SceneCharacterSet = {
+  setting: 'students celebrating their graduation day',
+  background: 'School hall with a stage, banners, balloons, a podium.',
+  characters: [
+    { gridPosition: 'top-left',      zoneId: 'zone_tl', clothing: 'wearing a red gown',       activity: 'wearing a graduation cap' },
+    { gridPosition: 'top-middle',    zoneId: 'zone_tm', clothing: 'wearing a blue gown',      activity: 'holding a diploma' },
+    { gridPosition: 'top-right',     zoneId: 'zone_tr', clothing: 'wearing a green gown',     activity: 'throwing a cap in the air' },
+    { gridPosition: 'bottom-left',   zoneId: 'zone_bl', clothing: 'wearing a yellow dress',   activity: 'carrying flowers' },
+    { gridPosition: 'bottom-middle', zoneId: 'zone_bm', clothing: 'wearing a pink scarf',     activity: 'taking a photo' },
+    { gridPosition: 'bottom-right',  zoneId: 'zone_br', clothing: 'wearing an orange tie',    activity: 'shaking hands with the teacher' },
+  ],
+};
+
+/** Per-level Flyers character sets (L41-L60). */
 export const FLYERS_CHARS_BY_LEVEL: Record<number, SceneCharacterSet> = {
   41: FLYERS_L41_CHARS,
   42: FLYERS_L42_CHARS,
@@ -1048,9 +1190,19 @@ export const FLYERS_CHARS_BY_LEVEL: Record<number, SceneCharacterSet> = {
   48: FLYERS_L48_CHARS,
   49: FLYERS_L49_CHARS,
   50: FLYERS_L50_CHARS,
+  51: FLYERS_L51_CHARS,
+  52: FLYERS_L52_CHARS,
+  53: FLYERS_L53_CHARS,
+  54: FLYERS_L54_CHARS,
+  55: FLYERS_L55_CHARS,
+  56: FLYERS_L56_CHARS,
+  57: FLYERS_L57_CHARS,
+  58: FLYERS_L58_CHARS,
+  59: FLYERS_L59_CHARS,
+  60: FLYERS_L60_CHARS,
 };
 
-/** Per-level scene IDs for Flyers L41-L50 (R2 cache keys). */
+/** Per-level scene IDs for Flyers L41-L60 (R2 cache keys). */
 export const FLYERS_SCENE_IDS_BY_LEVEL: Record<number, string> = {
   41: 'flyer_l41_science_fair',
   42: 'flyer_l42_charity_event',
@@ -1062,4 +1214,14 @@ export const FLYERS_SCENE_IDS_BY_LEVEL: Record<number, string> = {
   48: 'flyer_l48_film_making',
   49: 'flyer_l49_photography_class',
   50: 'flyer_l50_mountain_hiking',
+  51: 'flyer_l51_sailing_course',
+  52: 'flyer_l52_ancient_museum',
+  53: 'flyer_l53_drama_festival',
+  54: 'flyer_l54_news_reporter',
+  55: 'flyer_l55_job_shadowing',
+  56: 'flyer_l56_time_capsule',
+  57: 'flyer_l57_future_career',
+  58: 'flyer_l58_pen_pals',
+  59: 'flyer_l59_school_olympics',
+  60: 'flyer_l60_graduation',
 };
