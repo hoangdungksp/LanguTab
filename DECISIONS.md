@@ -321,3 +321,93 @@ LinguTab target (60 unique) **vượt commercial benchmark 4x mỗi tier**. Trad
 - **Asset cost ~$15-30** for ElevenLabs quota renewals across 3-4 cycles
 - **Content writing burnout risk** mitigated by 5 levels/session pacing
 - **Audio cache invalidation**: every new script = new hash = re-gen. Pre-gen Phase 2 (Jan 2026) audio scripts will be obsolete by L11-L60 ship.
+
+---
+
+## D-19: Phân quyền = Role-based trong D1 (bỏ ADMIN_TOKEN tĩnh)
+
+**Date**: 2026-05-26
+**Status**: LOCKED (chưa implement)
+
+**Decision**: Quyền hạn dựa trên cột `role` trong bảng D1 `users`: `user` | `editor` | `admin`.
+Worker verify Google ID token → tra `role` từ D1 → cấp quyền. Bỏ hoàn toàn `ADMIN_TOKEN`
+tĩnh + allowlist email hardcode trong `adminModeService`.
+
+- `editor`: sửa nội dung exam (audio script, scene gen/upload, calibration, gen audio).
+- `admin`: quyền editor + quản lý user/role.
+- Endpoint `/admin/*` đổi từ "Bearer ADMIN_TOKEN" → "Bearer <google token> + role check".
+
+**Why**: Admin hiện tại sơ sài (token tĩnh trong sessionStorage + 1 email). Không an toàn,
+không phân quyền editor, và CWS submission (Sprint 5.0) yêu cầu bỏ token tĩnh.
+
+**Rejected**: giữ ADMIN_TOKEN (không scale, lộ token = toàn quyền).
+
+---
+
+## D-20: Thanh toán Pro (VN) = chuyển khoản QR/MOMO auto-reconcile qua SePay/Casso
+
+**Date**: 2026-05-26
+**Status**: LOCKED (chưa implement). Bổ sung/thay D-8 cho thị trường VN.
+
+**Decision**: Bán gói Pro giá rẻ cho user VN qua **chuyển khoản ngân hàng/MOMO bằng QR**,
+tự động xác nhận bằng dịch vụ đọc biến động số dư (**SePay** hoặc **Casso**) → webhook về
+worker. User chuyển khoản kèm mã trong nội dung (vd `LINGU-<userId>`) → webhook khớp mã →
+set Pro trong D1.
+
+**Why**: Không thể tự đọc tài khoản ngân hàng trực tiếp. SePay/Casso là cách "tự động nhận
+tiền" chuẩn ở VN, phí thấp, nhiều app dùng. Lemon Squeezy (D-8) giữ lại cho thanh toán quốc
+tế sau này (Merchant of Record xử lý VAT).
+
+**Rejected**: chỉ Lemon Squeezy (phí cao + UX lạ với user VN); xác nhận thủ công 100% (không
+scale); tự scrape sao kê (không khả thi/không an toàn).
+
+---
+
+## D-21: Web app companion tại lingutab.com (Cloudflare Pages)
+
+**Date**: 2026-05-26
+**Status**: LOCKED (chưa implement).
+
+**Decision**: Mở rộng thành web app tại `lingutab.com` (Cloudflare Pages), **dùng chung worker
+API + D1** với extension. Web app là nơi đặt: landing/marketing, đăng nhập, **dashboard quản
+lý** (user/role D-19, học sinh online + độ tuổi, Pro users D-20), trang thanh toán.
+
+- Extension = bề mặt học "new tab" (giữ nguyên).
+- Web = quản lý + marketing + account. Code React tái dùng; tách abstraction cho phần
+  chrome-specific (chrome.storage, identity, newtab override).
+- Quản lý KHÔNG nhét inline trong extension nữa → chuyển sang dashboard web.
+
+**Why**: Quản lý chuyên nghiệp (#1/#2/#3) hợp với dashboard web hơn; reach user ngoài Chrome;
+landing để bán Pro.
+
+**Kèm lưu ý PRIVACY (trẻ em)**: thu thập độ tuổi/dữ liệu trẻ em dính COPPA/GDPR-K → cần cập
+nhật Privacy Policy + cân nhắc đồng ý phụ huynh TRƯỚC khi bật tính năng đăng ký tuổi.
+
+---
+
+## D-22: Tính năng mới (roadmap, chưa lock chi tiết)
+
+**Date**: 2026-05-26
+**Status**: AGREED in principle, chi tiết thiết kế sau.
+
+- **300 mẫu câu tiếng Anh thông dụng**: tab duyệt + audio (admin-gen).
+- **Nhật ký hằng ngày**: UI viết mỗi ngày, gợi ý từ 300 mẫu câu / ngữ pháp thông dụng, chấm
+  cú pháp (cân nhắc Gemini — cần verify Gemini text từ worker chạy được; vision bị geo-fence D-13).
+- Lưu nhật ký: Dexie (local) hoặc D1 (sync).
+
+---
+
+## D-23: Phòng thi tiếng Trung (HSK) — launch-critical theo D-12
+
+**Date**: 2026-05-26
+**Status**: AGREED, chưa làm. D-12 gate launch trên "Exam cho cả EN + ZH".
+
+**Decision**: Xây Phòng thi tiếng Trung dùng LẠI engine 4-part hiện có (drag/write/tick/colour)
++ planets/roadmap. Khác biệt: nội dung theo HSK (1-3+), audio Qwen-TTS Cherry (D-1, pinyin tone
+marks D-2), câu hỏi phù hợp hanzi/pinyin.
+
+**Ước tính**: Engine tái dùng 100%. Bottleneck là CONTENT (giống effort English vừa rồi) +
+gen audio tiếng Trung. Khởi đầu nhỏ HSK1 (~20 level) khả thi trong vài session; full 60 level
+tương đương công sức English (~8-10 session content).
+
+**Why**: D-12 yêu cầu exam EN+ZH cho launch. English content vừa xong (60/60); ZH chưa có.
