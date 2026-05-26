@@ -6,6 +6,8 @@ import {
   STARTERS_SCENE_IDS_BY_LEVEL,
   MOVERS_CHARS_BY_LEVEL,
   MOVERS_SCENE_IDS_BY_LEVEL,
+  FLYERS_CHARS_BY_LEVEL,
+  FLYERS_SCENE_IDS_BY_LEVEL,
 } from './sceneCharacters';
 
 /**
@@ -253,6 +255,61 @@ function makeMoverDragPart(
 ): DragNamePart {
   const sceneChars = MOVERS_CHARS_BY_LEVEL[levelNumber];
   const sceneId = MOVERS_SCENE_IDS_BY_LEVEL[levelNumber];
+  if (!sceneChars || !sceneId) {
+    return buildGridDragPart(partId, audioKey, 'park_kids', 'child', exampleName, names);
+  }
+
+  const zones = [
+    { id: 'zone_tl', x: 0.02, y: 0.05, width: 0.30, height: 0.45, label: 'top-left' },
+    { id: 'zone_tm', x: 0.35, y: 0.05, width: 0.30, height: 0.45, label: 'top-middle' },
+    { id: 'zone_tr', x: 0.68, y: 0.05, width: 0.30, height: 0.45, label: 'top-right' },
+    { id: 'zone_bl', x: 0.02, y: 0.50, width: 0.30, height: 0.45, label: 'bottom-left' },
+    { id: 'zone_bm', x: 0.35, y: 0.50, width: 0.30, height: 0.45, label: 'bottom-middle' },
+    { id: 'zone_br', x: 0.68, y: 0.50, width: 0.30, height: 0.45, label: 'bottom-right' },
+  ];
+
+  const exampleZoneId = zones[0].id;
+  const remainingZones = zones.slice(1).map((z) => z.id);
+  const correctMapping: Record<string, string> = {};
+  names.forEach((name, i) => {
+    correctMapping[name] = remainingZones[i];
+  });
+
+  const nameForZone: Record<string, string> = { [exampleZoneId]: exampleName };
+  for (const [name, zoneId] of Object.entries(correctMapping)) {
+    nameForZone[zoneId] = name;
+  }
+
+  const audioScript = buildDragNameAudioScript(sceneChars, nameForZone, exampleZoneId);
+
+  return {
+    type: 'listening_drag_name',
+    partId,
+    audioKey,
+    audioScript,
+    sceneId,
+    dropZones: zones,
+    exampleName,
+    exampleZoneId,
+    names,
+    correctMapping,
+  };
+}
+
+/**
+ * D-18 Phase 4: Per-level Flyers drag part — reads the FLYERS registry.
+ * Only called when FLYERS_CHARS_BY_LEVEL has an entry (L41-L50); L51-L60
+ * fall back to rotation drag scenes in makeLevel.
+ */
+function makeFlyerDragPart(
+  partId: string,
+  audioKey: string,
+  exampleName: string,
+  names: [string, string, string, string, string],
+  levelNumber: number,
+): DragNamePart {
+  const sceneChars = FLYERS_CHARS_BY_LEVEL[levelNumber];
+  const sceneId = FLYERS_SCENE_IDS_BY_LEVEL[levelNumber];
   if (!sceneChars || !sceneId) {
     return buildGridDragPart(partId, audioKey, 'park_kids', 'child', exampleName, names);
   }
@@ -1093,6 +1150,306 @@ function makeFlyerWritePart(partId: string, audioKey: string, sceneIdx: number):
       { questionId: 'q5', prompt: 'Favorite food?', acceptedAnswers: ['Tuna', 'tuna'] },
     ],
   };
+}
+
+// ─── D-18 Phase 4: Flyers per-level Write parts (L41-L50) ──────────────
+// B1: future tense + spelling of names; each reuses its drag sceneId.
+
+function makeFlyerWriteL41(partId: string, audioKey: string): WritePart {
+  return {
+    type: 'listening_write', partId, audioKey,
+    audioScript:
+      `Read the question. Listen and write a name, a number, or a date. There are two examples. ` +
+      `What event is at the school? It is the science fair. Science. ` +
+      `Who won the fair last year? A girl called Maya. M-A-Y-A. Maya. ` +
+      `Now listen and write the answers. ` +
+      `One. What will the winner get this year? A gold trophy. Trophy. ` +
+      `Two. How many projects will there be? Fourteen projects. Fourteen. ` +
+      `Three. What time will the judging start? At half past two. Two thirty. ` +
+      `Four. What is Leo's project about? It is about volcanoes. Volcanoes. ` +
+      `Five. What is the science teacher's surname? It is Brown. B-R-O-W-N. Brown.`,
+    sceneId: 'flyer_l41_science_fair',
+    examples: [
+      { question: 'What event?', answer: 'science' },
+      { question: 'Won last year?', answer: 'Maya' },
+    ],
+    questions: [
+      { questionId: 'q1', prompt: 'What will the winner get?', acceptedAnswers: ['trophy', 'a trophy', 'Trophy'] },
+      { questionId: 'q2', prompt: 'How many projects?', acceptedAnswers: ['14', 'fourteen'] },
+      { questionId: 'q3', prompt: 'Judging start time?', acceptedAnswers: ['2:30', 'two thirty', 'half past two'] },
+      { questionId: 'q4', prompt: "Leo's project about?", acceptedAnswers: ['volcanoes', 'volcano', 'Volcanoes'] },
+      { questionId: 'q5', prompt: 'Teacher surname?', acceptedAnswers: ['Brown', 'brown'] },
+    ],
+  };
+}
+
+function makeFlyerWriteL42(partId: string, audioKey: string): WritePart {
+  return {
+    type: 'listening_write', partId, audioKey,
+    audioScript:
+      `Read the question. Listen and write a name, a number, or a date. There are two examples. ` +
+      `What kind of event is it? A charity event. Charity. ` +
+      `What are they raising money for? For the hospital. Hospital. ` +
+      `Now listen and write the answers. ` +
+      `One. How much money did they raise? One hundred pounds. Hundred. ` +
+      `Two. Who organised the event? Mrs Hill. H-I-L-L. Hill. ` +
+      `Three. What time will it finish? At five o'clock. Five. ` +
+      `Four. What did they sell the most of? They sold the most cakes. Cakes. ` +
+      `Five. When is the next event? On the fifth of May. Fifth.`,
+    sceneId: 'flyer_l42_charity_event',
+    examples: [
+      { question: 'Kind of event?', answer: 'charity' },
+      { question: 'Money for?', answer: 'hospital' },
+    ],
+    questions: [
+      { questionId: 'q1', prompt: 'How much raised?', prefix: '£', acceptedAnswers: ['100', 'hundred', 'one hundred'] },
+      { questionId: 'q2', prompt: 'Who organised it?', acceptedAnswers: ['Hill', 'hill'] },
+      { questionId: 'q3', prompt: 'Finish time?', acceptedAnswers: ['5', '5:00', 'five'] },
+      { questionId: 'q4', prompt: 'Sold most of?', acceptedAnswers: ['cakes', 'cake', 'Cakes'] },
+      { questionId: 'q5', prompt: 'Next event date?', acceptedAnswers: ['5th', 'fifth', '5'] },
+    ],
+  };
+}
+
+function makeFlyerWriteL43(partId: string, audioKey: string): WritePart {
+  return {
+    type: 'listening_write', partId, audioKey,
+    audioScript:
+      `Read the question. Listen and write a name, a number, or a date. There are two examples. ` +
+      `Where do the children volunteer? At the animal shelter. Shelter. ` +
+      `What is the oldest dog called? It is called Max. M-A-X. Max. ` +
+      `Now listen and write the answers. ` +
+      `One. How many cats are at the shelter? Eleven cats. Eleven. ` +
+      `Two. What do they feed the rabbits? They feed them carrots. Carrots. ` +
+      `Three. What day do they help? On Sunday. Sunday. ` +
+      `Four. Who is the shelter manager? Miss Ford. F-O-R-D. Ford. ` +
+      `Five. How many hours do they stay? Three hours. Three.`,
+    sceneId: 'flyer_l43_volunteer_shelter',
+    examples: [
+      { question: 'Where volunteer?', answer: 'shelter' },
+      { question: 'Oldest dog?', answer: 'Max' },
+    ],
+    questions: [
+      { questionId: 'q1', prompt: 'How many cats?', acceptedAnswers: ['11', 'eleven'] },
+      { questionId: 'q2', prompt: 'Feed the rabbits?', acceptedAnswers: ['carrots', 'carrot', 'Carrots'] },
+      { questionId: 'q3', prompt: 'What day?', acceptedAnswers: ['Sunday', 'sunday'] },
+      { questionId: 'q4', prompt: 'Manager?', acceptedAnswers: ['Ford', 'ford'] },
+      { questionId: 'q5', prompt: 'How many hours?', suffix: 'hours', acceptedAnswers: ['3', 'three'] },
+    ],
+  };
+}
+
+function makeFlyerWriteL44(partId: string, audioKey: string): WritePart {
+  return {
+    type: 'listening_write', partId, audioKey,
+    audioScript:
+      `Read the question. Listen and write a name, a number, or a date. There are two examples. ` +
+      `What festival is in the park? A food festival. Food. ` +
+      `What is the most popular food? It is pizza. Pizza. ` +
+      `Now listen and write the answers. ` +
+      `One. How many food stalls are there? Twenty stalls. Twenty. ` +
+      `Two. What fruit is in the smoothie? There is mango. M-A-N-G-O. Mango. ` +
+      `Three. What time does it open? At ten o'clock. Ten. ` +
+      `Four. How much is a burger? It costs three pounds. Three. ` +
+      `Five. What is the head chef called? Pablo. P-A-B-L-O. Pablo.`,
+    sceneId: 'flyer_l44_food_festival',
+    examples: [
+      { question: 'What festival?', answer: 'food' },
+      { question: 'Popular food?', answer: 'pizza' },
+    ],
+    questions: [
+      { questionId: 'q1', prompt: 'How many stalls?', acceptedAnswers: ['20', 'twenty'] },
+      { questionId: 'q2', prompt: 'Fruit in smoothie?', acceptedAnswers: ['mango', 'Mango'] },
+      { questionId: 'q3', prompt: 'Open time?', acceptedAnswers: ['10', '10:00', 'ten'] },
+      { questionId: 'q4', prompt: 'Burger cost?', prefix: '£', acceptedAnswers: ['3', 'three'] },
+      { questionId: 'q5', prompt: 'Head chef?', acceptedAnswers: ['Pablo', 'pablo'] },
+    ],
+  };
+}
+
+function makeFlyerWriteL45(partId: string, audioKey: string): WritePart {
+  return {
+    type: 'listening_write', partId, audioKey,
+    audioScript:
+      `Read the question. Listen and write a name, a number, or a date. There are two examples. ` +
+      `What is the school project about? It is about recycling. Recycling. ` +
+      `Who leads the project? Mr Green. G-R-E-E-N. Green. ` +
+      `Now listen and write the answers. ` +
+      `One. How many recycling bins are there? Six bins. Six. ` +
+      `Two. What will they build with the bottles? A tower. Tower. ` +
+      `Three. What day is the clean-up? On Saturday. Saturday. ` +
+      `Four. How many trees will they plant? Thirty trees. Thirty. ` +
+      `Five. What will power the new lights? The sun will. Sun. S-U-N.`,
+    sceneId: 'flyer_l45_eco_project',
+    examples: [
+      { question: 'Project about?', answer: 'recycling' },
+      { question: 'Leader?', answer: 'Green' },
+    ],
+    questions: [
+      { questionId: 'q1', prompt: 'How many bins?', acceptedAnswers: ['6', 'six'] },
+      { questionId: 'q2', prompt: 'Build with bottles?', acceptedAnswers: ['tower', 'a tower', 'Tower'] },
+      { questionId: 'q3', prompt: 'Clean-up day?', acceptedAnswers: ['Saturday', 'saturday'] },
+      { questionId: 'q4', prompt: 'How many trees?', acceptedAnswers: ['30', 'thirty'] },
+      { questionId: 'q5', prompt: 'Power the lights?', acceptedAnswers: ['sun', 'the sun', 'Sun'] },
+    ],
+  };
+}
+
+function makeFlyerWriteL46(partId: string, audioKey: string): WritePart {
+  return {
+    type: 'listening_write', partId, audioKey,
+    audioScript:
+      `Read the question. Listen and write a name, a number, or a date. There are two examples. ` +
+      `Where did the class go? To a space exhibition. Space. ` +
+      `What is the biggest model? It is a rocket. Rocket. ` +
+      `Now listen and write the answers. ` +
+      `One. How many planets are in the model? Eight planets. Eight. ` +
+      `Two. What is the red planet called? It is called Mars. M-A-R-S. Mars. ` +
+      `Three. What time will the space show start? At four o'clock. Four. ` +
+      `Four. How heavy is the moon rock? It is two kilos. Two. ` +
+      `Five. What is the guide called? Luna. L-U-N-A. Luna.`,
+    sceneId: 'flyer_l46_space_exhibition',
+    examples: [
+      { question: 'Where?', answer: 'space' },
+      { question: 'Biggest model?', answer: 'rocket' },
+    ],
+    questions: [
+      { questionId: 'q1', prompt: 'How many planets?', acceptedAnswers: ['8', 'eight'] },
+      { questionId: 'q2', prompt: 'Red planet?', acceptedAnswers: ['Mars', 'mars'] },
+      { questionId: 'q3', prompt: 'Show start time?', acceptedAnswers: ['4', '4:00', 'four'] },
+      { questionId: 'q4', prompt: 'Moon rock weight?', suffix: 'kilos', acceptedAnswers: ['2', 'two'] },
+      { questionId: 'q5', prompt: 'Guide name?', acceptedAnswers: ['Luna', 'luna'] },
+    ],
+  };
+}
+
+function makeFlyerWriteL47(partId: string, audioKey: string): WritePart {
+  return {
+    type: 'listening_write', partId, audioKey,
+    audioScript:
+      `Read the question. Listen and write a name, a number, or a date. There are two examples. ` +
+      `What competition is it? A cooking competition. Cooking. ` +
+      `What is the secret ingredient? It is lemon. Lemon. ` +
+      `Now listen and write the answers. ` +
+      `One. How many cooks are there? Twelve cooks. Twelve. ` +
+      `Two. What time will the final start? At three o'clock. Three. ` +
+      `Three. What did the winner make? She made a cake. Cake. ` +
+      `Four. What is the head judge called? Maria. M-A-R-I-A. Maria. ` +
+      `Five. What will the winner get? A silver trophy. Trophy.`,
+    sceneId: 'flyer_l47_cooking_competition',
+    examples: [
+      { question: 'What competition?', answer: 'cooking' },
+      { question: 'Secret ingredient?', answer: 'lemon' },
+    ],
+    questions: [
+      { questionId: 'q1', prompt: 'How many cooks?', acceptedAnswers: ['12', 'twelve'] },
+      { questionId: 'q2', prompt: 'Final start time?', acceptedAnswers: ['3', '3:00', 'three'] },
+      { questionId: 'q3', prompt: 'Winner made?', acceptedAnswers: ['cake', 'a cake', 'Cake'] },
+      { questionId: 'q4', prompt: 'Head judge?', acceptedAnswers: ['Maria', 'maria'] },
+      { questionId: 'q5', prompt: 'Winner gets?', acceptedAnswers: ['trophy', 'a trophy', 'Trophy'] },
+    ],
+  };
+}
+
+function makeFlyerWriteL48(partId: string, audioKey: string): WritePart {
+  return {
+    type: 'listening_write', partId, audioKey,
+    audioScript:
+      `Read the question. Listen and write a name, a number, or a date. There are two examples. ` +
+      `What are the students making? A short film. Film. ` +
+      `What is the film called? It is called Dragons. D-R-A-G-O-N-S. ` +
+      `Now listen and write the answers. ` +
+      `One. How many actors are in the film? Seven actors. Seven. ` +
+      `Two. Where will they film the last scene? At the beach. Beach. ` +
+      `Three. What time will filming start? At eight o'clock. Eight. ` +
+      `Four. Who is the director? A boy called Sam. S-A-M. Sam. ` +
+      `Five. How long is the film? Ten minutes long. Ten.`,
+    sceneId: 'flyer_l48_film_making',
+    examples: [
+      { question: 'Making what?', answer: 'film' },
+      { question: 'Film called?', answer: 'Dragons' },
+    ],
+    questions: [
+      { questionId: 'q1', prompt: 'How many actors?', acceptedAnswers: ['7', 'seven'] },
+      { questionId: 'q2', prompt: 'Last scene where?', acceptedAnswers: ['beach', 'the beach', 'Beach'] },
+      { questionId: 'q3', prompt: 'Filming start time?', acceptedAnswers: ['8', '8:00', 'eight'] },
+      { questionId: 'q4', prompt: 'Director?', acceptedAnswers: ['Sam', 'sam'] },
+      { questionId: 'q5', prompt: 'Film length?', suffix: 'minutes', acceptedAnswers: ['10', 'ten'] },
+    ],
+  };
+}
+
+function makeFlyerWriteL49(partId: string, audioKey: string): WritePart {
+  return {
+    type: 'listening_write', partId, audioKey,
+    audioScript:
+      `Read the question. Listen and write a name, a number, or a date. There are two examples. ` +
+      `What class is it? A photography class. Photography. ` +
+      `What will they photograph today? They will photograph birds. Birds. ` +
+      `Now listen and write the answers. ` +
+      `One. How many cameras are there? Nine cameras. Nine. ` +
+      `Two. What colour is the bird in the best photo? It is blue. Blue. ` +
+      `Three. What time does the class start? At two o'clock. Two. ` +
+      `Four. What is the teacher called? Mr Day. D-A-Y. Day. ` +
+      `Five. How many photos must they take? Five photos. Five.`,
+    sceneId: 'flyer_l49_photography_class',
+    examples: [
+      { question: 'What class?', answer: 'photography' },
+      { question: 'Photograph today?', answer: 'birds' },
+    ],
+    questions: [
+      { questionId: 'q1', prompt: 'How many cameras?', acceptedAnswers: ['9', 'nine'] },
+      { questionId: 'q2', prompt: 'Best photo bird colour?', acceptedAnswers: ['blue', 'Blue'] },
+      { questionId: 'q3', prompt: 'Class start time?', acceptedAnswers: ['2', '2:00', 'two'] },
+      { questionId: 'q4', prompt: 'Teacher?', acceptedAnswers: ['Day', 'day'] },
+      { questionId: 'q5', prompt: 'Photos to take?', acceptedAnswers: ['5', 'five'] },
+    ],
+  };
+}
+
+function makeFlyerWriteL50(partId: string, audioKey: string): WritePart {
+  return {
+    type: 'listening_write', partId, audioKey,
+    audioScript:
+      `Read the question. Listen and write a name, a number, or a date. There are two examples. ` +
+      `Where are the friends hiking? In the mountains. Mountains. ` +
+      `What is the mountain called? It is called Eagle Mountain. E-A-G-L-E. ` +
+      `Now listen and write the answers. ` +
+      `One. How many kilometres will they walk? Eight kilometres. Eight. ` +
+      `Two. What will they see at the top? They will see a lake. Lake. ` +
+      `Three. What time will they start? At seven o'clock. Seven. ` +
+      `Four. What is the guide called? A man called Cliff. C-L-I-F-F. Cliff. ` +
+      `Five. What must everyone take? A map. Map. M-A-P.`,
+    sceneId: 'flyer_l50_mountain_hiking',
+    examples: [
+      { question: 'Where hiking?', answer: 'mountains' },
+      { question: 'Mountain called?', answer: 'Eagle' },
+    ],
+    questions: [
+      { questionId: 'q1', prompt: 'How many km?', acceptedAnswers: ['8', 'eight'] },
+      { questionId: 'q2', prompt: 'See at the top?', acceptedAnswers: ['lake', 'a lake', 'Lake'] },
+      { questionId: 'q3', prompt: 'Start time?', acceptedAnswers: ['7', '7:00', 'seven'] },
+      { questionId: 'q4', prompt: 'Guide?', acceptedAnswers: ['Cliff', 'cliff'] },
+      { questionId: 'q5', prompt: 'Must take?', acceptedAnswers: ['map', 'a map', 'Map'] },
+    ],
+  };
+}
+
+/** Dispatch Flyers Write: per-level L41-L50, rotation fallback beyond. */
+function makeFlyerWriteByLevel(partId: string, audioKey: string, levelNumber: number): WritePart {
+  switch (levelNumber) {
+    case 41: return makeFlyerWriteL41(partId, audioKey);
+    case 42: return makeFlyerWriteL42(partId, audioKey);
+    case 43: return makeFlyerWriteL43(partId, audioKey);
+    case 44: return makeFlyerWriteL44(partId, audioKey);
+    case 45: return makeFlyerWriteL45(partId, audioKey);
+    case 46: return makeFlyerWriteL46(partId, audioKey);
+    case 47: return makeFlyerWriteL47(partId, audioKey);
+    case 48: return makeFlyerWriteL48(partId, audioKey);
+    case 49: return makeFlyerWriteL49(partId, audioKey);
+    case 50: return makeFlyerWriteL50(partId, audioKey);
+    default: return makeFlyerWritePart(partId, audioKey, (levelNumber - 1) % 3);
+  }
 }
 
 // ─── Part 2: Listen & write — Starters difficulty (5 variants) ─────────
@@ -3821,6 +4178,295 @@ function makeFlyerTickPart(partId: string, audioKey: string): TickPart {
   };
 }
 
+// ─── D-18 Phase 4: Flyers per-level Tick parts (L41-L50) ───────────────
+
+function makeFlyerTickL41(partId: string, audioKey: string): TickPart {
+  return {
+    type: 'listening_tick', partId, audioKey,
+    audioScript:
+      `Listen and tick the box. There is one example. ` +
+      `What did the students look through at the fair? A microscope. The microscope. ` +
+      `Now listen. There are five questions. ` +
+      `One. What did they mix in the experiment? They mixed it in a test tube. ` +
+      `Two. What did Maya hold up? She held a small robot. ` +
+      `Three. What did they measure with? They measured with a ruler. ` +
+      `Four. What won first prize? The trophy went to the best project. ` +
+      `Five. What did they use to pick up metal? They used a magnet.`,
+    example: {
+      questionId: 'ex', prompt: 'What did they look through?',
+      options: [{ id: 'A', iconId: 'microscope' }, { id: 'B', iconId: 'telescope' }, { id: 'C', iconId: 'camera' }],
+      correctOptionId: 'A',
+    },
+    questions: [
+      { questionId: 'q1', prompt: 'What did they mix in?', options: [{ id: 'A', iconId: 'test_tube' }, { id: 'B', iconId: 'juice_glass' }, { id: 'C', iconId: 'soup_bowl' }], correctOptionId: 'A' },
+      { questionId: 'q2', prompt: 'What did Maya hold?', options: [{ id: 'A', iconId: 'planet' }, { id: 'B', iconId: 'robot' }, { id: 'C', iconId: 'rocket' }], correctOptionId: 'B' },
+      { questionId: 'q3', prompt: 'What did they measure with?', options: [{ id: 'A', iconId: 'pen' }, { id: 'B', iconId: 'book' }, { id: 'C', iconId: 'ruler' }], correctOptionId: 'C' },
+      { questionId: 'q4', prompt: 'What won first prize?', options: [{ id: 'A', iconId: 'trophy' }, { id: 'B', iconId: 'medal' }, { id: 'C', iconId: 'rosette' }], correctOptionId: 'A' },
+      { questionId: 'q5', prompt: 'Used to pick up metal?', options: [{ id: 'A', iconId: 'spade' }, { id: 'B', iconId: 'whisk' }, { id: 'C', iconId: 'magnet' }], correctOptionId: 'C' },
+    ],
+  };
+}
+
+function makeFlyerTickL42(partId: string, audioKey: string): TickPart {
+  return {
+    type: 'listening_tick', partId, audioKey,
+    audioScript:
+      `Listen and tick the box. There is one example. ` +
+      `What did they sell at the charity stall? Cakes. The cakes. ` +
+      `Now listen. There are five questions. ` +
+      `One. Where did they put the coins? In a donation box. ` +
+      `Two. What did they count at the end? They counted the coins. ` +
+      `Three. What did they hand out? They handed out flowers. ` +
+      `Four. What did they paint? They painted a poster. ` +
+      `Five. How many cakes were left? Five cakes.`,
+    example: {
+      questionId: 'ex', prompt: 'What did they sell?',
+      options: [{ id: 'A', iconId: 'cake' }, { id: 'B', iconId: 'pizza' }, { id: 'C', iconId: 'burger' }],
+      correctOptionId: 'A',
+    },
+    questions: [
+      { questionId: 'q1', prompt: 'Where did the coins go?', options: [{ id: 'A', iconId: 'donation_box' }, { id: 'B', iconId: 'box' }, { id: 'C', iconId: 'suitcase' }], correctOptionId: 'A' },
+      { questionId: 'q2', prompt: 'What did they count?', options: [{ id: 'A', iconId: 'ticket' }, { id: 'B', iconId: 'coin' }, { id: 'C', iconId: 'stamp' }], correctOptionId: 'B' },
+      { questionId: 'q3', prompt: 'What did they hand out?', options: [{ id: 'A', iconId: 'kite' }, { id: 'B', iconId: 'ball' }, { id: 'C', iconId: 'flower' }], correctOptionId: 'C' },
+      { questionId: 'q4', prompt: 'What did they paint?', options: [{ id: 'A', iconId: 'poster' }, { id: 'B', iconId: 'painting' }, { id: 'C', iconId: 'frame' }], correctOptionId: 'A' },
+      { questionId: 'q5', prompt: 'How many cakes left?', options: [{ id: 'A', iconId: 'count_4' }, { id: 'B', iconId: 'count_5' }, { id: 'C', iconId: 'count_6' }], correctOptionId: 'B' },
+    ],
+  };
+}
+
+function makeFlyerTickL43(partId: string, audioKey: string): TickPart {
+  return {
+    type: 'listening_tick', partId, audioKey,
+    audioScript:
+      `Listen and tick the box. There is one example. ` +
+      `What did the volunteers feed first? A dog. The dog. ` +
+      `Now listen. There are five questions. ` +
+      `One. What did they wash? They washed a cat. ` +
+      `Two. What did they brush? They brushed a rabbit. ` +
+      `Three. What did they fill? They filled a bucket. ` +
+      `Four. What did the dog chew? The dog chewed a bone. ` +
+      `Five. What lives in the bowl? A fish lives in the bowl.`,
+    example: {
+      questionId: 'ex', prompt: 'What did they feed?',
+      options: [{ id: 'A', iconId: 'dog' }, { id: 'B', iconId: 'cat' }, { id: 'C', iconId: 'rabbit' }],
+      correctOptionId: 'A',
+    },
+    questions: [
+      { questionId: 'q1', prompt: 'What did they wash?', options: [{ id: 'A', iconId: 'cat' }, { id: 'B', iconId: 'dog' }, { id: 'C', iconId: 'fish' }], correctOptionId: 'A' },
+      { questionId: 'q2', prompt: 'What did they brush?', options: [{ id: 'A', iconId: 'bird' }, { id: 'B', iconId: 'rabbit' }, { id: 'C', iconId: 'cat' }], correctOptionId: 'B' },
+      { questionId: 'q3', prompt: 'What did they fill?', options: [{ id: 'A', iconId: 'bottle' }, { id: 'B', iconId: 'fishbowl' }, { id: 'C', iconId: 'bucket' }], correctOptionId: 'C' },
+      { questionId: 'q4', prompt: 'What did the dog chew?', options: [{ id: 'A', iconId: 'bone' }, { id: 'B', iconId: 'ball' }, { id: 'C', iconId: 'fish' }], correctOptionId: 'A' },
+      { questionId: 'q5', prompt: 'What lives in the bowl?', options: [{ id: 'A', iconId: 'rabbit' }, { id: 'B', iconId: 'fish' }, { id: 'C', iconId: 'bird' }], correctOptionId: 'B' },
+    ],
+  };
+}
+
+function makeFlyerTickL44(partId: string, audioKey: string): TickPart {
+  return {
+    type: 'listening_tick', partId, audioKey,
+    audioScript:
+      `Listen and tick the box. There is one example. ` +
+      `What was the most popular food? Pizza. The pizza. ` +
+      `Now listen. There are five questions. ` +
+      `One. What did they grill? They grilled burgers. ` +
+      `Two. What did they drink? They drank a fruit smoothie. ` +
+      `Three. What was served in a bowl? A bowl of noodles. ` +
+      `Four. What did they taste? They tasted some cheese. ` +
+      `Five. What did they hold at the end? An ice cream.`,
+    example: {
+      questionId: 'ex', prompt: 'Most popular food?',
+      options: [{ id: 'A', iconId: 'pizza' }, { id: 'B', iconId: 'burger' }, { id: 'C', iconId: 'noodles' }],
+      correctOptionId: 'A',
+    },
+    questions: [
+      { questionId: 'q1', prompt: 'What did they grill?', options: [{ id: 'A', iconId: 'burger' }, { id: 'B', iconId: 'pizza' }, { id: 'C', iconId: 'cake' }], correctOptionId: 'A' },
+      { questionId: 'q2', prompt: 'What did they drink?', options: [{ id: 'A', iconId: 'soup_bowl' }, { id: 'B', iconId: 'juice_glass' }, { id: 'C', iconId: 'ice_cream' }], correctOptionId: 'B' },
+      { questionId: 'q3', prompt: 'Served in a bowl?', options: [{ id: 'A', iconId: 'noodles' }, { id: 'B', iconId: 'salad' }, { id: 'C', iconId: 'pizza' }], correctOptionId: 'A' },
+      { questionId: 'q4', prompt: 'What did they taste?', options: [{ id: 'A', iconId: 'bread' }, { id: 'B', iconId: 'apple' }, { id: 'C', iconId: 'cheese' }], correctOptionId: 'C' },
+      { questionId: 'q5', prompt: 'Held at the end?', options: [{ id: 'A', iconId: 'ice_cream' }, { id: 'B', iconId: 'cake' }, { id: 'C', iconId: 'banana' }], correctOptionId: 'A' },
+    ],
+  };
+}
+
+function makeFlyerTickL45(partId: string, audioKey: string): TickPart {
+  return {
+    type: 'listening_tick', partId, audioKey,
+    audioScript:
+      `Listen and tick the box. There is one example. ` +
+      `What did the students sort? The recycling bin. The bin. ` +
+      `Now listen. There are five questions. ` +
+      `One. What did they plant? They planted a tree. ` +
+      `Two. What did they hold up? They held a solar panel. ` +
+      `Three. What rubbish did they pick up? They picked up a bottle. ` +
+      `Four. What did they water with? A watering can. ` +
+      `Five. What did they carry the compost in? A wheelbarrow.`,
+    example: {
+      questionId: 'ex', prompt: 'What did they sort?',
+      options: [{ id: 'A', iconId: 'recycle_bin' }, { id: 'B', iconId: 'box' }, { id: 'C', iconId: 'bucket' }],
+      correctOptionId: 'A',
+    },
+    questions: [
+      { questionId: 'q1', prompt: 'What did they plant?', options: [{ id: 'A', iconId: 'tree' }, { id: 'B', iconId: 'flower' }, { id: 'C', iconId: 'flowerpot' }], correctOptionId: 'A' },
+      { questionId: 'q2', prompt: 'What did they hold up?', options: [{ id: 'A', iconId: 'painting' }, { id: 'B', iconId: 'solar_panel' }, { id: 'C', iconId: 'frame' }], correctOptionId: 'B' },
+      { questionId: 'q3', prompt: 'Rubbish picked up?', options: [{ id: 'A', iconId: 'ball' }, { id: 'B', iconId: 'kite' }, { id: 'C', iconId: 'bottle' }], correctOptionId: 'C' },
+      { questionId: 'q4', prompt: 'Water with?', options: [{ id: 'A', iconId: 'watering_can' }, { id: 'B', iconId: 'bucket' }, { id: 'C', iconId: 'juice_glass' }], correctOptionId: 'A' },
+      { questionId: 'q5', prompt: 'Carry compost in?', options: [{ id: 'A', iconId: 'wheelbarrow' }, { id: 'B', iconId: 'box' }, { id: 'C', iconId: 'bucket' }], correctOptionId: 'A' },
+    ],
+  };
+}
+
+function makeFlyerTickL46(partId: string, audioKey: string): TickPart {
+  return {
+    type: 'listening_tick', partId, audioKey,
+    audioScript:
+      `Listen and tick the box. There is one example. ` +
+      `What was the biggest model at the space show? A rocket. The rocket. ` +
+      `Now listen. There are five questions. ` +
+      `One. What did they look through? A telescope. ` +
+      `Two. What did they hold? They held a model planet. ` +
+      `Three. What did they wear on their head? An astronaut helmet. ` +
+      `Four. What did they see in the sky model? They saw a star. ` +
+      `Five. What did they touch? They touched the moon rock.`,
+    example: {
+      questionId: 'ex', prompt: 'Biggest model?',
+      options: [{ id: 'A', iconId: 'rocket' }, { id: 'B', iconId: 'planet' }, { id: 'C', iconId: 'star' }],
+      correctOptionId: 'A',
+    },
+    questions: [
+      { questionId: 'q1', prompt: 'Looked through?', options: [{ id: 'A', iconId: 'telescope' }, { id: 'B', iconId: 'microscope' }, { id: 'C', iconId: 'binoculars' }], correctOptionId: 'A' },
+      { questionId: 'q2', prompt: 'What did they hold?', options: [{ id: 'A', iconId: 'ball' }, { id: 'B', iconId: 'planet' }, { id: 'C', iconId: 'rocket' }], correctOptionId: 'B' },
+      { questionId: 'q3', prompt: 'Wore on their head?', options: [{ id: 'A', iconId: 'fire_helmet' }, { id: 'B', iconId: 'chef_hat' }, { id: 'C', iconId: 'astronaut_helmet' }], correctOptionId: 'C' },
+      { questionId: 'q4', prompt: 'Saw in the sky model?', options: [{ id: 'A', iconId: 'star' }, { id: 'B', iconId: 'moon' }, { id: 'C', iconId: 'planet' }], correctOptionId: 'A' },
+      { questionId: 'q5', prompt: 'What did they touch?', options: [{ id: 'A', iconId: 'star' }, { id: 'B', iconId: 'moon' }, { id: 'C', iconId: 'rocket' }], correctOptionId: 'B' },
+    ],
+  };
+}
+
+function makeFlyerTickL47(partId: string, audioKey: string): TickPart {
+  return {
+    type: 'listening_tick', partId, audioKey,
+    audioScript:
+      `Listen and tick the box. There is one example. ` +
+      `What did the cooks use to mix? A whisk. The whisk. ` +
+      `Now listen. There are five questions. ` +
+      `One. What did they decorate? They decorated a cake. ` +
+      `Two. What did they chop with? They chopped with a knife. ` +
+      `Three. What did they taste? They tasted the soup. ` +
+      `Four. What did the chef wear? A chef hat. ` +
+      `Five. What did the winner get? A silver trophy.`,
+    example: {
+      questionId: 'ex', prompt: 'Used to mix?',
+      options: [{ id: 'A', iconId: 'whisk' }, { id: 'B', iconId: 'spade' }, { id: 'C', iconId: 'paintbrush' }],
+      correctOptionId: 'A',
+    },
+    questions: [
+      { questionId: 'q1', prompt: 'What did they decorate?', options: [{ id: 'A', iconId: 'cake' }, { id: 'B', iconId: 'pie' }, { id: 'C', iconId: 'cupcake' }], correctOptionId: 'A' },
+      { questionId: 'q2', prompt: 'Chopped with?', options: [{ id: 'A', iconId: 'spade' }, { id: 'B', iconId: 'knife' }, { id: 'C', iconId: 'ruler' }], correctOptionId: 'B' },
+      { questionId: 'q3', prompt: 'What did they taste?', options: [{ id: 'A', iconId: 'salad' }, { id: 'B', iconId: 'pizza' }, { id: 'C', iconId: 'soup_bowl' }], correctOptionId: 'C' },
+      { questionId: 'q4', prompt: 'Chef wore?', options: [{ id: 'A', iconId: 'chef_hat' }, { id: 'B', iconId: 'fire_helmet' }, { id: 'C', iconId: 'astronaut_helmet' }], correctOptionId: 'A' },
+      { questionId: 'q5', prompt: 'Winner got?', options: [{ id: 'A', iconId: 'trophy' }, { id: 'B', iconId: 'medal' }, { id: 'C', iconId: 'rosette' }], correctOptionId: 'A' },
+    ],
+  };
+}
+
+function makeFlyerTickL48(partId: string, audioKey: string): TickPart {
+  return {
+    type: 'listening_tick', partId, audioKey,
+    audioScript:
+      `Listen and tick the box. There is one example. ` +
+      `What did they hold to start filming? A clapperboard. The clapperboard. ` +
+      `Now listen. There are five questions. ` +
+      `One. What did they film with? A video camera. ` +
+      `Two. What did they speak into? A microphone. ` +
+      `Three. What did they read? They read the script. ` +
+      `Four. What lit the film set? A big light. ` +
+      `Five. What did the director sit in? A chair.`,
+    example: {
+      questionId: 'ex', prompt: 'Held to start filming?',
+      options: [{ id: 'A', iconId: 'clapperboard' }, { id: 'B', iconId: 'book' }, { id: 'C', iconId: 'frame' }],
+      correctOptionId: 'A',
+    },
+    questions: [
+      { questionId: 'q1', prompt: 'Filmed with?', options: [{ id: 'A', iconId: 'video_camera' }, { id: 'B', iconId: 'microphone' }, { id: 'C', iconId: 'telescope' }], correctOptionId: 'A' },
+      { questionId: 'q2', prompt: 'Spoke into?', options: [{ id: 'A', iconId: 'trumpet' }, { id: 'B', iconId: 'microphone' }, { id: 'C', iconId: 'whistle' }], correctOptionId: 'B' },
+      { questionId: 'q3', prompt: 'What did they read?', options: [{ id: 'A', iconId: 'map' }, { id: 'B', iconId: 'book' }, { id: 'C', iconId: 'script_paper' }], correctOptionId: 'C' },
+      { questionId: 'q4', prompt: 'What lit the set?', options: [{ id: 'A', iconId: 'light_bulb' }, { id: 'B', iconId: 'lamp' }, { id: 'C', iconId: 'campfire' }], correctOptionId: 'A' },
+      { questionId: 'q5', prompt: 'Director sat in?', options: [{ id: 'A', iconId: 'chair' }, { id: 'B', iconId: 'bed' }, { id: 'C', iconId: 'canoe' }], correctOptionId: 'A' },
+    ],
+  };
+}
+
+function makeFlyerTickL49(partId: string, audioKey: string): TickPart {
+  return {
+    type: 'listening_tick', partId, audioKey,
+    audioScript:
+      `Listen and tick the box. There is one example. ` +
+      `What did the students take photos with? A camera. The camera. ` +
+      `Now listen. There are five questions. ` +
+      `One. What held the camera steady? A tripod. ` +
+      `Two. What did they photograph? They photographed a bird. ` +
+      `Three. What did they change on the camera? The lens. ` +
+      `Four. What did they hang up? A framed photo. ` +
+      `Five. How many photos must they take? Five photos.`,
+    example: {
+      questionId: 'ex', prompt: 'Took photos with?',
+      options: [{ id: 'A', iconId: 'camera' }, { id: 'B', iconId: 'video_camera' }, { id: 'C', iconId: 'telescope' }],
+      correctOptionId: 'A',
+    },
+    questions: [
+      { questionId: 'q1', prompt: 'Held the camera steady?', options: [{ id: 'A', iconId: 'tripod' }, { id: 'B', iconId: 'easel' }, { id: 'C', iconId: 'ladder' }], correctOptionId: 'A' },
+      { questionId: 'q2', prompt: 'What did they photograph?', options: [{ id: 'A', iconId: 'cat' }, { id: 'B', iconId: 'bird' }, { id: 'C', iconId: 'fish' }], correctOptionId: 'B' },
+      { questionId: 'q3', prompt: 'Changed on the camera?', options: [{ id: 'A', iconId: 'pen' }, { id: 'B', iconId: 'ball' }, { id: 'C', iconId: 'lens' }], correctOptionId: 'C' },
+      { questionId: 'q4', prompt: 'What did they hang up?', options: [{ id: 'A', iconId: 'photo' }, { id: 'B', iconId: 'painting' }, { id: 'C', iconId: 'frame' }], correctOptionId: 'A' },
+      { questionId: 'q5', prompt: 'How many photos?', options: [{ id: 'A', iconId: 'count_4' }, { id: 'B', iconId: 'count_5' }, { id: 'C', iconId: 'count_6' }], correctOptionId: 'B' },
+    ],
+  };
+}
+
+function makeFlyerTickL50(partId: string, audioKey: string): TickPart {
+  return {
+    type: 'listening_tick', partId, audioKey,
+    audioScript:
+      `Listen and tick the box. There is one example. ` +
+      `What did the hikers climb with? A rope. The rope. ` +
+      `Now listen. There are five questions. ` +
+      `One. What did they read to find the way? A map. ` +
+      `Two. What did they look through? Binoculars. ` +
+      `Three. What did they drink from? A flask. ` +
+      `Four. What did they plant at the top? A flag. ` +
+      `Five. What did they carry? A backpack.`,
+    example: {
+      questionId: 'ex', prompt: 'Climbed with?',
+      options: [{ id: 'A', iconId: 'rope' }, { id: 'B', iconId: 'ladder' }, { id: 'C', iconId: 'fishing_rod' }],
+      correctOptionId: 'A',
+    },
+    questions: [
+      { questionId: 'q1', prompt: 'Read to find the way?', options: [{ id: 'A', iconId: 'map' }, { id: 'B', iconId: 'compass' }, { id: 'C', iconId: 'book' }], correctOptionId: 'A' },
+      { questionId: 'q2', prompt: 'Looked through?', options: [{ id: 'A', iconId: 'glasses_3d' }, { id: 'B', iconId: 'binoculars' }, { id: 'C', iconId: 'telescope' }], correctOptionId: 'B' },
+      { questionId: 'q3', prompt: 'Drank from?', options: [{ id: 'A', iconId: 'juice_glass' }, { id: 'B', iconId: 'bottle' }, { id: 'C', iconId: 'flask' }], correctOptionId: 'C' },
+      { questionId: 'q4', prompt: 'Planted at the top?', options: [{ id: 'A', iconId: 'flag' }, { id: 'B', iconId: 'tent' }, { id: 'C', iconId: 'tree' }], correctOptionId: 'A' },
+      { questionId: 'q5', prompt: 'What did they carry?', options: [{ id: 'A', iconId: 'backpack' }, { id: 'B', iconId: 'suitcase' }, { id: 'C', iconId: 'box' }], correctOptionId: 'A' },
+    ],
+  };
+}
+
+/** Dispatch Flyers Tick: per-level L41-L50, rotation fallback beyond. */
+function makeFlyerTickByLevel(partId: string, audioKey: string, levelNumber: number): TickPart {
+  switch (levelNumber) {
+    case 41: return makeFlyerTickL41(partId, audioKey);
+    case 42: return makeFlyerTickL42(partId, audioKey);
+    case 43: return makeFlyerTickL43(partId, audioKey);
+    case 44: return makeFlyerTickL44(partId, audioKey);
+    case 45: return makeFlyerTickL45(partId, audioKey);
+    case 46: return makeFlyerTickL46(partId, audioKey);
+    case 47: return makeFlyerTickL47(partId, audioKey);
+    case 48: return makeFlyerTickL48(partId, audioKey);
+    case 49: return makeFlyerTickL49(partId, audioKey);
+    case 50: return makeFlyerTickL50(partId, audioKey);
+    default: return makeFlyerTickPart(partId, audioKey);
+  }
+}
+
 // ─── Part 4: Listen & colour ───────────────────────────────────────────
 
 function makeGardenColourPart(partId: string, audioKey: string): ColourPart {
@@ -4736,6 +5382,210 @@ function makeMoverColourByLevel(partId: string, audioKey: string, levelNumber: n
   }
 }
 
+// ─── D-18 Phase 4: Flyers per-level Colour parts (L41-L50) ─────────────
+
+function makeFlyerColourL41(partId: string, audioKey: string): ColourPart {
+  return {
+    type: 'listening_colour', partId, audioKey,
+    audioScript: `Listen and colour. There is one example. Colour the microscope grey. The microscope is grey. Grey. Now you listen and colour. Colour the test tube blue. Colour the robot red. Colour the ruler yellow. Colour the magnet orange. Colour the light bulb green.`,
+    sceneId: 'flyer_l41_science_fair_outline' as SceneId,
+    example: { regionId: 'microscope', color: 'grey', ...MC_EX },
+    regions: [
+      { id: 'testtube', label: 'ống nghiệm', ...MC_R[0] },
+      { id: 'robot',    label: 'robot',      ...MC_R[1] },
+      { id: 'ruler',    label: 'thước kẻ',   ...MC_R[2] },
+      { id: 'magnet',   label: 'nam châm',   ...MC_R[3] },
+      { id: 'bulb',     label: 'bóng đèn',   ...MC_R[4] },
+    ],
+    correctColors: { testtube: 'blue', robot: 'red', ruler: 'yellow', magnet: 'orange', bulb: 'green' },
+    palette: MOVER_COLOUR_PALETTE,
+  };
+}
+
+function makeFlyerColourL42(partId: string, audioKey: string): ColourPart {
+  return {
+    type: 'listening_colour', partId, audioKey,
+    audioScript: `Listen and colour. There is one example. Colour the balloon red. The balloon is red. Red. Now you listen and colour. Colour the cake pink. Colour the coin yellow. Colour the box brown. Colour the poster blue. Colour the jar green.`,
+    sceneId: 'flyer_l42_charity_event_outline' as SceneId,
+    example: { regionId: 'balloon', color: 'red', ...MC_EX },
+    regions: [
+      { id: 'cake',   label: 'bánh ngọt',  ...MC_R[0] },
+      { id: 'coin',   label: 'đồng xu',    ...MC_R[1] },
+      { id: 'box',    label: 'hộp quyên góp', ...MC_R[2] },
+      { id: 'poster', label: 'áp phích',   ...MC_R[3] },
+      { id: 'jar',    label: 'lọ tiền',    ...MC_R[4] },
+    ],
+    correctColors: { cake: 'pink', coin: 'yellow', box: 'brown', poster: 'blue', jar: 'green' },
+    palette: MOVER_COLOUR_PALETTE,
+  };
+}
+
+function makeFlyerColourL43(partId: string, audioKey: string): ColourPart {
+  return {
+    type: 'listening_colour', partId, audioKey,
+    audioScript: `Listen and colour. There is one example. Colour the dog brown. The dog is brown. Brown. Now you listen and colour. Colour the cat orange. Colour the rabbit pink. Colour the bird yellow. Colour the fish blue. Colour the bowl green.`,
+    sceneId: 'flyer_l43_volunteer_shelter_outline' as SceneId,
+    example: { regionId: 'dog', color: 'brown', ...MC_EX },
+    regions: [
+      { id: 'cat',    label: 'con mèo',  ...MC_R[0] },
+      { id: 'rabbit', label: 'con thỏ',  ...MC_R[1] },
+      { id: 'bird',   label: 'con chim', ...MC_R[2] },
+      { id: 'fish',   label: 'con cá',   ...MC_R[3] },
+      { id: 'bowl',   label: 'bát ăn',   ...MC_R[4] },
+    ],
+    correctColors: { cat: 'orange', rabbit: 'pink', bird: 'yellow', fish: 'blue', bowl: 'green' },
+    palette: MOVER_COLOUR_PALETTE,
+  };
+}
+
+function makeFlyerColourL44(partId: string, audioKey: string): ColourPart {
+  return {
+    type: 'listening_colour', partId, audioKey,
+    audioScript: `Listen and colour. There is one example. Colour the pizza red. The pizza is red. Red. Now you listen and colour. Colour the burger brown. Colour the smoothie pink. Colour the noodles orange. Colour the cheese yellow. Colour the flag blue.`,
+    sceneId: 'flyer_l44_food_festival_outline' as SceneId,
+    example: { regionId: 'pizza', color: 'red', ...MC_EX },
+    regions: [
+      { id: 'burger',   label: 'bánh kẹp',  ...MC_R[0] },
+      { id: 'smoothie', label: 'sinh tố',   ...MC_R[1] },
+      { id: 'noodles',  label: 'mì',        ...MC_R[2] },
+      { id: 'cheese',   label: 'phô mai',   ...MC_R[3] },
+      { id: 'flag',     label: 'lá cờ',     ...MC_R[4] },
+    ],
+    correctColors: { burger: 'brown', smoothie: 'pink', noodles: 'orange', cheese: 'yellow', flag: 'blue' },
+    palette: MOVER_COLOUR_PALETTE,
+  };
+}
+
+function makeFlyerColourL45(partId: string, audioKey: string): ColourPart {
+  return {
+    type: 'listening_colour', partId, audioKey,
+    audioScript: `Listen and colour. There is one example. Colour the tree green. The tree is green. Green. Now you listen and colour. Colour the recycling bin blue. Colour the solar panel black. Colour the bottle orange. Colour the watering can yellow. Colour the flower pink.`,
+    sceneId: 'flyer_l45_eco_project_outline' as SceneId,
+    example: { regionId: 'tree', color: 'green', ...MC_EX },
+    regions: [
+      { id: 'bin',    label: 'thùng tái chế', ...MC_R[0] },
+      { id: 'panel',  label: 'tấm pin mặt trời', ...MC_R[1] },
+      { id: 'bottle', label: 'chai nhựa',   ...MC_R[2] },
+      { id: 'can',    label: 'bình tưới',   ...MC_R[3] },
+      { id: 'flower', label: 'bông hoa',    ...MC_R[4] },
+    ],
+    correctColors: { bin: 'blue', panel: 'black', bottle: 'orange', can: 'yellow', flower: 'pink' },
+    palette: MOVER_COLOUR_PALETTE,
+  };
+}
+
+function makeFlyerColourL46(partId: string, audioKey: string): ColourPart {
+  return {
+    type: 'listening_colour', partId, audioKey,
+    audioScript: `Listen and colour. There is one example. Colour the rocket red. The rocket is red. Red. Now you listen and colour. Colour the planet blue. Colour the star yellow. Colour the moon grey. Colour the telescope green. Colour the helmet orange.`,
+    sceneId: 'flyer_l46_space_exhibition_outline' as SceneId,
+    example: { regionId: 'rocket', color: 'red', ...MC_EX },
+    regions: [
+      { id: 'planet',    label: 'hành tinh', ...MC_R[0] },
+      { id: 'star',      label: 'ngôi sao',  ...MC_R[1] },
+      { id: 'moon',      label: 'mặt trăng', ...MC_R[2] },
+      { id: 'telescope', label: 'kính viễn vọng', ...MC_R[3] },
+      { id: 'helmet',    label: 'mũ phi hành', ...MC_R[4] },
+    ],
+    correctColors: { planet: 'blue', star: 'yellow', moon: 'grey', telescope: 'green', helmet: 'orange' },
+    palette: MOVER_COLOUR_PALETTE,
+  };
+}
+
+function makeFlyerColourL47(partId: string, audioKey: string): ColourPart {
+  return {
+    type: 'listening_colour', partId, audioKey,
+    audioScript: `Listen and colour. There is one example. Colour the cake pink. The cake is pink. Pink. Now you listen and colour. Colour the whisk grey. Colour the knife blue. Colour the pot red. Colour the chef hat yellow. Colour the bowl orange.`,
+    sceneId: 'flyer_l47_cooking_competition_outline' as SceneId,
+    example: { regionId: 'cake', color: 'pink', ...MC_EX },
+    regions: [
+      { id: 'whisk',   label: 'cái đánh trứng', ...MC_R[0] },
+      { id: 'knife',   label: 'con dao',  ...MC_R[1] },
+      { id: 'pot',     label: 'cái nồi',  ...MC_R[2] },
+      { id: 'chefhat', label: 'mũ đầu bếp', ...MC_R[3] },
+      { id: 'bowl',    label: 'cái bát',  ...MC_R[4] },
+    ],
+    correctColors: { whisk: 'grey', knife: 'blue', pot: 'red', chefhat: 'yellow', bowl: 'orange' },
+    palette: MOVER_COLOUR_PALETTE,
+  };
+}
+
+function makeFlyerColourL48(partId: string, audioKey: string): ColourPart {
+  return {
+    type: 'listening_colour', partId, audioKey,
+    audioScript: `Listen and colour. There is one example. Colour the camera black. The camera is black. Black. Now you listen and colour. Colour the clapperboard red. Colour the microphone blue. Colour the light yellow. Colour the script green. Colour the chair brown.`,
+    sceneId: 'flyer_l48_film_making_outline' as SceneId,
+    example: { regionId: 'camera', color: 'black', ...MC_EX },
+    regions: [
+      { id: 'clapper', label: 'bảng đánh dấu', ...MC_R[0] },
+      { id: 'mic',     label: 'micro',     ...MC_R[1] },
+      { id: 'light',   label: 'đèn',       ...MC_R[2] },
+      { id: 'script',  label: 'kịch bản',  ...MC_R[3] },
+      { id: 'chair',   label: 'cái ghế',   ...MC_R[4] },
+    ],
+    correctColors: { clapper: 'red', mic: 'blue', light: 'yellow', script: 'green', chair: 'brown' },
+    palette: MOVER_COLOUR_PALETTE,
+  };
+}
+
+function makeFlyerColourL49(partId: string, audioKey: string): ColourPart {
+  return {
+    type: 'listening_colour', partId, audioKey,
+    audioScript: `Listen and colour. There is one example. Colour the camera black. The camera is black. Black. Now you listen and colour. Colour the tripod grey. Colour the photo blue. Colour the lens green. Colour the frame brown. Colour the bird yellow.`,
+    sceneId: 'flyer_l49_photography_class_outline' as SceneId,
+    example: { regionId: 'camera', color: 'black', ...MC_EX },
+    regions: [
+      { id: 'tripod', label: 'chân máy', ...MC_R[0] },
+      { id: 'photo',  label: 'tấm ảnh',  ...MC_R[1] },
+      { id: 'lens',   label: 'ống kính', ...MC_R[2] },
+      { id: 'frame',  label: 'khung ảnh', ...MC_R[3] },
+      { id: 'bird',   label: 'con chim', ...MC_R[4] },
+    ],
+    correctColors: { tripod: 'grey', photo: 'blue', lens: 'green', frame: 'brown', bird: 'yellow' },
+    palette: MOVER_COLOUR_PALETTE,
+  };
+}
+
+function makeFlyerColourL50(partId: string, audioKey: string): ColourPart {
+  return {
+    type: 'listening_colour', partId, audioKey,
+    audioScript: `Listen and colour. There is one example. Colour the mountain grey. The mountain is grey. Grey. Now you listen and colour. Colour the tent red. Colour the flag blue. Colour the backpack green. Colour the rope brown. Colour the flask orange.`,
+    sceneId: 'flyer_l50_mountain_hiking_outline' as SceneId,
+    example: { regionId: 'mountain', color: 'grey', ...MC_EX },
+    regions: [
+      { id: 'tent',     label: 'cái lều',  ...MC_R[0] },
+      { id: 'flag',     label: 'lá cờ',    ...MC_R[1] },
+      { id: 'backpack', label: 'ba lô',    ...MC_R[2] },
+      { id: 'rope',     label: 'dây thừng', ...MC_R[3] },
+      { id: 'flask',    label: 'bình giữ nhiệt', ...MC_R[4] },
+    ],
+    correctColors: { tent: 'red', flag: 'blue', backpack: 'green', rope: 'brown', flask: 'orange' },
+    palette: MOVER_COLOUR_PALETTE,
+  };
+}
+
+/** Dispatch Flyers Colour: per-level L41-L50, rotation fallback beyond. */
+function makeFlyerColourByLevel(partId: string, audioKey: string, levelNumber: number): ColourPart {
+  switch (levelNumber) {
+    case 41: return makeFlyerColourL41(partId, audioKey);
+    case 42: return makeFlyerColourL42(partId, audioKey);
+    case 43: return makeFlyerColourL43(partId, audioKey);
+    case 44: return makeFlyerColourL44(partId, audioKey);
+    case 45: return makeFlyerColourL45(partId, audioKey);
+    case 46: return makeFlyerColourL46(partId, audioKey);
+    case 47: return makeFlyerColourL47(partId, audioKey);
+    case 48: return makeFlyerColourL48(partId, audioKey);
+    case 49: return makeFlyerColourL49(partId, audioKey);
+    case 50: return makeFlyerColourL50(partId, audioKey);
+    default: {
+      const idx = (levelNumber - 1) % 3;
+      if (idx === 1) return makeBedroomColourPart(partId, audioKey);
+      if (idx === 2) return makeFarmColourPart(partId, audioKey);
+      return makeGardenColourPart(partId, audioKey);
+    }
+  }
+}
+
 // ─── Level builder ─────────────────────────────────────────────────────
 
 /**
@@ -4794,6 +5644,9 @@ function makeLevel(levelNumber: number): ExamLevel {
     if (difficulty === 'movers' && MOVERS_CHARS_BY_LEVEL[levelNumber]) {
       return makeMoverDragPart(partId, audioKey, exampleName, names, levelNumber);
     }
+    if (difficulty === 'flyers' && FLYERS_CHARS_BY_LEVEL[levelNumber]) {
+      return makeFlyerDragPart(partId, audioKey, exampleName, names, levelNumber);
+    }
     switch (dragSceneIdx) {
       case 0: return makeParkDragPart(partId, audioKey, exampleName, names);
       case 1: return makeBeachDragPart(partId, audioKey, exampleName, names);
@@ -4810,7 +5663,7 @@ function makeLevel(levelNumber: number): ExamLevel {
   const part2 = (() => {
     const audioKey = `level${levelNumber}/p2.mp3`;
     const partId = `lvl${levelNumber}_p2`;
-    if (difficulty === 'flyers') return makeFlyerWritePart(partId, audioKey, (levelNumber - 1) % 3);
+    if (difficulty === 'flyers') return makeFlyerWriteByLevel(partId, audioKey, levelNumber);
     if (difficulty === 'movers') return makeMoverWriteByLevel(partId, audioKey, levelNumber);
     return makeStarterWritePart(partId, audioKey, levelNumber);
   })();
@@ -4820,7 +5673,7 @@ function makeLevel(levelNumber: number): ExamLevel {
   const part3 = (() => {
     const audioKey = `level${levelNumber}/p3.mp3`;
     const partId = `lvl${levelNumber}_p3`;
-    if (difficulty === 'flyers') return makeFlyerTickPart(partId, audioKey);
+    if (difficulty === 'flyers') return makeFlyerTickByLevel(partId, audioKey, levelNumber);
     if (difficulty === 'movers') return makeMoverTickByLevel(partId, audioKey, levelNumber);
     return makeStarterTickPart(partId, audioKey, levelNumber);
   })();
@@ -4835,6 +5688,9 @@ function makeLevel(levelNumber: number): ExamLevel {
     }
     if (difficulty === 'movers') {
       return makeMoverColourByLevel(partId, audioKey, levelNumber);
+    }
+    if (difficulty === 'flyers') {
+      return makeFlyerColourByLevel(partId, audioKey, levelNumber);
     }
     if (colourSceneIdx === 1) return makeBedroomColourPart(partId, audioKey);
     if (colourSceneIdx === 2) return makeFarmColourPart(partId, audioKey);

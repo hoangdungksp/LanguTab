@@ -142,6 +142,28 @@ export const SCENE_IDS = [
   'mover_l38_camping_mountains_outline',
   'mover_l39_art_exhibition_outline',
   'mover_l40_new_baby_outline',
+  // D-18 Phase 4: Flyers per-level drag scenes (L41-L50)
+  'flyer_l41_science_fair',
+  'flyer_l42_charity_event',
+  'flyer_l43_volunteer_shelter',
+  'flyer_l44_food_festival',
+  'flyer_l45_eco_project',
+  'flyer_l46_space_exhibition',
+  'flyer_l47_cooking_competition',
+  'flyer_l48_film_making',
+  'flyer_l49_photography_class',
+  'flyer_l50_mountain_hiking',
+  // D-18 Phase 4: Flyers per-level colour outline scenes (L41-L50)
+  'flyer_l41_science_fair_outline',
+  'flyer_l42_charity_event_outline',
+  'flyer_l43_volunteer_shelter_outline',
+  'flyer_l44_food_festival_outline',
+  'flyer_l45_eco_project_outline',
+  'flyer_l46_space_exhibition_outline',
+  'flyer_l47_cooking_competition_outline',
+  'flyer_l48_film_making_outline',
+  'flyer_l49_photography_class_outline',
+  'flyer_l50_mountain_hiking_outline',
 ] as const;
 
 export type SceneId = typeof SCENE_IDS[number];
@@ -991,6 +1013,170 @@ export const SCENE_PROMPTS: Record<SceneId, ScenePromptSpec> = {
   mover_l40_new_baby_outline: {
     prompt:
       'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of a baby nursery scene with 6 elements spread across the wide image: a cot, a pram, a baby bottle, a rattle, a teddy bear, a blanket. Each element well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+
+  // ─── D-18 Phase 4: Flyers per-level drag scenes (L41-L50) ───────────
+  flyer_l41_science_fair: {
+    prompt:
+      'Wide horizontal cartoon illustration of students at a school science fair. ' +
+      'COMPOSITION: Six students arranged in a clean 3×2 grid. ' +
+      'Top row left to right: student wearing a red lab coat presenting an experiment; ' +
+      'student wearing blue safety goggles mixing two chemicals; student wearing a green jumper showing a model volcano. ' +
+      'Bottom row left to right: student wearing a yellow shirt looking through a microscope; ' +
+      'student wearing a pink cardigan holding a small robot; student wearing an orange tie measuring with a ruler. ' +
+      'School hall with science stalls, posters, a model volcano. Wide 16:9. Flat cartoon, vibrant colors, no text.',
+    aspect: 'landscape',
+  },
+  flyer_l42_charity_event: {
+    prompt:
+      'Wide horizontal cartoon illustration of people raising money at a charity event. ' +
+      'COMPOSITION: Six people arranged in a clean 3×2 grid. ' +
+      'Top row left to right: person wearing a red apron selling homemade cakes; ' +
+      'person wearing a blue t-shirt collecting coins in a box; person wearing a green vest giving out balloons. ' +
+      'Bottom row left to right: person wearing a yellow dress counting the money; ' +
+      'person wearing a pink shirt painting a charity poster; person wearing an orange cap carrying a donation jar. ' +
+      'Charity fair with stalls, banners, balloons, a donation box. Wide 16:9. Flat cartoon, no text.',
+    aspect: 'landscape',
+  },
+  flyer_l43_volunteer_shelter: {
+    prompt:
+      'Wide horizontal cartoon illustration of volunteers helping at an animal shelter. ' +
+      'COMPOSITION: Six people arranged in a clean 3×2 grid. ' +
+      'Top row left to right: person wearing a red jumper feeding a hungry dog; ' +
+      'person wearing a blue apron washing a fluffy cat; person wearing a green shirt walking a puppy. ' +
+      'Bottom row left to right: person wearing a yellow vest filling the water bowls; ' +
+      'person wearing a pink cardigan brushing a rabbit; person wearing orange gloves cleaning a cage. ' +
+      'Animal shelter with kennels, pet bowls, a play area. Wide 16:9. Flat cartoon, no text.',
+    aspect: 'landscape',
+  },
+  flyer_l44_food_festival: {
+    prompt:
+      'Wide horizontal cartoon illustration of people enjoying an outdoor food festival. ' +
+      'COMPOSITION: Six people arranged in a clean 3×2 grid. ' +
+      'Top row left to right: person wearing a red apron grilling burgers; ' +
+      'person wearing a blue shirt selling fruit smoothies; person wearing a green hat serving a bowl of noodles. ' +
+      'Bottom row left to right: person wearing a yellow dress tasting some cheese; ' +
+      'person wearing a pink scarf making a pizza; person wearing an orange cap holding an ice cream cone. ' +
+      'Outdoor food festival with stalls, flags, picnic tables. Wide 16:9. Flat cartoon, no text.',
+    aspect: 'landscape',
+  },
+  flyer_l45_eco_project: {
+    prompt:
+      'Wide horizontal cartoon illustration of students working on a green eco project. ' +
+      'COMPOSITION: Six students arranged in a clean 3×2 grid. ' +
+      'Top row left to right: student wearing red gloves sorting the recycling; ' +
+      'student wearing a blue shirt planting a young tree; student wearing a green vest holding a solar panel. ' +
+      'Bottom row left to right: student wearing yellow boots picking up litter; ' +
+      'student wearing a pink cap watering the plants; student wearing an orange jumper carrying a compost bin. ' +
+      'School garden with recycling bins, young trees, solar panels. Wide 16:9. Flat cartoon, no text.',
+    aspect: 'landscape',
+  },
+  flyer_l46_space_exhibition: {
+    prompt:
+      'Wide horizontal cartoon illustration of children exploring a space exhibition. ' +
+      'COMPOSITION: Six children arranged in a clean 3×2 grid. ' +
+      'Top row left to right: child wearing a red spacesuit pointing at a rocket; ' +
+      'child wearing a blue jumper looking through a telescope; child wearing a green t-shirt holding a model planet. ' +
+      'Bottom row left to right: child wearing a yellow shirt touching a moon rock; ' +
+      'child wearing a pink cardigan reading a star map; child wearing an astronaut helmet pressing a control button. ' +
+      'Space museum with a rocket model, hanging planets, a telescope. Wide 16:9. Flat cartoon, no text.',
+    aspect: 'landscape',
+  },
+  flyer_l47_cooking_competition: {
+    prompt:
+      'Wide horizontal cartoon illustration of young chefs in a cooking competition. ' +
+      'COMPOSITION: Six chefs arranged in a clean 3×2 grid. ' +
+      'Top row left to right: chef wearing a red chef hat whisking some eggs; ' +
+      'chef wearing a blue apron rolling out dough; chef wearing a green shirt decorating a cake. ' +
+      'Bottom row left to right: chef wearing a yellow apron chopping vegetables; ' +
+      'chef wearing a pink hat tasting the soup; chef wearing an orange scarf presenting a dish to the judges. ' +
+      'Competition kitchen with workstations and a judges table. Wide 16:9. Flat cartoon, no text.',
+    aspect: 'landscape',
+  },
+  flyer_l48_film_making: {
+    prompt:
+      'Wide horizontal cartoon illustration of a team making a short film on set. ' +
+      'COMPOSITION: Six people arranged in a clean 3×2 grid. ' +
+      'Top row left to right: person wearing a red cap holding a clapperboard; ' +
+      'person wearing a blue jumper filming with a camera; person wearing a green shirt holding a microphone boom. ' +
+      'Bottom row left to right: person wearing a yellow vest directing the actors; ' +
+      'person wearing a pink scarf adjusting a big light; person wearing an orange t-shirt reading the script. ' +
+      'Film set with cameras, lights, a director chair. Wide 16:9. Flat cartoon, no text.',
+    aspect: 'landscape',
+  },
+  flyer_l49_photography_class: {
+    prompt:
+      'Wide horizontal cartoon illustration of students learning in a photography class. ' +
+      'COMPOSITION: Six students arranged in a clean 3×2 grid. ' +
+      'Top row left to right: student wearing a red jumper taking a photo with a camera; ' +
+      'student wearing a blue shirt setting up a tripod; student wearing a green cap looking at photos on a screen. ' +
+      'Bottom row left to right: student wearing a yellow vest changing a camera lens; ' +
+      'student wearing a pink cardigan framing a picture; student wearing an orange scarf printing a photo. ' +
+      'Photography studio with cameras, tripods, framed photos. Wide 16:9. Flat cartoon, no text.',
+    aspect: 'landscape',
+  },
+  flyer_l50_mountain_hiking: {
+    prompt:
+      'Wide horizontal cartoon illustration of hikers on a long mountain trail. ' +
+      'COMPOSITION: Six hikers arranged in a clean 3×2 grid. ' +
+      'Top row left to right: hiker wearing a red anorak climbing with a rope; ' +
+      'hiker wearing a blue backpack reading a trail map; hiker wearing green boots crossing a rope bridge. ' +
+      'Bottom row left to right: hiker wearing a yellow hat looking through binoculars; ' +
+      'hiker wearing a pink scarf drinking from a flask; hiker wearing an orange jacket planting a flag at the top. ' +
+      'Mountain trail with peaks, a rope bridge, pine trees. Wide 16:9. Flat cartoon, no text.',
+    aspect: 'landscape',
+  },
+
+  // ─── D-18 Phase 4: Flyers per-level colour outline scenes (L41-L50) ──
+  flyer_l41_science_fair_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of a science fair scene with 6 elements spread across the wide image: a microscope, a test tube, a robot, a ruler, a magnet, a light bulb. Each element well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  flyer_l42_charity_event_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of a charity event scene with 6 elements spread across the wide image: a balloon, a cake, a coin, a donation box, a poster, a money jar. Each element well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  flyer_l43_volunteer_shelter_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of an animal shelter scene with 6 elements spread across the wide image: a dog, a cat, a rabbit, a bird, a fish, a pet bowl. Each element well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  flyer_l44_food_festival_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of a food festival scene with 6 elements spread across the wide image: a pizza, a burger, a smoothie cup, a bowl of noodles, a wedge of cheese, a flag. Each element well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  flyer_l45_eco_project_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of an eco project scene with 6 elements spread across the wide image: a tree, a recycling bin, a solar panel, a plastic bottle, a watering can, a flower. Each element well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  flyer_l46_space_exhibition_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of a space scene with 6 elements spread across the wide image: a rocket, a planet with a ring, a star, a moon, a telescope, an astronaut helmet. Each element well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  flyer_l47_cooking_competition_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of a cooking scene with 6 elements spread across the wide image: a cake, a whisk, a knife, a cooking pot, a chef hat, a mixing bowl. Each element well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  flyer_l48_film_making_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of a film set scene with 6 elements spread across the wide image: a film camera, a clapperboard, a microphone, a studio light, a script, a director chair. Each element well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  flyer_l49_photography_class_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of a photography scene with 6 elements spread across the wide image: a camera, a tripod, a framed photo, a camera lens, a picture frame, a bird. Each element well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  flyer_l50_mountain_hiking_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of a mountain hiking scene with 6 elements spread across the wide image: a mountain, a tent, a flag, a backpack, a coil of rope, a flask. Each element well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
     aspect: 'landscape',
   },
 };

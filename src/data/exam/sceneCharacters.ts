@@ -892,3 +892,174 @@ export const MOVERS_SCENE_IDS_BY_LEVEL: Record<number, string> = {
   39: 'mover_l39_art_exhibition',
   40: 'mover_l40_new_baby',
 };
+
+// ─── D-18 Phase 4: Flyers L41-L50 per-level character sets ─────────────
+// Flyers (A2-B1). Same 3×2 drag structure; richer/abstract activities.
+
+/** L41 Science fair. */
+export const FLYERS_L41_CHARS: SceneCharacterSet = {
+  setting: 'students showing projects at a school science fair',
+  background: 'School hall with science stalls, posters, a model volcano.',
+  characters: [
+    { gridPosition: 'top-left',      zoneId: 'zone_tl', clothing: 'wearing a red lab coat',   activity: 'presenting an experiment' },
+    { gridPosition: 'top-middle',    zoneId: 'zone_tm', clothing: 'wearing blue safety goggles', activity: 'mixing two chemicals' },
+    { gridPosition: 'top-right',     zoneId: 'zone_tr', clothing: 'wearing a green jumper',   activity: 'showing a model volcano' },
+    { gridPosition: 'bottom-left',   zoneId: 'zone_bl', clothing: 'wearing a yellow shirt',   activity: 'looking through a microscope' },
+    { gridPosition: 'bottom-middle', zoneId: 'zone_bm', clothing: 'wearing a pink cardigan',  activity: 'holding a small robot' },
+    { gridPosition: 'bottom-right',  zoneId: 'zone_br', clothing: 'wearing an orange tie',    activity: 'measuring with a ruler' },
+  ],
+};
+
+/** L42 Charity event. */
+export const FLYERS_L42_CHARS: SceneCharacterSet = {
+  setting: 'people raising money at a charity event',
+  background: 'Charity fair with stalls, banners, balloons, a donation box.',
+  characters: [
+    { gridPosition: 'top-left',      zoneId: 'zone_tl', clothing: 'wearing a red apron',      activity: 'selling homemade cakes' },
+    { gridPosition: 'top-middle',    zoneId: 'zone_tm', clothing: 'wearing a blue t-shirt',   activity: 'collecting coins in a box' },
+    { gridPosition: 'top-right',     zoneId: 'zone_tr', clothing: 'wearing a green vest',     activity: 'giving out balloons' },
+    { gridPosition: 'bottom-left',   zoneId: 'zone_bl', clothing: 'wearing a yellow dress',   activity: 'counting the money' },
+    { gridPosition: 'bottom-middle', zoneId: 'zone_bm', clothing: 'wearing a pink shirt',     activity: 'painting a charity poster' },
+    { gridPosition: 'bottom-right',  zoneId: 'zone_br', clothing: 'wearing an orange cap',    activity: 'carrying a donation jar' },
+  ],
+};
+
+/** L43 Volunteer animal shelter. */
+export const FLYERS_L43_CHARS: SceneCharacterSet = {
+  setting: 'volunteers helping at an animal shelter',
+  background: 'Animal shelter with kennels, pet bowls, a play area.',
+  characters: [
+    { gridPosition: 'top-left',      zoneId: 'zone_tl', clothing: 'wearing a red jumper',     activity: 'feeding a hungry dog' },
+    { gridPosition: 'top-middle',    zoneId: 'zone_tm', clothing: 'wearing a blue apron',     activity: 'washing a fluffy cat' },
+    { gridPosition: 'top-right',     zoneId: 'zone_tr', clothing: 'wearing a green shirt',    activity: 'walking a puppy' },
+    { gridPosition: 'bottom-left',   zoneId: 'zone_bl', clothing: 'wearing a yellow vest',    activity: 'filling the water bowls' },
+    { gridPosition: 'bottom-middle', zoneId: 'zone_bm', clothing: 'wearing a pink cardigan',  activity: 'brushing a rabbit' },
+    { gridPosition: 'bottom-right',  zoneId: 'zone_br', clothing: 'wearing orange gloves',    activity: 'cleaning a cage' },
+  ],
+};
+
+/** L44 Food festival. */
+export const FLYERS_L44_CHARS: SceneCharacterSet = {
+  setting: 'people enjoying an outdoor food festival',
+  background: 'Outdoor food festival with stalls, flags, picnic tables.',
+  characters: [
+    { gridPosition: 'top-left',      zoneId: 'zone_tl', clothing: 'wearing a red apron',      activity: 'grilling burgers' },
+    { gridPosition: 'top-middle',    zoneId: 'zone_tm', clothing: 'wearing a blue shirt',     activity: 'selling fruit smoothies' },
+    { gridPosition: 'top-right',     zoneId: 'zone_tr', clothing: 'wearing a green hat',      activity: 'serving a bowl of noodles' },
+    { gridPosition: 'bottom-left',   zoneId: 'zone_bl', clothing: 'wearing a yellow dress',   activity: 'tasting some cheese' },
+    { gridPosition: 'bottom-middle', zoneId: 'zone_bm', clothing: 'wearing a pink scarf',     activity: 'making a pizza' },
+    { gridPosition: 'bottom-right',  zoneId: 'zone_br', clothing: 'wearing an orange cap',    activity: 'holding an ice cream cone' },
+  ],
+};
+
+/** L45 Eco project. */
+export const FLYERS_L45_CHARS: SceneCharacterSet = {
+  setting: 'students working on a green eco project',
+  background: 'School garden with recycling bins, young trees, solar panels.',
+  characters: [
+    { gridPosition: 'top-left',      zoneId: 'zone_tl', clothing: 'wearing red gloves',       activity: 'sorting the recycling' },
+    { gridPosition: 'top-middle',    zoneId: 'zone_tm', clothing: 'wearing a blue shirt',     activity: 'planting a young tree' },
+    { gridPosition: 'top-right',     zoneId: 'zone_tr', clothing: 'wearing a green vest',     activity: 'holding a solar panel' },
+    { gridPosition: 'bottom-left',   zoneId: 'zone_bl', clothing: 'wearing yellow boots',     activity: 'picking up litter' },
+    { gridPosition: 'bottom-middle', zoneId: 'zone_bm', clothing: 'wearing a pink cap',       activity: 'watering the plants' },
+    { gridPosition: 'bottom-right',  zoneId: 'zone_br', clothing: 'wearing an orange jumper', activity: 'carrying a compost bin' },
+  ],
+};
+
+/** L46 Space exhibition. */
+export const FLYERS_L46_CHARS: SceneCharacterSet = {
+  setting: 'children exploring a space exhibition',
+  background: 'Space museum with a rocket model, hanging planets, a telescope.',
+  characters: [
+    { gridPosition: 'top-left',      zoneId: 'zone_tl', clothing: 'wearing a red spacesuit',  activity: 'pointing at a rocket' },
+    { gridPosition: 'top-middle',    zoneId: 'zone_tm', clothing: 'wearing a blue jumper',    activity: 'looking through a telescope' },
+    { gridPosition: 'top-right',     zoneId: 'zone_tr', clothing: 'wearing a green t-shirt',  activity: 'holding a model planet' },
+    { gridPosition: 'bottom-left',   zoneId: 'zone_bl', clothing: 'wearing a yellow shirt',   activity: 'touching a moon rock' },
+    { gridPosition: 'bottom-middle', zoneId: 'zone_bm', clothing: 'wearing a pink cardigan',  activity: 'reading a star map' },
+    { gridPosition: 'bottom-right',  zoneId: 'zone_br', clothing: 'wearing an astronaut helmet', activity: 'pressing a control button' },
+  ],
+};
+
+/** L47 Cooking competition. */
+export const FLYERS_L47_CHARS: SceneCharacterSet = {
+  setting: 'young chefs in a cooking competition',
+  background: 'Competition kitchen with workstations and a judges table.',
+  characters: [
+    { gridPosition: 'top-left',      zoneId: 'zone_tl', clothing: 'wearing a red chef hat',   activity: 'whisking some eggs' },
+    { gridPosition: 'top-middle',    zoneId: 'zone_tm', clothing: 'wearing a blue apron',     activity: 'rolling out dough' },
+    { gridPosition: 'top-right',     zoneId: 'zone_tr', clothing: 'wearing a green shirt',    activity: 'decorating a cake' },
+    { gridPosition: 'bottom-left',   zoneId: 'zone_bl', clothing: 'wearing a yellow apron',   activity: 'chopping vegetables' },
+    { gridPosition: 'bottom-middle', zoneId: 'zone_bm', clothing: 'wearing a pink hat',       activity: 'tasting the soup' },
+    { gridPosition: 'bottom-right',  zoneId: 'zone_br', clothing: 'wearing an orange scarf',  activity: 'presenting a dish to the judges' },
+  ],
+};
+
+/** L48 Film making. */
+export const FLYERS_L48_CHARS: SceneCharacterSet = {
+  setting: 'a team making a short film on set',
+  background: 'Film set with cameras, lights, a director\'s chair.',
+  characters: [
+    { gridPosition: 'top-left',      zoneId: 'zone_tl', clothing: 'wearing a red cap',        activity: 'holding a clapperboard' },
+    { gridPosition: 'top-middle',    zoneId: 'zone_tm', clothing: 'wearing a blue jumper',    activity: 'filming with a camera' },
+    { gridPosition: 'top-right',     zoneId: 'zone_tr', clothing: 'wearing a green shirt',    activity: 'holding a microphone boom' },
+    { gridPosition: 'bottom-left',   zoneId: 'zone_bl', clothing: 'wearing a yellow vest',    activity: 'directing the actors' },
+    { gridPosition: 'bottom-middle', zoneId: 'zone_bm', clothing: 'wearing a pink scarf',     activity: 'adjusting a big light' },
+    { gridPosition: 'bottom-right',  zoneId: 'zone_br', clothing: 'wearing an orange t-shirt', activity: 'reading the script' },
+  ],
+};
+
+/** L49 Photography class. */
+export const FLYERS_L49_CHARS: SceneCharacterSet = {
+  setting: 'students learning in a photography class',
+  background: 'Photography studio with cameras, tripods, framed photos.',
+  characters: [
+    { gridPosition: 'top-left',      zoneId: 'zone_tl', clothing: 'wearing a red jumper',     activity: 'taking a photo with a camera' },
+    { gridPosition: 'top-middle',    zoneId: 'zone_tm', clothing: 'wearing a blue shirt',     activity: 'setting up a tripod' },
+    { gridPosition: 'top-right',     zoneId: 'zone_tr', clothing: 'wearing a green cap',      activity: 'looking at photos on a screen' },
+    { gridPosition: 'bottom-left',   zoneId: 'zone_bl', clothing: 'wearing a yellow vest',    activity: 'changing a camera lens' },
+    { gridPosition: 'bottom-middle', zoneId: 'zone_bm', clothing: 'wearing a pink cardigan',  activity: 'framing a picture' },
+    { gridPosition: 'bottom-right',  zoneId: 'zone_br', clothing: 'wearing an orange scarf',  activity: 'printing a photo' },
+  ],
+};
+
+/** L50 Mountain hiking. */
+export const FLYERS_L50_CHARS: SceneCharacterSet = {
+  setting: 'hikers on a long mountain trail',
+  background: 'Mountain trail with peaks, a rope bridge, pine trees.',
+  characters: [
+    { gridPosition: 'top-left',      zoneId: 'zone_tl', clothing: 'wearing a red anorak',     activity: 'climbing with a rope' },
+    { gridPosition: 'top-middle',    zoneId: 'zone_tm', clothing: 'wearing a blue backpack',  activity: 'reading a trail map' },
+    { gridPosition: 'top-right',     zoneId: 'zone_tr', clothing: 'wearing green boots',      activity: 'crossing a rope bridge' },
+    { gridPosition: 'bottom-left',   zoneId: 'zone_bl', clothing: 'wearing a yellow hat',     activity: 'looking through binoculars' },
+    { gridPosition: 'bottom-middle', zoneId: 'zone_bm', clothing: 'wearing a pink scarf',     activity: 'drinking from a flask' },
+    { gridPosition: 'bottom-right',  zoneId: 'zone_br', clothing: 'wearing an orange jacket', activity: 'planting a flag at the top' },
+  ],
+};
+
+/** Per-level Flyers character sets (L41-L50). L51-L60 fall back to rotation. */
+export const FLYERS_CHARS_BY_LEVEL: Record<number, SceneCharacterSet> = {
+  41: FLYERS_L41_CHARS,
+  42: FLYERS_L42_CHARS,
+  43: FLYERS_L43_CHARS,
+  44: FLYERS_L44_CHARS,
+  45: FLYERS_L45_CHARS,
+  46: FLYERS_L46_CHARS,
+  47: FLYERS_L47_CHARS,
+  48: FLYERS_L48_CHARS,
+  49: FLYERS_L49_CHARS,
+  50: FLYERS_L50_CHARS,
+};
+
+/** Per-level scene IDs for Flyers L41-L50 (R2 cache keys). */
+export const FLYERS_SCENE_IDS_BY_LEVEL: Record<number, string> = {
+  41: 'flyer_l41_science_fair',
+  42: 'flyer_l42_charity_event',
+  43: 'flyer_l43_volunteer_shelter',
+  44: 'flyer_l44_food_festival',
+  45: 'flyer_l45_eco_project',
+  46: 'flyer_l46_space_exhibition',
+  47: 'flyer_l47_cooking_competition',
+  48: 'flyer_l48_film_making',
+  49: 'flyer_l49_photography_class',
+  50: 'flyer_l50_mountain_hiking',
+};

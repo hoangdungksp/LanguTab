@@ -186,7 +186,40 @@ export type IconId =
   | 'cot'
   | 'bottle'
   | 'rattle'
-  | 'pram';
+  | 'pram'
+  // D-18 Phase 4: Flyers L41-L50 thematic icons
+  | 'microscope'
+  | 'test_tube'
+  | 'robot'
+  | 'ruler'
+  | 'magnet'
+  | 'coin'
+  | 'donation_box'
+  | 'poster'
+  | 'noodles'
+  | 'cheese'
+  | 'recycle_bin'
+  | 'solar_panel'
+  | 'rocket'
+  | 'telescope'
+  | 'planet'
+  | 'astronaut_helmet'
+  | 'star'
+  | 'moon'
+  | 'whisk'
+  | 'knife'
+  | 'chef_hat'
+  | 'clapperboard'
+  | 'video_camera'
+  | 'script_paper'
+  | 'light_bulb'
+  | 'camera'
+  | 'tripod'
+  | 'lens'
+  | 'photo'
+  | 'rope'
+  | 'flask'
+  | 'flag';
 
 const SIZE = 120;
 
@@ -1109,6 +1142,239 @@ export function getIcon(id: string): ReactNode {
         <line x1="64" y1="40" x2="92" y2="34" stroke="#1f2937" strokeWidth="3" />
         <circle cx="42" cy="88" r="10" fill="#1f2937" />
         <circle cx="78" cy="88" r="10" fill="#1f2937" />
+      </>);
+
+    // ─── Science fair ───────────────────────────────────────────────
+    case 'microscope':
+      return wrap(<>
+        <rect x="40" y="92" width="48" height="8" rx="3" fill="#9ca3af" stroke="#1f2937" strokeWidth="2" />
+        <rect x="54" y="40" width="10" height="40" fill="#9ca3af" stroke="#1f2937" strokeWidth="2" transform="rotate(20 59 60)" />
+        <circle cx="48" cy="34" r="8" fill="#3b82f6" stroke="#1f2937" strokeWidth="2" />
+        <rect x="44" y="78" width="36" height="8" fill="#1f2937" />
+      </>);
+    case 'test_tube':
+      return wrap(<>
+        <path d="M 50 20 L 70 20 L 70 84 Q 70 96 60 96 Q 50 96 50 84 Z" fill="#bbf7d0" stroke="#1f2937" strokeWidth="2" />
+        <path d="M 50 64 L 70 64 L 70 84 Q 70 96 60 96 Q 50 96 50 84 Z" fill="#22c55e" stroke="#1f2937" strokeWidth="2" />
+        <line x1="46" y1="20" x2="74" y2="20" stroke="#1f2937" strokeWidth="3" />
+      </>);
+    case 'robot':
+      return wrap(<>
+        <rect x="36" y="44" width="48" height="42" rx="6" fill="#9ca3af" stroke="#1f2937" strokeWidth="2" />
+        <circle cx="50" cy="60" r="6" fill="#3b82f6" />
+        <circle cx="70" cy="60" r="6" fill="#3b82f6" />
+        <rect x="50" y="74" width="20" height="5" fill="#1f2937" />
+        <line x1="60" y1="44" x2="60" y2="32" stroke="#1f2937" strokeWidth="2" />
+        <circle cx="60" cy="28" r="5" fill="#dc2626" />
+      </>);
+    case 'ruler':
+      return wrap(<>
+        <rect x="24" y="48" width="72" height="24" fill="#fcd34d" stroke="#1f2937" strokeWidth="2" />
+        <line x1="36" y1="48" x2="36" y2="58" stroke="#1f2937" strokeWidth="2" />
+        <line x1="48" y1="48" x2="48" y2="60" stroke="#1f2937" strokeWidth="2" />
+        <line x1="60" y1="48" x2="60" y2="58" stroke="#1f2937" strokeWidth="2" />
+        <line x1="72" y1="48" x2="72" y2="60" stroke="#1f2937" strokeWidth="2" />
+        <line x1="84" y1="48" x2="84" y2="58" stroke="#1f2937" strokeWidth="2" />
+      </>);
+    case 'magnet':
+      return wrap(<>
+        <path d="M 36 30 L 36 70 Q 36 90 60 90 Q 84 90 84 70 L 84 30 L 68 30 L 68 70 Q 68 74 60 74 Q 52 74 52 70 L 52 30 Z"
+          fill="#dc2626" stroke="#1f2937" strokeWidth="2" />
+        <rect x="36" y="30" width="16" height="14" fill="#9ca3af" stroke="#1f2937" strokeWidth="2" />
+        <rect x="68" y="30" width="16" height="14" fill="#9ca3af" stroke="#1f2937" strokeWidth="2" />
+      </>);
+
+    // ─── Charity ────────────────────────────────────────────────────
+    case 'coin':
+      return wrap(<>
+        <circle cx="60" cy="60" r="32" fill="#facc15" stroke="#1f2937" strokeWidth="2" />
+        <circle cx="60" cy="60" r="24" fill="#fde68a" stroke="#a16207" strokeWidth="2" />
+        <text x="60" y="72" fontSize="28" textAnchor="middle" fill="#a16207" fontWeight="bold">$</text>
+      </>);
+    case 'donation_box':
+      return wrap(<>
+        <rect x="26" y="50" width="68" height="46" fill="#d6a675" stroke="#1f2937" strokeWidth="2" />
+        <rect x="26" y="42" width="68" height="12" fill="#b45309" stroke="#1f2937" strokeWidth="2" />
+        <rect x="52" y="46" width="16" height="4" fill="#1f2937" />
+        <path d="M 60 30 Q 56 38 60 42 Q 64 38 60 30" fill="#dc2626" />
+      </>);
+    case 'poster':
+      return wrap(<>
+        <rect x="28" y="22" width="64" height="76" fill="#fff" stroke="#1f2937" strokeWidth="2" />
+        <circle cx="60" cy="44" r="12" fill="#f59e0b" />
+        <line x1="38" y1="68" x2="82" y2="68" stroke="#3b82f6" strokeWidth="3" />
+        <line x1="38" y1="78" x2="82" y2="78" stroke="#9ca3af" strokeWidth="2" />
+        <line x1="38" y1="86" x2="70" y2="86" stroke="#9ca3af" strokeWidth="2" />
+      </>);
+
+    // ─── Food festival ──────────────────────────────────────────────
+    case 'noodles':
+      return wrap(<>
+        <path d="M 24 56 Q 60 96 96 56 Z" fill="#fde68a" stroke="#1f2937" strokeWidth="2" />
+        <path d="M 36 56 Q 48 36 60 56 Q 72 36 84 56" fill="none" stroke="#f59e0b" strokeWidth="3" />
+        <line x1="70" y1="30" x2="58" y2="54" stroke="#92400e" strokeWidth="3" />
+        <line x1="80" y1="30" x2="66" y2="54" stroke="#92400e" strokeWidth="3" />
+      </>);
+    case 'cheese':
+      return wrap(<>
+        <path d="M 24 80 L 24 56 L 92 44 L 92 80 Z" fill="#facc15" stroke="#1f2937" strokeWidth="2" />
+        <circle cx="44" cy="68" r="5" fill="#fde68a" stroke="#a16207" strokeWidth="1" />
+        <circle cx="64" cy="62" r="4" fill="#fde68a" stroke="#a16207" strokeWidth="1" />
+        <circle cx="78" cy="68" r="4" fill="#fde68a" stroke="#a16207" strokeWidth="1" />
+      </>);
+
+    // ─── Eco project ────────────────────────────────────────────────
+    case 'recycle_bin':
+      return wrap(<>
+        <path d="M 34 40 L 86 40 L 80 96 L 40 96 Z" fill="#22c55e" stroke="#1f2937" strokeWidth="2" />
+        <rect x="28" y="32" width="64" height="10" rx="3" fill="#15803d" stroke="#1f2937" strokeWidth="2" />
+        <path d="M 52 56 L 60 50 L 60 70 M 50 60 L 70 60 L 64 70" fill="none" stroke="#fff" strokeWidth="3" />
+      </>);
+    case 'solar_panel':
+      return wrap(<>
+        <rect x="24" y="34" width="72" height="48" fill="#1e3a8a" stroke="#1f2937" strokeWidth="2" />
+        <line x1="48" y1="34" x2="48" y2="82" stroke="#60a5fa" strokeWidth="2" />
+        <line x1="72" y1="34" x2="72" y2="82" stroke="#60a5fa" strokeWidth="2" />
+        <line x1="24" y1="58" x2="96" y2="58" stroke="#60a5fa" strokeWidth="2" />
+        <rect x="56" y="82" width="8" height="14" fill="#9ca3af" />
+      </>);
+
+    // ─── Space ──────────────────────────────────────────────────────
+    case 'rocket':
+      return wrap(<>
+        <path d="M 60 16 Q 76 40 76 72 L 44 72 Q 44 40 60 16 Z" fill="#e5e7eb" stroke="#1f2937" strokeWidth="2" />
+        <circle cx="60" cy="46" r="8" fill="#3b82f6" stroke="#1f2937" strokeWidth="2" />
+        <path d="M 44 64 L 30 84 L 44 78 Z" fill="#dc2626" stroke="#1f2937" strokeWidth="2" />
+        <path d="M 76 64 L 90 84 L 76 78 Z" fill="#dc2626" stroke="#1f2937" strokeWidth="2" />
+        <path d="M 52 72 Q 60 96 68 72 Z" fill="#f97316" stroke="#1f2937" strokeWidth="1" />
+      </>);
+    case 'telescope':
+      return wrap(<>
+        <rect x="30" y="44" width="56" height="16" rx="6" fill="#9ca3af" stroke="#1f2937" strokeWidth="2" transform="rotate(-20 58 52)" />
+        <ellipse cx="84" cy="40" rx="7" ry="11" fill="#bfdbfe" stroke="#1f2937" strokeWidth="2" transform="rotate(-20 84 40)" />
+        <line x1="52" y1="68" x2="44" y2="96" stroke="#1f2937" strokeWidth="3" />
+        <line x1="52" y1="68" x2="68" y2="92" stroke="#1f2937" strokeWidth="3" />
+      </>);
+    case 'planet':
+      return wrap(<>
+        <circle cx="60" cy="58" r="26" fill="#f59e0b" stroke="#1f2937" strokeWidth="2" />
+        <ellipse cx="60" cy="58" rx="42" ry="12" fill="none" stroke="#7c3aed" strokeWidth="4" transform="rotate(-20 60 58)" />
+      </>);
+    case 'astronaut_helmet':
+      return wrap(<>
+        <circle cx="60" cy="58" r="34" fill="#e5e7eb" stroke="#1f2937" strokeWidth="2" />
+        <rect x="40" y="44" width="40" height="32" rx="10" fill="#1e3a8a" stroke="#1f2937" strokeWidth="2" />
+        <ellipse cx="50" cy="54" rx="6" ry="8" fill="#bfdbfe" />
+      </>);
+    case 'star':
+      return wrap(<>
+        <polygon points="60,18 70,46 100,46 76,64 85,94 60,76 35,94 44,64 20,46 50,46"
+          fill="#facc15" stroke="#1f2937" strokeWidth="2" />
+      </>);
+    case 'moon':
+      return wrap(<>
+        <path d="M 72 22 A 38 38 0 1 0 72 98 A 30 30 0 1 1 72 22 Z" fill="#e5e7eb" stroke="#1f2937" strokeWidth="2" />
+        <circle cx="52" cy="44" r="5" fill="#9ca3af" />
+        <circle cx="44" cy="64" r="4" fill="#9ca3af" />
+      </>);
+
+    // ─── Cooking competition ────────────────────────────────────────
+    case 'whisk':
+      return wrap(<>
+        <rect x="54" y="20" width="12" height="30" rx="4" fill="#9ca3af" stroke="#1f2937" strokeWidth="2" />
+        <path d="M 60 50 Q 40 70 50 98 M 60 50 Q 60 74 60 98 M 60 50 Q 80 70 70 98" fill="none" stroke="#9ca3af" strokeWidth="3" />
+      </>);
+    case 'knife':
+      return wrap(<>
+        <path d="M 30 70 L 78 30 Q 88 38 80 50 L 44 80 Z" fill="#d1d5db" stroke="#1f2937" strokeWidth="2" />
+        <rect x="26" y="70" width="22" height="10" rx="3" fill="#92400e" stroke="#1f2937" strokeWidth="2" transform="rotate(40 37 75)" />
+      </>);
+    case 'chef_hat':
+      return wrap(<>
+        <path d="M 38 60 Q 24 60 28 46 Q 28 32 44 34 Q 48 22 60 22 Q 72 22 76 34 Q 92 32 92 46 Q 96 60 82 60 Z"
+          fill="#fff" stroke="#1f2937" strokeWidth="2" />
+        <rect x="40" y="60" width="40" height="20" fill="#fff" stroke="#1f2937" strokeWidth="2" />
+      </>);
+
+    // ─── Film making ────────────────────────────────────────────────
+    case 'clapperboard':
+      return wrap(<>
+        <rect x="24" y="52" width="72" height="40" fill="#1f2937" />
+        <path d="M 24 52 L 36 40 L 50 52 L 62 40 L 76 52 L 88 40 L 96 48 L 96 52 Z" fill="#fff" stroke="#1f2937" strokeWidth="2" />
+        <line x1="36" y1="46" x2="44" y2="52" stroke="#1f2937" strokeWidth="2" />
+        <line x1="62" y1="46" x2="70" y2="52" stroke="#1f2937" strokeWidth="2" />
+      </>);
+    case 'video_camera':
+      return wrap(<>
+        <rect x="26" y="44" width="50" height="36" rx="5" fill="#1f2937" />
+        <polygon points="76,54 96,44 96,80 76,70" fill="#374151" stroke="#1f2937" strokeWidth="2" />
+        <circle cx="44" cy="62" r="9" fill="#3b82f6" stroke="#fff" strokeWidth="2" />
+        <circle cx="40" cy="38" r="6" fill="#1f2937" />
+      </>);
+    case 'script_paper':
+      return wrap(<>
+        <rect x="34" y="22" width="52" height="76" fill="#fff" stroke="#1f2937" strokeWidth="2" />
+        <line x1="44" y1="38" x2="76" y2="38" stroke="#9ca3af" strokeWidth="2" />
+        <line x1="44" y1="50" x2="76" y2="50" stroke="#9ca3af" strokeWidth="2" />
+        <line x1="44" y1="62" x2="68" y2="62" stroke="#9ca3af" strokeWidth="2" />
+        <line x1="44" y1="74" x2="76" y2="74" stroke="#9ca3af" strokeWidth="2" />
+      </>);
+    case 'light_bulb':
+      return wrap(<>
+        <circle cx="60" cy="48" r="26" fill="#fde68a" stroke="#1f2937" strokeWidth="2" />
+        <rect x="50" y="72" width="20" height="14" fill="#9ca3af" stroke="#1f2937" strokeWidth="2" />
+        <line x1="52" y1="90" x2="68" y2="90" stroke="#1f2937" strokeWidth="2" />
+        <path d="M 54 44 L 60 54 L 66 44" fill="none" stroke="#f59e0b" strokeWidth="2" />
+      </>);
+
+    // ─── Photography ────────────────────────────────────────────────
+    case 'camera':
+      return wrap(<>
+        <rect x="22" y="42" width="76" height="48" rx="6" fill="#1f2937" />
+        <rect x="40" y="34" width="24" height="10" fill="#1f2937" />
+        <circle cx="60" cy="66" r="16" fill="#374151" stroke="#9ca3af" strokeWidth="2" />
+        <circle cx="60" cy="66" r="8" fill="#3b82f6" />
+        <circle cx="86" cy="52" r="3" fill="#facc15" />
+      </>);
+    case 'tripod':
+      return wrap(<>
+        <rect x="46" y="22" width="28" height="16" rx="3" fill="#1f2937" />
+        <line x1="60" y1="38" x2="60" y2="70" stroke="#9ca3af" strokeWidth="3" />
+        <line x1="60" y1="66" x2="34" y2="98" stroke="#1f2937" strokeWidth="3" />
+        <line x1="60" y1="66" x2="86" y2="98" stroke="#1f2937" strokeWidth="3" />
+        <line x1="60" y1="66" x2="60" y2="98" stroke="#1f2937" strokeWidth="3" />
+      </>);
+    case 'lens':
+      return wrap(<>
+        <circle cx="60" cy="60" r="32" fill="#374151" stroke="#1f2937" strokeWidth="2" />
+        <circle cx="60" cy="60" r="22" fill="#1f2937" stroke="#9ca3af" strokeWidth="2" />
+        <circle cx="60" cy="60" r="12" fill="#3b82f6" />
+        <circle cx="54" cy="54" r="4" fill="#bfdbfe" />
+      </>);
+    case 'photo':
+      return wrap(<>
+        <rect x="24" y="28" width="72" height="64" fill="#fff" stroke="#1f2937" strokeWidth="2" />
+        <polygon points="32,84 52,56 64,70 78,50 88,84" fill="#22c55e" />
+        <circle cx="74" cy="46" r="7" fill="#facc15" />
+      </>);
+
+    // ─── Mountain hiking ────────────────────────────────────────────
+    case 'rope':
+      return wrap(<>
+        <circle cx="60" cy="56" r="34" fill="none" stroke="#a16207" strokeWidth="8" />
+        <circle cx="60" cy="56" r="20" fill="none" stroke="#92400e" strokeWidth="8" />
+        <line x1="84" y1="78" x2="98" y2="96" stroke="#a16207" strokeWidth="6" />
+      </>);
+    case 'flask':
+      return wrap(<>
+        <rect x="46" y="22" width="28" height="12" rx="3" fill="#9ca3af" stroke="#1f2937" strokeWidth="2" />
+        <rect x="42" y="34" width="36" height="62" rx="10" fill="#dc2626" stroke="#1f2937" strokeWidth="2" />
+        <rect x="42" y="50" width="36" height="8" fill="#fff" opacity="0.5" />
+      </>);
+    case 'flag':
+      return wrap(<>
+        <line x1="38" y1="20" x2="38" y2="98" stroke="#92400e" strokeWidth="4" />
+        <path d="M 38 24 L 88 34 L 38 56 Z" fill="#dc2626" stroke="#1f2937" strokeWidth="2" />
       </>);
 
     default:
