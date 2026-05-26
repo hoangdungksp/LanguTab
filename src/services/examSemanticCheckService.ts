@@ -20,6 +20,8 @@
  * admin dashboard.
  */
 
+import { authedFetch } from './authService';
+
 const WORKER_URL = 'https://lingua-newtab-worker.kspstudio.workers.dev';
 
 export type SemanticStatus = 'pass' | 'warn' | 'fail' | 'error';
@@ -58,19 +60,13 @@ export async function runSemanticCheck(
   audioScript: string,
   sceneId: string,
 ): Promise<SemanticCheckResult> {
-  const token = sessionStorage.getItem('admin_token');
-  if (!token) throw new Error('Admin token not set in sessionStorage');
-
   const url =
     `${WORKER_URL}/admin/exam/semantic-check/` +
     `${encodeURIComponent(levelId)}/${encodeURIComponent(partId)}`;
 
-  const resp = await fetch(url, {
+  const resp = await authedFetch(url, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ audioScript, sceneId }),
   });
 

@@ -12,8 +12,7 @@ import { TabExam } from './components/TabExam';
 import { OnboardingModal } from './components/OnboardingModal';
 import { syncPendingImages } from '../services/imageService';
 import { onAuthChange } from '../services/authService';
-import { fetchSyncStatus } from '../services/syncService';
-import { provisionAdminToken } from '../services/adminModeService';
+import { refreshAdminRole, clearAdminRole } from '../services/adminModeService';
 
 export default function App() {
   const { init, isInitialized, activeTab, hasSeenOnboarding, dismissOnboarding } = useAppStore();
@@ -29,28 +28,16 @@ export default function App() {
     // Fire and forget — failures are logged inside syncPendingImages
     syncPendingImages();
 
-    // Sprint 4.9.5.1: provision admin token based on user email so admins
-    // don't have to paste sessionStorage token manually each session.
-    // Runs on mount + whenever auth changes.
-    async function refreshAdminMode() {
-      try {
-        const status = await fetchSyncStatus();
-        provisionAdminToken(status.user?.email);
-      } catch {
-        // Not signed in or network error — clear any previously
-        // provisioned token to be safe.
-        provisionAdminToken(null);
-      }
-    }
-    refreshAdminMode();
+    // D-19: resolve admin role from D1 (via /exam/me) so admin UI shows for
+    // editors/admins. Runs on mount + whenever auth changes.
+    refreshAdminRole();
 
     const unsubscribe = onAuthChange((signedIn) => {
       if (signedIn) {
         syncPendingImages();
-        refreshAdminMode();
+        refreshAdminRole();
       } else {
-        // Signed out — clear admin token
-        provisionAdminToken(null);
+        clearAdminRole();
       }
     });
     return unsubscribe;

@@ -620,6 +620,7 @@ import { handleSyncRequest } from './sync/handlers';
 import { handleBillingRequest } from './billing/handlers';
 import { handleExamRequest, handleAdminExamRequest } from './exam/handlers';
 import { getUserTier, quotaFor } from './billing/tier';
+import { getUserRole, canEdit } from './auth/roles';
 
 export default {
   /**
@@ -670,12 +671,21 @@ export default {
     // /admin/exam/scenes/* — scene generation control. Bearer ADMIN_TOKEN
     // required (verified inline since handleAdminExamRequest has no own auth).
     if (url.pathname.startsWith('/admin/exam/')) {
-      const adminAuth = req.headers.get('Authorization');
-      if (
-        !env.ADMIN_TOKEN ||
-        !adminAuth?.startsWith('Bearer ') ||
-        adminAuth.slice(7) !== env.ADMIN_TOKEN
-      ) {
+      // D-19: authorize by EITHER break-glass ADMIN_TOKEN OR a signed-in
+      // Google user whose D1 role is editor/admin. The static token is no
+      // longer required (and no longer shipped in the client bundle).
+      const bearer = req.headers.get('Authorization')?.startsWith('Bearer ')
+        ? req.headers.get('Authorization')!.slice(7)
+        : null;
+      let examAuthorized = !!bearer && !!env.ADMIN_TOKEN && bearer === env.ADMIN_TOKEN;
+      if (!examAuthorized && bearer) {
+        const gUser = await verifyGoogleToken(bearer);
+        if (gUser) {
+          const role = await getUserRole(env.DB, gUser.userId);
+          examAuthorized = canEdit(role);
+        }
+      }
+      if (!examAuthorized) {
         return new Response(JSON.stringify({ error: 'Unauthorized' }), {
           status: 401, headers: { 'Content-Type': 'application/json', ...cors },
         });
@@ -723,6 +733,22 @@ export default {
           });
         } else {
           resp = await getQuotaInfo(env, user);
+        }
+      } else if (url.pathname === '/exam/me' && req.method === 'GET') {
+        // D-19: who am I? Returns role (user/editor/admin) + tier + email so
+        // the client can gate admin UI by D1 role (not a hardcoded allowlist).
+        if (!user) {
+          resp = new Response(JSON.stringify({ error: 'Auth required' }), {
+            status: 401, headers: { 'Content-Type': 'application/json' },
+          });
+        } else {
+          const [role, tier] = await Promise.all([
+            getUserRole(env.DB, user.userId),
+            getUserTier(env.DB, user.userId),
+          ]);
+          resp = new Response(JSON.stringify({ email: user.email, role, tier }), {
+            status: 200, headers: { 'Content-Type': 'application/json' },
+          });
         }
       } else if (url.pathname === '/generate-story' && req.method === 'POST') {
         if (!user) {

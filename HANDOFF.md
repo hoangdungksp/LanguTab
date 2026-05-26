@@ -296,6 +296,7 @@ rm -rf public && mv public.snap.YYYYMMDD_HHMMSS public   # restore public snapsh
 
 ## 📝 Recent activity log (last 10)
 
+- 2026-05-27 — D-19 IMPLEMENTED: role-based auth (D1 users.role user/editor/admin). Migration 13 applied (Jason=admin), worker /exam/me + role check on /admin/exam/*, frontend gate theo role + mọi call admin dùng authedFetch (google token). ADMIN_TOKEN bỏ khỏi bundle (break-glass server-side). Admin mở khóa exam content qua role, không qua secret hardcode
 - 2026-05-26 — Phase 4b: Flyers L51-L60 (4 parts unique, B1) + examIcons +20 icon → D-18 CONTENT XONG 60/60. UI: admin mở khóa mọi planet; roadmap SVG + level node đổi màu theo planet (green/blue/purple); back-nav fix (do unlock)
 - 2026-05-26 — Phase 4a: Flyers L41-L50 (4 parts unique, B1) + examIcons +32 icon (science/charity/space/film/photo...); 20 scene prompts. tsc 0/0, validator 0 err, 112/112 scenes
 - 2026-05-26 — Read-only assets cho user: /exam/audio → chỉ đọc R2 (miss=404), thêm /admin/exam/audio/generate + nút 🎙️ Gen audio. Ảnh & text vốn đã read-only. ⚠️ level chưa pre-gen audio sẽ 404 tới khi admin Gen

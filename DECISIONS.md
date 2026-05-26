@@ -327,7 +327,9 @@ LinguTab target (60 unique) **vượt commercial benchmark 4x mỗi tier**. Trad
 ## D-19: Phân quyền = Role-based trong D1 (bỏ ADMIN_TOKEN tĩnh)
 
 **Date**: 2026-05-26
-**Status**: LOCKED (chưa implement)
+**Status**: ✅ IMPLEMENTED 2026-05-27 — migration 13 applied (Jason=admin), worker deployed,
+frontend live. Secret ADMIN_TOKEN đã BỎ khỏi client bundle (verify: không còn trong dist);
+giữ server-side làm break-glass. `/exam/me` trả role; `/admin/exam/*` nhận Google token + role.
 
 **Decision**: Quyền hạn dựa trên cột `role` trong bảng D1 `users`: `user` | `editor` | `admin`.
 Worker verify Google ID token → tra `role` từ D1 → cấp quyền. Bỏ hoàn toàn `ADMIN_TOKEN`

@@ -128,11 +128,9 @@ export async function adminGenerateAudio(
   audioScript: string,
   force = false,
 ): Promise<string> {
-  const token = sessionStorage.getItem('admin_token');
-  if (!token) throw new ExamAudioError('Thiếu admin_token', 'auth');
-  const res = await fetch(`${WORKER_URL}/admin/exam/audio/generate`, {
+  const res = await authedFetch(`${WORKER_URL}/admin/exam/audio/generate`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ audioKey, audioScript, force }),
   });
   if (!res.ok) {
@@ -161,12 +159,10 @@ export async function adminCheckAudio(
   audioKey: string,
   audioScript: string,
 ): Promise<boolean> {
-  const token = sessionStorage.getItem('admin_token');
-  if (!token) return false;
   try {
-    const res = await fetch(`${WORKER_URL}/admin/exam/audio/status`, {
+    const res = await authedFetch(`${WORKER_URL}/admin/exam/audio/status`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ audioKey, audioScript }),
     });
     if (!res.ok) return false;

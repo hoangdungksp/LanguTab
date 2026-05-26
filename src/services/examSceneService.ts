@@ -129,11 +129,9 @@ export async function getSceneUrl(
  * The prompt matches the audio script, so the generated image will match.
  */
 export async function getScenePromptForAdmin(sceneId: string): Promise<string> {
-  const token = sessionStorage.getItem('admin_token');
-  if (!token) throw new ExamSceneError('Thiếu admin_token', 'auth');
-  const res = await fetch(
+  // D-19: authorize by Google token + D1 role (editor/admin), via authedFetch.
+  const res = await authedFetch(
     `${WORKER_URL}/admin/exam/scenes/${encodeURIComponent(sceneId)}/prompt`,
-    { headers: { Authorization: `Bearer ${token}` } },
   );
   if (!res.ok) {
     throw new ExamSceneError(`Không lấy được prompt (HTTP ${res.status})`, 'server');
@@ -151,16 +149,11 @@ export async function uploadSceneImage(
   sceneId: string,
   file: File,
 ): Promise<{ bytes: number }> {
-  const token = sessionStorage.getItem('admin_token');
-  if (!token) throw new ExamSceneError('Thiếu admin_token', 'auth');
-  const res = await fetch(
+  const res = await authedFetch(
     `${WORKER_URL}/admin/exam/scenes/${encodeURIComponent(sceneId)}/upload`,
     {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': file.type || 'image/jpeg',
-      },
+      headers: { 'Content-Type': file.type || 'image/jpeg' },
       body: file,
     },
   );

@@ -25,6 +25,7 @@ import {
   type ZoneOverride,
 } from '../../services/examCalibrationService';
 import { getIcon } from '../../data/exam/examIcons';
+import { authedFetch } from '../../services/authService';
 import { ExamScene } from './ExamScene';
 import {
   invalidateScene,
@@ -788,17 +789,12 @@ function AdminAudioScriptEditor({
     setRecaptioning(true);
     setMsg('🧠 Vision model đang phân tích image...');
     try {
-      const token = sessionStorage.getItem('admin_token');
-      if (!token) throw new Error('admin_token missing');
-      // Sprint 4.9.5.2: hardcoded URL (was using undefined env var)
+      // D-19: authorize via Google token + D1 role (authedFetch).
       const WORKER_URL = 'https://lingua-newtab-worker.kspstudio.workers.dev';
       const url = `${WORKER_URL}/admin/exam/scenes/${encodeURIComponent(recaptionContext.sceneId)}/recaption`;
-      const resp = await fetch(url, {
+      const resp = await authedFetch(url, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           levelId,
           partId,

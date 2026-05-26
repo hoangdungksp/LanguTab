@@ -15,6 +15,8 @@
  * using import.meta.env.VITE_WORKER_URL which was never defined,
  * causing all admin fetches to use relative URLs and fail.
  */
+import { authedFetch } from './authService';
+
 const WORKER_URL = 'https://lingua-newtab-worker.kspstudio.workers.dev';
 
 export interface ZoneOverride {
@@ -77,16 +79,10 @@ export async function saveCalibration(
   partId: string,
   zones: ZoneOverride[],
 ): Promise<{ ok: true; saved: number }> {
-  const token = sessionStorage.getItem('admin_token');
-  if (!token) throw new Error('Admin token not set in sessionStorage');
-
   const url = `${WORKER_URL}/admin/exam/calibration/${encodeURIComponent(levelId)}/${encodeURIComponent(partId)}`;
-  const resp = await fetch(url, {
+  const resp = await authedFetch(url, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ zones }),
   });
   if (!resp.ok) {
@@ -106,14 +102,8 @@ export async function deleteCalibration(
   levelId: string,
   partId: string,
 ): Promise<{ ok: true; deleted: number }> {
-  const token = sessionStorage.getItem('admin_token');
-  if (!token) throw new Error('Admin token not set in sessionStorage');
-
   const url = `${WORKER_URL}/admin/exam/calibration/${encodeURIComponent(levelId)}/${encodeURIComponent(partId)}`;
-  const resp = await fetch(url, {
-    method: 'DELETE',
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const resp = await authedFetch(url, { method: 'DELETE' });
   if (!resp.ok) {
     const body = await resp.text().catch(() => '');
     throw new Error(`Delete failed: ${resp.status} ${body}`);

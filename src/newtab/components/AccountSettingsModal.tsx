@@ -15,7 +15,7 @@ import { UpgradeModal } from './UpgradeModal';
 import { StatsSection } from './StatsSection';
 import { refreshTier } from '../hooks/useTier';
 import {
-  isAdminEmail,
+  isAdminRole,
   isAdminManuallyDisabled,
   setAdminEnabled,
 } from '../../services/adminModeService';
@@ -204,7 +204,7 @@ export function AccountSettingsModal({ onClose }: Props) {
                 admin temporarily disable admin features (e.g., to test as
                 a regular user) without signing out. State persists in
                 localStorage so it survives reloads. */}
-            <AdminModeSection email={status.user.email} />
+            <AdminModeSection />
 
             {/* ─── Upgrade / Pro management ─────────────────────────────── */}
             {status.user.tier === 'free' ? (
@@ -504,11 +504,11 @@ function TabPill({
  * email is in the ADMIN_EMAILS list. Lets admin temporarily disable
  * admin features without signing out (e.g., to test as a regular user).
  */
-function AdminModeSection({ email }: { email: string }) {
+function AdminModeSection() {
   const [disabled, setDisabled] = useState(isAdminManuallyDisabled());
 
-  if (!isAdminEmail(email)) {
-    // Not an admin email — render nothing
+  if (!isAdminRole()) {
+    // Not an editor/admin (per D1 role) — render nothing
     return null;
   }
 
@@ -516,7 +516,7 @@ function AdminModeSection({ email }: { email: string }) {
     const newDisabled = !disabled;
     setDisabled(newDisabled);
     // setAdminEnabled takes ENABLED state, so we negate
-    setAdminEnabled(!newDisabled, email);
+    setAdminEnabled(!newDisabled);
   }
 
   return (
