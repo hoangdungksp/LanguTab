@@ -351,7 +351,10 @@ function LevelNode({
   idleLabel: string;
   onClick: () => void;
 }) {
-  const num = level.levelNumber;
+  // Chinese (HSK) levels are stored as 101+ so their progress never collides
+  // with the English 1-60 range, but they DISPLAY as 1-60 (HSK1 1-20, HSK2
+  // 21-40, HSK3 41-60) — mirroring the English planets.
+  const num = level.levelNumber > 100 ? level.levelNumber - 100 : level.levelNumber;
   // Title shows just the within-planet index (e.g. "Movers 5") since the
   // planet header above already contextualizes which planet we're in.
   const title = level.title;
