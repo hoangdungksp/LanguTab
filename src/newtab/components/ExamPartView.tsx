@@ -2273,33 +2273,37 @@ function MatchView({
         )}
       </svg>
 
-      <div className="relative flex items-start justify-between gap-4">
+      {/* Two clean vertical columns with a wide central channel for the
+          connecting lines (left = names, right = lettered pictures). */}
+      <div className="relative flex items-start justify-center gap-16 sm:gap-28">
         {/* Left column: example + items */}
-        <div className="flex flex-1 flex-col gap-3">
+        <div className="flex w-52 flex-col gap-3">
           {renderLeftCard(part.exampleItem, true)}
           {part.items.map((item) => renderLeftCard(item, false))}
         </div>
 
-        {/* Right column: lettered pictures */}
-        <div className="grid flex-1 grid-cols-2 gap-2 sm:grid-cols-3">
+        {/* Right column: lettered pictures, one per row */}
+        <div className="flex w-40 flex-col gap-2">
           {part.options.map((opt) => (
             <div
               key={opt.letter}
               data-match-letter={opt.letter}
               ref={(el) => { if (el) rightRefs.current.set(opt.letter, el); }}
-              className="relative flex flex-col items-center gap-1 rounded-chunk border-2 border-ink-200 bg-paper p-2"
+              className="relative flex items-center gap-2 rounded-chunk border-2 border-ink-200 bg-paper px-3 py-1.5"
             >
-              {/* anchor dot */}
+              {/* anchor dot (left edge, vertical center) */}
               <span className="absolute -left-1.5 top-1/2 h-3 w-3 -translate-y-1/2 rounded-full border-2 border-ink-400 bg-white" />
-              <div className="aspect-square w-full max-w-[72px]">{getIcon(opt.iconId)}</div>
-              <span className="rounded-md bg-coral-200 px-2 text-[11px] font-bold text-coral-800">{opt.letter}</span>
+              <div className="h-10 w-10 shrink-0">{getIcon(opt.iconId)}</div>
+              <span className="ml-auto inline-flex h-6 w-6 items-center justify-center rounded-md bg-coral-200 text-xs font-bold text-coral-800">
+                {opt.letter}
+              </span>
             </div>
           ))}
         </div>
       </div>
 
-      <p className="mt-3 text-center text-xs font-bold text-ink-400">
-        Kéo từ chấm bên trái sang tranh bên phải để nối. Bấm ✕ để bỏ nối.
+      <p className="mt-4 text-center text-xs font-bold text-ink-400">
+        Kéo từ chấm bên phải mỗi tên sang tranh để nối. Bấm ✕ để bỏ nối.
       </p>
     </div>
   );
