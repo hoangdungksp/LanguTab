@@ -717,18 +717,33 @@ function partWantsGaps(audioKey: string): boolean {
  * one — after the question AND after the answer. EN splits on . ? ! followed
  * by space; ZH splits after 。？！.
  */
-function splitQuestionSegments(script: string, lang: 'en' | 'zh'): string[] {
+/** Split into individual sentences (after . ? ! / 。？！). */
+function splitSentences(script: string, lang: 'en' | 'zh'): string[] {
   const re = lang === 'zh' ? /(?<=[。？！])/ : /(?<=[.?!])\s+/;
-  const all = script.split(re).map((s) => s.trim()).filter(Boolean);
-  // Keep the intro (everything up to & including the "Now listen…" / "现在听…"
-  // transition) as ONE segment — no point pausing between intro sentences.
-  // Pause only between the actual question/answer sentences that follow.
+  return script.split(re).map((s) => s.trim()).filter(Boolean);
+}
+
+/** Merge everything up to & including the "Now listen…/现在听…" transition into
+ *  ONE intro segment (no gaps inside the intro). */
+function mergeIntro(segs: string[], lang: 'en' | 'zh'): string[] {
   const transRe = lang === 'zh' ? /现在.{0,4}(听|写)/ : /Now\s+listen/i;
-  const idx = all.findIndex((s) => transRe.test(s));
-  if (idx >= 0 && idx < all.length - 1) {
-    return [all.slice(0, idx + 1).join(' '), ...all.slice(idx + 1)];
+  const idx = segs.findIndex((s) => transRe.test(s));
+  if (idx >= 0 && idx < segs.length - 1) {
+    return [segs.slice(0, idx + 1).join(' '), ...segs.slice(idx + 1)];
   }
-  return all;
+  return segs;
+}
+
+/**
+ * A "read-back" is the redundant single-word answer echo Cambridge scripts add
+ * ("Sam is nine years old. Nine." / "三号。三。"). Jason wants these dropped from
+ * the audio. Markers are already relabeled to "Question N." (multi-token) so
+ * they survive; spelling keeps its hyphens so it survives too.
+ */
+function isReadback(seg: string, lang: 'en' | 'zh'): boolean {
+  const t = seg.trim();
+  if (lang === 'zh') return /^[一二三四五六七八九十两]+。$/.test(t);
+  return /^[A-Za-z]+\.$/.test(t); // a lone word + period
 }
 
 /**
@@ -853,9 +868,16 @@ async function generateWithGaps(
   script: string,
   lang: 'en' | 'zh',
 ): Promise<{ bytes: ArrayBuffer; provider: string } | null> {
-  const rawSegments = splitQuestionSegments(script, lang);
-  if (rawSegments.length < 2) return null; // no question boundaries found
-  const segments = relabelQuestionMarkers(rawSegments, lang); // One. → Question 1.
+  // Pipeline: split → relabel markers (One.→Question 1.) → drop read-backs →
+  // merge intro. Relabel runs on the full list so the "next is a question"
+  // check is valid; read-backs are dropped before the intro merge so the
+  // example section is cleaned too.
+  const sentences = splitSentences(script, lang);
+  if (sentences.length < 2) return null;
+  const labeled = relabelQuestionMarkers(sentences, lang);
+  const cleaned = labeled.filter((s) => !isReadback(s, lang));
+  const segments = mergeIntro(cleaned, lang);
+  if (segments.length < 2) return null;
 
   const pcms: { sampleRate: number; data: Uint8Array }[] = [];
   for (const seg of segments) {
