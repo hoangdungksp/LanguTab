@@ -30,7 +30,10 @@
  * pass but inform admin tooling priorities (Phase 2/3 of D-16).
  */
 
-import { allLevels } from '../src/data/exam';
+import { allLevels, allLevelsZh } from '../src/data/exam';
+
+/** All levels across languages — English (1-60) + Chinese HSK1 (101-120). */
+const ALL_LEVELS = [...allLevels, ...allLevelsZh];
 import {
   SCENE_IDS as WORKER_SCENE_IDS_RAW,
 } from '../worker/src/exam/scenes';
@@ -417,7 +420,7 @@ function crossLevelChecks(): void {
   }
 
   // Duplicate level numbers
-  const lvlNums = allLevels.map((l) => l.levelNumber);
+  const lvlNums = ALL_LEVELS.map((l) => l.levelNumber);
   const dupes = lvlNums.filter((n, i) => lvlNums.indexOf(n) !== i);
   if (dupes.length > 0) {
     err('global', `Duplicate levelNumber(s): ${[...new Set(dupes)].join(', ')}`);
@@ -434,7 +437,7 @@ function report(): number {
   console.log('═══════════════════════════════════════════════════════════');
   console.log('  D-16 Phase 1 — Exam Data Validation Report');
   console.log('═══════════════════════════════════════════════════════════');
-  console.log(`  Levels checked:       ${allLevels.length}`);
+  console.log(`  Levels checked:       ${ALL_LEVELS.length} (EN ${allLevels.length} + ZH ${allLevelsZh.length})`);
   console.log(
     `  Scenes used:          ${usedSceneIds.size} / ${WORKER_SCENE_IDS.length} in worker registry`,
   );
@@ -473,7 +476,7 @@ function main(): void {
     process.exit(report());
   }
 
-  for (const level of allLevels) {
+  for (const level of ALL_LEVELS) {
     validateLevel(level);
   }
   crossLevelChecks();

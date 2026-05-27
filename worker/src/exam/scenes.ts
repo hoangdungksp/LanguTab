@@ -186,6 +186,17 @@ export const SCENE_IDS = [
   'flyer_l58_pen_pals_outline',
   'flyer_l59_school_olympics_outline',
   'flyer_l60_graduation_outline',
+  // D-23: Chinese HSK1 curated scenes (L101-L105) — drag + colour outline
+  'zh_hsk1_l101_park',
+  'zh_hsk1_l102_home',
+  'zh_hsk1_l103_clothes',
+  'zh_hsk1_l104_animals',
+  'zh_hsk1_l105_food',
+  'zh_hsk1_l101_park_outline',
+  'zh_hsk1_l102_home_outline',
+  'zh_hsk1_l103_clothes_outline',
+  'zh_hsk1_l104_animals_outline',
+  'zh_hsk1_l105_food_outline',
 ] as const;
 
 export type SceneId = typeof SCENE_IDS[number];
@@ -1363,6 +1374,62 @@ export const SCENE_PROMPTS: Record<SceneId, ScenePromptSpec> = {
   flyer_l60_graduation_outline: {
     prompt:
       'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of a graduation scene with 6 elements spread across the wide image: a graduation cap, a diploma scroll, a flower, a balloon, a camera, a cake. Each element well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+
+  // ─── D-23: Chinese HSK1 curated drag scenes (L101-L105) ──────────────────
+  // Clothing colours MUST follow the 3×2 grid order the audio narrates:
+  // top row red/blue/green, bottom row yellow/pink/orange (orange decorative).
+  zh_hsk1_l101_park: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children playing in a sunny park. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt flying a kite; child wearing a blue shirt reading a book; child wearing a green shirt kicking a ball. Bottom row left to right: child wearing a yellow shirt riding a bicycle; child wearing a pink shirt eating an ice cream; child wearing an orange shirt drawing a picture. Park background with green grass, trees, blue sky. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+  zh_hsk1_l102_home: {
+    prompt:
+      'Wide horizontal cartoon illustration of a Chinese family at home in the living room. COMPOSITION (most important): Six people arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: person wearing a red shirt cooking; person wearing a blue shirt watching television; person wearing a green shirt reading a book. Bottom row left to right: person wearing a yellow shirt drawing a picture; person wearing a pink shirt playing with a ball; person wearing an orange shirt eating an apple. Cozy living room background with a sofa and a window. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+  zh_hsk1_l103_clothes: {
+    prompt:
+      'Wide horizontal cartoon illustration of children at a clothing shop. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red dress holding a hat; child wearing a blue shirt holding a folded shirt; child wearing a green shirt holding a pair of shoes. Bottom row left to right: child wearing a yellow shirt holding a bag; child wearing a pink dress holding an umbrella; child wearing an orange shirt looking at a mirror. Clothing shop background with racks of colorful clothes. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+  zh_hsk1_l104_animals: {
+    prompt:
+      'Wide horizontal cartoon illustration of children with pet animals. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt holding a cat; child wearing a blue shirt walking a dog; child wearing a green shirt looking at a fish bowl. Bottom row left to right: child wearing a yellow shirt feeding a bird; child wearing a pink shirt holding a rabbit; child wearing an orange shirt holding a puppy. Friendly pet-corner background with green plants. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+  zh_hsk1_l105_food: {
+    prompt:
+      'Wide horizontal cartoon illustration of children at a food market. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt eating an apple; child wearing a blue shirt holding a loaf of bread; child wearing a green shirt drinking water. Bottom row left to right: child wearing a yellow shirt eating a slice of cake; child wearing a pink shirt holding a banana; child wearing an orange shirt holding an orange fruit. Food market background with fruit stalls. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+
+  // ─── D-23: Chinese HSK1 colour outline scenes (L101-L105) ────────────────
+  zh_hsk1_l101_park_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of a park scene with 6 objects spread across the wide image: a ball, a tree, a cat, a bird, a bicycle, a flower. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  zh_hsk1_l102_home_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of a bedroom and living room scene with 6 objects spread across the wide image: a bed, a chair, a table, a lamp, a teddy bear, a window. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  zh_hsk1_l103_clothes_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of clothes spread across the wide image: a shirt, a hat, a dress, an umbrella, a bag, a pair of shoes. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  zh_hsk1_l104_animals_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of animals spread across the wide image: a cat, a dog, a fish, a bird, a rabbit, a tree. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  zh_hsk1_l105_food_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of food spread across the wide image: an apple, a banana, a slice of cake, a loaf of bread, an orange, a bunch of grapes. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
     aspect: 'landscape',
   },
 };
