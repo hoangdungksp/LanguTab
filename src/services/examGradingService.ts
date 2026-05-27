@@ -30,6 +30,7 @@ export function gradeAttempt(
   const writeAnswers = new Map<string, ExamAnswer>(); // key: partId+questionId
   const tickAnswers = new Map<string, ExamAnswer>();
   const colourAnswers = new Map<string, ExamAnswer>();
+  const matchAnswers = new Map<string, ExamAnswer>();
 
   for (const ans of answers) {
     if (ans.type === 'listening_drag_name') {
@@ -40,11 +41,13 @@ export function gradeAttempt(
       tickAnswers.set(`${ans.partId}::${ans.questionId}`, ans);
     } else if (ans.type === 'listening_colour') {
       colourAnswers.set(ans.partId, ans);
+    } else if (ans.type === 'listening_match') {
+      matchAnswers.set(ans.partId, ans);
     }
   }
 
   const partResults = level.parts.map((part) =>
-    gradePart(part, dragAnswers, writeAnswers, tickAnswers, colourAnswers),
+    gradePart(part, dragAnswers, writeAnswers, tickAnswers, colourAnswers, matchAnswers),
   );
   const totalStars = partResults.filter((p) => p.starEarned).length;
 
@@ -65,6 +68,7 @@ function gradePart(
   writeAnswers: Map<string, ExamAnswer>,
   tickAnswers: Map<string, ExamAnswer>,
   colourAnswers: Map<string, ExamAnswer>,
+  matchAnswers: Map<string, ExamAnswer>,
 ): ExamPartResult {
   switch (part.type) {
     case 'listening_drag_name': {
@@ -146,6 +150,25 @@ function gradePart(
         totalGraded: part.regions.length,
         correctCount,
         starEarned: correctCount >= Math.ceil(part.regions.length * 0.8),
+        itemResults,
+      };
+    }
+
+    case 'listening_match': {
+      const answer = matchAnswers.get(part.partId);
+      const mapping =
+        answer?.type === 'listening_match' ? answer.mapping : {};
+      const itemResults = part.items.map((item) => ({
+        itemId: item.id,
+        correct: mapping[item.id] === part.correctMapping[item.id],
+      }));
+      const correctCount = itemResults.filter((r) => r.correct).length;
+      return {
+        partId: part.partId,
+        partType: part.type,
+        totalGraded: part.items.length,
+        correctCount,
+        starEarned: correctCount >= Math.ceil(part.items.length * 0.8),
         itemResults,
       };
     }

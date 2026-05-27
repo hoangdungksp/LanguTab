@@ -1,8 +1,8 @@
 {
   "name": "lingua-newtab",
   "displayName": "LinguTab — Học tiếng Trung & Anh",
-  "version": "1.9.0",
-  "versionName": "1.9.0 — HSK1 L101-105 nội dung riêng từng level + ảnh Trung",
+  "version": "1.10.0",
+  "versionName": "1.10.0 — Engine: part Matching (nối tranh) + 5 phần cho Movers/Flyers (mẫu L21)",
   "description": "Chrome extension thay new tab thành nơi học tiếng Trung / tiếng Anh với phonetics, flashcard SRS, TTS. Dành cho người Việt.",
   "private": true,
   "type": "module",

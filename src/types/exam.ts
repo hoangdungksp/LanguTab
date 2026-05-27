@@ -108,7 +108,43 @@ export interface ColourPart {
   palette: string[];
 }
 
-export type ExamPart = DragNamePart | WritePart | TickPart | ColourPart;
+/**
+ * Part 3 of A1 Movers / A2 Flyers Listening — MATCHING.
+ * A left column of named pictures (items) and a right set of lettered
+ * pictures (options, with distractors). The child connects each item to one
+ * option by drawing a line. One item is pre-connected as the example.
+ */
+export interface MatchItem {
+  /** Stable id used as the answer key, e.g. "m1". */
+  id: string;
+  /** Name/word shown on the left card, e.g. "Tom". */
+  label: string;
+  /** Optional picture for the left card; falls back to the label if absent. */
+  iconId?: string;
+}
+export interface MatchOption {
+  /** Letter shown on the right card, e.g. "A". */
+  letter: string;
+  /** Picture for the right card. */
+  iconId: string;
+}
+export interface MatchPart {
+  type: 'listening_match';
+  partId: string;
+  audioKey: string;
+  audioScript: string;
+  /** Left cards the child must connect (excludes the example). */
+  items: MatchItem[];
+  /** Right cards (letters); MORE than items so some are distractors. */
+  options: MatchOption[];
+  /** Pre-connected example: its left card + the letter it links to. */
+  exampleItem: MatchItem;
+  exampleLetter: string;
+  /** itemId → correct letter, for the non-example items. */
+  correctMapping: Record<string, string>;
+}
+
+export type ExamPart = DragNamePart | WritePart | TickPart | ColourPart | MatchPart;
 
 export interface ExamLevel {
   levelNumber: number;
@@ -116,16 +152,23 @@ export interface ExamLevel {
   title: string;
   description: string;
   timeLimitSec: number;
-  parts: [DragNamePart, WritePart, TickPart, ColourPart];
+  /**
+   * Ordered parts. Starters have 4 (drag, write, tick, colour); Movers/Flyers
+   * have 5 (drag, write, MATCH, tick, colour) — matching the real Cambridge
+   * Listening structure. Stars per level = parts.length.
+   */
+  parts: ExamPart[];
 }
 
+/** Legacy default (Starters). Per-level use `level.parts.length` instead. */
 export const STARS_PER_LEVEL = 4;
 
 export type ExamAnswer =
   | { type: 'listening_drag_name'; partId: string; mapping: Record<string, string> }
   | { type: 'listening_write'; partId: string; questionId: string; answer: string }
   | { type: 'listening_tick'; partId: string; questionId: string; selectedOptionId: string }
-  | { type: 'listening_colour'; partId: string; colors: Record<string, string> };
+  | { type: 'listening_colour'; partId: string; colors: Record<string, string> }
+  | { type: 'listening_match'; partId: string; mapping: Record<string, string> };
 
 export interface ExamPartResult {
   partId: string;

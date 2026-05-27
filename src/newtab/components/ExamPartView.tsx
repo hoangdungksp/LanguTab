@@ -1,10 +1,12 @@
-import { useState, useEffect, useRef, useMemo, type ChangeEvent } from 'react';
+import { useState, useEffect, useRef, useMemo, type ChangeEvent, type PointerEvent as ReactPointerEvent } from 'react';
 import type {
   ExamAnswer,
   DragNamePart,
   WritePart,
   TickPart,
   ColourPart,
+  MatchPart,
+  MatchItem,
 } from '../../types';
 import {
   getAudioUrl,
@@ -105,6 +107,13 @@ export function ExamPartView({ page, currentAnswers, onAnswer, levelId }: Props)
             sceneRefreshKey={sceneRefreshKey}
           />
         )}
+        {page.kind === 'match' && (
+          <MatchView
+            part={page.part}
+            answer={findMatchAnswer(currentAnswers, page.part.partId)}
+            onAnswer={onAnswer}
+          />
+        )}
       </div>
     </div>
   );
@@ -136,6 +145,11 @@ function InstructionBanner({ page }: { page: ExamPage }) {
     case 'colour':
       title = `Part ${partNum}`;
       instruction = 'LISTEN AND COLOUR. THERE IS ONE EXAMPLE.';
+      break;
+    case 'match':
+      title = `Part ${partNum}`;
+      instruction = 'LISTEN AND DRAW A LINE FROM EACH PERSON TO THE CORRECT PICTURE. THERE IS ONE EXAMPLE.';
+      questionsLabel = `(${page.part.items.length} QUESTIONS)`;
       break;
   }
 
@@ -1016,6 +1030,12 @@ function findTickAnswer(answers: ExamAnswer[], partId: string, questionId: strin
       a.type === 'listening_tick' && a.partId === partId && a.questionId === questionId,
   );
 }
+function findMatchAnswer(answers: ExamAnswer[], partId: string) {
+  return answers.find(
+    (a): a is Extract<ExamAnswer, { type: 'listening_match' }> =>
+      a.type === 'listening_match' && a.partId === partId,
+  );
+}
 
 // ─── Drag-name view ────────────────────────────────────────────────────
 
@@ -1336,7 +1356,7 @@ function CalibrationZone({
     return el;
   }
 
-  function onPointerDown(e: React.PointerEvent, m: DragMode) {
+  function onPointerDown(e: ReactPointerEvent, m: DragMode) {
     e.stopPropagation();
     e.preventDefault();
     setMode(m);
@@ -1347,7 +1367,7 @@ function CalibrationZone({
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
   }
 
-  function onPointerMove(e: React.PointerEvent) {
+  function onPointerMove(e: ReactPointerEvent) {
     if (!mode || !startRef.current) return;
     const container = findContainer(e.target);
     if (!container) return;
@@ -1386,7 +1406,7 @@ function CalibrationZone({
     onChange({ x: nx, y: ny, width: nw, height: nh });
   }
 
-  function onPointerUp(e: React.PointerEvent) {
+  function onPointerUp(e: ReactPointerEvent) {
     setMode(null);
     startRef.current = null;
     try {
@@ -1435,7 +1455,7 @@ function ResizeHandle({
   onPointerDown,
 }: {
   pos: 'tl' | 'tr' | 'bl' | 'br';
-  onPointerDown: (e: React.PointerEvent) => void;
+  onPointerDown: (e: ReactPointerEvent) => void;
 }) {
   const positions: Record<string, string> = {
     tl: 'top-0 left-0 -translate-x-1/2 -translate-y-1/2 cursor-nw-resize',
@@ -2079,4 +2099,208 @@ function getRegionHotspot(
     },
   };
   return map[sceneId]?.[regionId] ?? null;
+}
+
+// ─── Match view (draw lines, Movers/Flyers Part 3) ─────────────────────────
+
+type XY = { x: number; y: number };
+
+function MatchView({
+  part,
+  answer,
+  onAnswer,
+}: {
+  part: MatchPart;
+  answer: ReturnType<typeof findMatchAnswer>;
+  onAnswer: (a: ExamAnswer) => void;
+}) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  // DOM nodes of each anchor so we can measure their on-screen position.
+  const leftRefs = useRef<Map<string, HTMLElement>>(new Map());
+  const rightRefs = useRef<Map<string, HTMLElement>>(new Map());
+
+  // Measured anchor centers (container-relative px).
+  const [leftPts, setLeftPts] = useState<Record<string, XY>>({});
+  const [rightPts, setRightPts] = useState<Record<string, XY>>({});
+  // In-progress drag line.
+  const [drag, setDrag] = useState<{ itemId: string; from: XY; to: XY } | null>(null);
+
+  const mapping = answer?.mapping ?? {};
+
+  // Measure anchor positions after layout + on resize.
+  useEffect(() => {
+    const measure = () => {
+      const c = containerRef.current;
+      if (!c) return;
+      const cr = c.getBoundingClientRect();
+      const lp: Record<string, XY> = {};
+      leftRefs.current.forEach((el, id) => {
+        const r = el.getBoundingClientRect();
+        lp[id] = { x: r.right - cr.left, y: r.top - cr.top + r.height / 2 };
+      });
+      const rp: Record<string, XY> = {};
+      rightRefs.current.forEach((el, letter) => {
+        const r = el.getBoundingClientRect();
+        rp[letter] = { x: r.left - cr.left, y: r.top - cr.top + r.height / 2 };
+      });
+      setLeftPts(lp);
+      setRightPts(rp);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (containerRef.current) ro.observe(containerRef.current);
+    window.addEventListener('resize', measure);
+    return () => { ro.disconnect(); window.removeEventListener('resize', measure); };
+  }, [part.partId]);
+
+  const commit = (next: Record<string, string>) => {
+    onAnswer({ type: 'listening_match', partId: part.partId, mapping: next });
+  };
+
+  const ptInContainer = (e: ReactPointerEvent): XY => {
+    const cr = containerRef.current!.getBoundingClientRect();
+    return { x: e.clientX - cr.left, y: e.clientY - cr.top };
+  };
+
+  const onPointerDownItem = (itemId: string) => (e: ReactPointerEvent) => {
+    e.preventDefault();
+    containerRef.current?.setPointerCapture(e.pointerId);
+    const from = leftPts[itemId] ?? ptInContainer(e);
+    setDrag({ itemId, from, to: ptInContainer(e) });
+  };
+
+  const onPointerMove = (e: ReactPointerEvent) => {
+    if (!drag) return;
+    setDrag({ ...drag, to: ptInContainer(e) });
+  };
+
+  const onPointerUp = (e: ReactPointerEvent) => {
+    if (!drag) return;
+    // Which right option is under the pointer?
+    const el = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null;
+    const letter = el?.closest('[data-match-letter]')?.getAttribute('data-match-letter') ?? null;
+    if (letter) {
+      commit({ ...mapping, [drag.itemId]: letter });
+    }
+    setDrag(null);
+  };
+
+  const clearItem = (itemId: string) => {
+    const next = { ...mapping };
+    delete next[itemId];
+    commit(next);
+  };
+
+  // Lines to draw: committed answers + the locked example + the live drag.
+  const lines: { from: XY; to: XY; key: string; kind: 'answer' | 'example' }[] = [];
+  for (const [itemId, letter] of Object.entries(mapping)) {
+    if (leftPts[itemId] && rightPts[letter]) {
+      lines.push({ from: leftPts[itemId], to: rightPts[letter], key: `${itemId}-${letter}`, kind: 'answer' });
+    }
+  }
+  if (leftPts[part.exampleItem.id] && rightPts[part.exampleLetter]) {
+    lines.push({
+      from: leftPts[part.exampleItem.id],
+      to: rightPts[part.exampleLetter],
+      key: 'example',
+      kind: 'example',
+    });
+  }
+
+  const renderLeftCard = (item: MatchItem, isExample: boolean) => {
+    const connected = isExample ? part.exampleLetter : mapping[item.id];
+    return (
+      <div
+        key={item.id}
+        data-match-item={item.id}
+        ref={(el) => { if (el) leftRefs.current.set(item.id, el); }}
+        onPointerDown={isExample ? undefined : onPointerDownItem(item.id)}
+        className={[
+          'relative flex items-center gap-2 rounded-chunk border-2 px-3 py-2 select-none',
+          isExample
+            ? 'border-ink-300 bg-ink-50 cursor-default'
+            : 'border-coral-300 bg-paper cursor-pointer hover:border-coral-500 active:border-coral-600',
+        ].join(' ')}
+        style={{ touchAction: 'none' }}
+      >
+        {item.iconId && <div className="h-10 w-10 shrink-0">{getIcon(item.iconId)}</div>}
+        <span className="flex-1 font-display text-sm font-bold text-ink-800">{item.label}</span>
+        {connected && (
+          <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-mint-500 text-xs font-bold text-white">
+            {connected}
+          </span>
+        )}
+        {!isExample && connected && (
+          <button
+            onClick={() => clearItem(item.id)}
+            className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-coral-500 text-[10px] font-bold text-white shadow"
+            aria-label={`Bỏ nối ${item.label}`}
+          >
+            ✕
+          </button>
+        )}
+        {/* anchor dot */}
+        <span className="absolute -right-1.5 top-1/2 h-3 w-3 -translate-y-1/2 rounded-full border-2 border-coral-500 bg-white" />
+      </div>
+    );
+  };
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative mx-auto max-w-3xl px-2 py-2"
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={() => setDrag(null)}
+    >
+      {/* SVG overlay for connection lines */}
+      <svg className="pointer-events-none absolute inset-0 h-full w-full" style={{ overflow: 'visible' }}>
+        {lines.map((ln) => (
+          <line
+            key={ln.key}
+            x1={ln.from.x} y1={ln.from.y} x2={ln.to.x} y2={ln.to.y}
+            stroke={ln.kind === 'example' ? '#94a3b8' : '#10b981'}
+            strokeWidth={3}
+            strokeLinecap="round"
+            strokeDasharray={ln.kind === 'example' ? '6 5' : undefined}
+          />
+        ))}
+        {drag && (
+          <line
+            x1={drag.from.x} y1={drag.from.y} x2={drag.to.x} y2={drag.to.y}
+            stroke="#f97316" strokeWidth={3} strokeLinecap="round" strokeDasharray="2 6"
+          />
+        )}
+      </svg>
+
+      <div className="relative flex items-start justify-between gap-4">
+        {/* Left column: example + items */}
+        <div className="flex flex-1 flex-col gap-3">
+          {renderLeftCard(part.exampleItem, true)}
+          {part.items.map((item) => renderLeftCard(item, false))}
+        </div>
+
+        {/* Right column: lettered pictures */}
+        <div className="grid flex-1 grid-cols-2 gap-2 sm:grid-cols-3">
+          {part.options.map((opt) => (
+            <div
+              key={opt.letter}
+              data-match-letter={opt.letter}
+              ref={(el) => { if (el) rightRefs.current.set(opt.letter, el); }}
+              className="relative flex flex-col items-center gap-1 rounded-chunk border-2 border-ink-200 bg-paper p-2"
+            >
+              {/* anchor dot */}
+              <span className="absolute -left-1.5 top-1/2 h-3 w-3 -translate-y-1/2 rounded-full border-2 border-ink-400 bg-white" />
+              <div className="aspect-square w-full max-w-[72px]">{getIcon(opt.iconId)}</div>
+              <span className="rounded-md bg-coral-200 px-2 text-[11px] font-bold text-coral-800">{opt.letter}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <p className="mt-3 text-center text-xs font-bold text-ink-400">
+        Kéo từ chấm bên trái sang tranh bên phải để nối. Bấm ✕ để bỏ nối.
+      </p>
+    </div>
+  );
 }

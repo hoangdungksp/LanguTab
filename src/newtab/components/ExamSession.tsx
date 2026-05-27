@@ -269,7 +269,8 @@ export type ExamPage =
   | { kind: 'drag'; part: Extract<ExamPart, { type: 'listening_drag_name' }>; partIndex: number }
   | { kind: 'write'; part: Extract<ExamPart, { type: 'listening_write' }>; partIndex: number }
   | { kind: 'tick'; part: Extract<ExamPart, { type: 'listening_tick' }>; partIndex: number }
-  | { kind: 'colour'; part: Extract<ExamPart, { type: 'listening_colour' }>; partIndex: number };
+  | { kind: 'colour'; part: Extract<ExamPart, { type: 'listening_colour' }>; partIndex: number }
+  | { kind: 'match'; part: Extract<ExamPart, { type: 'listening_match' }>; partIndex: number };
 
 function buildPageList(level: ExamLevel): ExamPage[] {
   const pages: ExamPage[] = [];
@@ -284,6 +285,8 @@ function buildPageList(level: ExamLevel): ExamPage[] {
       pages.push({ kind: 'tick', part, partIndex });
     } else if (part.type === 'listening_colour') {
       pages.push({ kind: 'colour', part, partIndex });
+    } else if (part.type === 'listening_match') {
+      pages.push({ kind: 'match', part, partIndex });
     }
   });
   return pages;
@@ -293,5 +296,6 @@ function buildPageList(level: ExamLevel): ExamPage[] {
 function identityOf(a: ExamAnswer): string {
   if (a.type === 'listening_drag_name') return `drag::${a.partId}`;
   if (a.type === 'listening_colour') return `colour::${a.partId}`;
+  if (a.type === 'listening_match') return `match::${a.partId}`;
   return `${a.type}::${a.partId}::${a.questionId}`;
 }

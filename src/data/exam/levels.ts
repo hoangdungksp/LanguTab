@@ -1,4 +1,4 @@
-import type { ExamLevel, DragNamePart, WritePart, TickPart, ColourPart } from '../../types';
+import type { ExamLevel, DragNamePart, WritePart, TickPart, ColourPart, MatchPart } from '../../types';
 import {
   DRAG_SCENE_CHARS,
   buildDragNameAudioScript,
@@ -6386,6 +6386,47 @@ function namesPoolForDifficulty(difficulty: Difficulty, idx: number): string[] {
  * Write scenes (rotated): pet_girl, family_dinner, weekend_activities
  * Colour scenes (rotated): garden_objects_outline, bedroom_outline, farm_outline
  */
+/**
+ * Phase B SAMPLE — a single Movers Matching part (L21) so the new
+ * `listening_match` engine + draw-line UI can be reviewed before authoring
+ * matching content for all 40 Movers/Flyers levels. Real Cambridge Movers
+ * Part 3 = matching; language is past simple (A1). Returns null for every
+ * other level (they stay 4-part until the per-batch rollout).
+ */
+function makeSampleMatchPart(levelNumber: number, partId: string, audioKey: string): MatchPart | null {
+  if (levelNumber !== 21) return null;
+  return {
+    type: 'listening_match',
+    partId,
+    audioKey,
+    audioScript:
+      'Listen and look. There is one example. Ben slept in the tent. ' +
+      'Now listen and draw a line from each name to the correct picture. ' +
+      'Anna paddled the canoe across the lake. ' +
+      'Tom cooked his food on the campfire. ' +
+      'Sue carried the big heavy backpack. ' +
+      'May caught a fish in the river.',
+    exampleItem: { id: 'ex_ben', label: 'Ben' },
+    exampleLetter: 'A',
+    items: [
+      { id: 'anna', label: 'Anna' },
+      { id: 'tom', label: 'Tom' },
+      { id: 'sue', label: 'Sue' },
+      { id: 'may', label: 'May' },
+    ],
+    options: [
+      { letter: 'A', iconId: 'tent' },
+      { letter: 'B', iconId: 'canoe' },
+      { letter: 'C', iconId: 'campfire' },
+      { letter: 'D', iconId: 'backpack' },
+      { letter: 'E', iconId: 'fish' },
+      { letter: 'F', iconId: 'ball' },
+      { letter: 'G', iconId: 'tree' },
+    ],
+    correctMapping: { anna: 'B', tom: 'C', sue: 'D', may: 'E' },
+  };
+}
+
 function makeLevel(levelNumber: number): ExamLevel {
   const difficulty = difficultyForLevel(levelNumber);
   const namePool = namesPoolForDifficulty(difficulty, levelNumber);
@@ -6428,11 +6469,19 @@ function makeLevel(levelNumber: number): ExamLevel {
     return makeStarterWritePart(partId, audioKey, levelNumber);
   })();
 
+  // Matching part (Movers/Flyers Part 3). When present, it takes position 3
+  // (p3) and pushes tick → p4 and colour → p5 to mirror the real Cambridge
+  // layout. Currently only the L21 sample returns non-null.
+  const matchPart = makeSampleMatchPart(levelNumber, `lvl${levelNumber}_p3`, `level${levelNumber}/p3.mp3`);
+  const hasMatch = !!matchPart;
+  const tickPos = hasMatch ? 4 : 3;
+  const colourPos = hasMatch ? 5 : 4;
+
   // Tick part: difficulty-scaled vocabulary.
   // Starters: per-level unique content (L1-L10), rotation fallback (L11-L20 TODO).
   const part3 = (() => {
-    const audioKey = `level${levelNumber}/p3.mp3`;
-    const partId = `lvl${levelNumber}_p3`;
+    const audioKey = `level${levelNumber}/p${tickPos}.mp3`;
+    const partId = `lvl${levelNumber}_p${tickPos}`;
     if (difficulty === 'flyers') return makeFlyerTickByLevel(partId, audioKey, levelNumber);
     if (difficulty === 'movers') return makeMoverTickByLevel(partId, audioKey, levelNumber);
     return makeStarterTickPart(partId, audioKey, levelNumber);
@@ -6441,8 +6490,8 @@ function makeLevel(levelNumber: number): ExamLevel {
   // Colour scene: Starters per-level (L1-L20 unique). Movers/Flyers rotate.
   const colourSceneIdx = (levelNumber - 1) % 3;
   const part4 = (() => {
-    const audioKey = `level${levelNumber}/p4.mp3`;
-    const partId = `lvl${levelNumber}_p4`;
+    const audioKey = `level${levelNumber}/p${colourPos}.mp3`;
+    const partId = `lvl${levelNumber}_p${colourPos}`;
     if (difficulty === 'starters') {
       return makeStarterColourPart(partId, audioKey, levelNumber);
     }
@@ -6479,7 +6528,9 @@ function makeLevel(levelNumber: number): ExamLevel {
     title: `${planetName} ${idxInDifficulty}`,
     description: 'Bài thi luyện kỹ năng nghe — nghe hiểu, ghép tên, viết, chọn tranh, tô màu.',
     timeLimitSec,
-    parts: [part1, part2, part3, part4],
+    parts: matchPart
+      ? [part1, part2, matchPart, part3, part4]
+      : [part1, part2, part3, part4],
   };
 }
 

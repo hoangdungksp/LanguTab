@@ -1,5 +1,4 @@
 import type { ExamLevel, ExamAttemptResult } from '../../types';
-import { STARS_PER_LEVEL } from '../../types';
 
 /**
  * Results screen shown after the kid finishes (or runs out of time).
@@ -23,16 +22,20 @@ interface Props {
 }
 
 export function ExamResultsModal({ result, level, onClose }: Props) {
-  const passed = result.totalStars >= Math.ceil(STARS_PER_LEVEL / 2);
-  const perfect = result.totalStars === STARS_PER_LEVEL;
+  // Stars per level = number of parts (Starters 4, Movers/Flyers 5).
+  const maxStars = level.parts.length;
+  const passed = result.totalStars >= Math.ceil(maxStars / 2);
+  const perfect = result.totalStars === maxStars;
   const elapsedMin = Math.max(1, Math.round((result.finishedAt - result.startedAt) / 60000));
 
-  // Cambridge-style label per part type — kid-friendly Vietnamese summaries
+  // Cambridge-style label per part type — kid-friendly Vietnamese summaries.
+  // (Labels by type, not fixed position, since Movers/Flyers reorder/add parts.)
   const partLabel: Record<string, string> = {
-    listening_drag_name: 'Phần 1 — Nghe và kéo tên',
-    listening_write: 'Phần 2 — Nghe và viết',
-    listening_tick: 'Phần 3 — Nghe và chọn tranh',
-    listening_colour: 'Phần 4 — Nghe và tô màu',
+    listening_drag_name: 'Nghe và kéo tên',
+    listening_write: 'Nghe và viết',
+    listening_match: 'Nghe và nối tranh',
+    listening_tick: 'Nghe và chọn tranh',
+    listening_colour: 'Nghe và tô màu',
   };
 
   return (
@@ -57,7 +60,7 @@ export function ExamResultsModal({ result, level, onClose }: Props) {
 
         {/* 4-star row */}
         <div className="my-6 flex justify-center gap-3">
-          {Array.from({ length: STARS_PER_LEVEL }).map((_, i) => {
+          {Array.from({ length: maxStars }).map((_, i) => {
             const earned = i < result.totalStars;
             return (
               <div
@@ -77,7 +80,7 @@ export function ExamResultsModal({ result, level, onClose }: Props) {
         </div>
 
         <div className="text-center font-display text-2xl font-bold text-ink-700">
-          {result.totalStars} / {STARS_PER_LEVEL} sao ⭐
+          {result.totalStars} / {maxStars} sao ⭐
         </div>
 
         {/* Per-part breakdown */}

@@ -342,6 +342,53 @@ function validatePart(part: ExamPart, partPath: string): void {
       break;
     }
 
+    case 'listening_match': {
+      if (!part.items || part.items.length === 0) {
+        err(partPath, 'Empty items[]');
+        break;
+      }
+      const itemIds = new Set(part.items.map((it) => it.id));
+      if (itemIds.size !== part.items.length) {
+        err(partPath, 'Duplicate item ids in items[]');
+      }
+      if (itemIds.has(part.exampleItem.id)) {
+        err(partPath, `exampleItem.id "${part.exampleItem.id}" must NOT be in items[] (example is separate)`);
+      }
+      if (!part.options || part.options.length === 0) {
+        err(partPath, 'Empty options[]');
+        break;
+      }
+      const letters = new Set(part.options.map((o) => o.letter));
+      if (letters.size !== part.options.length) {
+        err(partPath, 'Duplicate letters in options[]');
+      }
+      if (part.options.length < part.items.length) {
+        err(partPath, `options (${part.options.length}) must be ≥ items (${part.items.length})`);
+      }
+      if (!part.exampleLetter || !letters.has(part.exampleLetter)) {
+        err(partPath, `exampleLetter "${part.exampleLetter}" not in options letters`);
+      }
+      // correctMapping: every item mapped to a valid letter
+      for (const it of part.items) {
+        const letter = part.correctMapping[it.id];
+        if (!letter) {
+          err(partPath, `item "${it.id}" has no correctMapping entry`);
+        } else if (!letters.has(letter)) {
+          err(partPath, `correctMapping["${it.id}"] = "${letter}" not in options letters`);
+        }
+      }
+      for (const key of Object.keys(part.correctMapping)) {
+        if (!itemIds.has(key)) {
+          err(partPath, `correctMapping key "${key}" is not an item id`);
+        }
+      }
+      // Collect icon refs (right options always have icons; left optionally).
+      for (const o of part.options) usedIconIds.add(o.iconId);
+      for (const it of part.items) if (it.iconId) usedIconIds.add(it.iconId);
+      if (part.exampleItem.iconId) usedIconIds.add(part.exampleItem.iconId);
+      break;
+    }
+
     default: {
       // TypeScript exhaustiveness check
       const _exhaustive: never = part;
@@ -352,9 +399,18 @@ function validatePart(part: ExamPart, partPath: string): void {
 
 // ─── Per-level validator ────────────────────────────────────────────
 
-const EXPECTED_PART_TYPES = [
+// Two valid layouts: Starters (4 parts) and Movers/Flyers (5 parts, with a
+// MATCH part inserted at position 3, before tick).
+const LAYOUT_4 = [
   'listening_drag_name',
   'listening_write',
+  'listening_tick',
+  'listening_colour',
+] as const;
+const LAYOUT_5 = [
+  'listening_drag_name',
+  'listening_write',
+  'listening_match',
   'listening_tick',
   'listening_colour',
 ] as const;
@@ -374,17 +430,18 @@ function validateLevel(level: ExamLevel): void {
     err(lvlPath, `Invalid timeLimitSec: ${level.timeLimitSec}`);
   }
 
-  if (!level.parts || level.parts.length !== 4) {
-    err(lvlPath, `Expected 4 parts, got ${level.parts?.length ?? 0}`);
+  if (!level.parts || (level.parts.length !== 4 && level.parts.length !== 5)) {
+    err(lvlPath, `Expected 4 or 5 parts, got ${level.parts?.length ?? 0}`);
     return;
   }
 
   const actualTypes = level.parts.map((p) => p.type);
-  for (let i = 0; i < 4; i++) {
-    if (actualTypes[i] !== EXPECTED_PART_TYPES[i]) {
+  const expected = level.parts.length === 5 ? LAYOUT_5 : LAYOUT_4;
+  for (let i = 0; i < expected.length; i++) {
+    if (actualTypes[i] !== expected[i]) {
       err(
         lvlPath,
-        `parts[${i}] expected "${EXPECTED_PART_TYPES[i]}" got "${actualTypes[i]}"`,
+        `parts[${i}] expected "${expected[i]}" got "${actualTypes[i]}"`,
       );
     }
   }
