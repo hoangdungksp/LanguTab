@@ -6664,7 +6664,247 @@ const MOVERS_MATCH_BY_LEVEL: Record<number, MoverMatchDef> = {
     ],
     distractors: ['ball'],
   },
-};
+  // ─── Flyers L41-60 (A2: present perfect / future intent clues) ──────────
+  // L41 — Science fair
+  41: {
+    example: { name: 'Sam', iconId: 'robot', say: 'Sam has built a robot.' },
+    items: [
+      { name: 'Tom', iconId: 'microscope', say: 'Tom has used the microscope.' },
+      { name: 'Sue', iconId: 'test_tube', say: 'Sue has filled a test tube.' },
+      { name: 'Kim', iconId: 'magnet', say: 'Kim has tested a magnet.' },
+      { name: 'Max', iconId: 'flask', say: 'Max has mixed something in a flask.' },
+      { name: 'Lily', iconId: 'light_bulb', say: 'Lily has made a light bulb glow.' },
+    ],
+    distractors: ['ruler'],
+  },
+  // L42 — Charity event
+  42: {
+    example: { name: 'Jasmine', iconId: 'cake', say: 'Jasmine has sold homemade cakes.' },
+    items: [
+      { name: 'Tom', iconId: 'coin', say: 'Tom has collected the coins.' },
+      { name: 'Sue', iconId: 'donation_box', say: 'Sue has filled the donation box.' },
+      { name: 'Kim', iconId: 'poster', say: 'Kim has made a poster.' },
+      { name: 'Max', iconId: 'ticket', say: 'Max has sold the tickets.' },
+      { name: 'Lily', iconId: 'flag', say: 'Lily has waved a flag.' },
+    ],
+    distractors: ['star'],
+  },
+  // L43 — Volunteer animal shelter
+  43: {
+    example: { name: 'Anna', iconId: 'dog', say: 'Anna has walked the dogs.' },
+    items: [
+      { name: 'Tom', iconId: 'cat', say: 'Tom has fed the cats.' },
+      { name: 'Sue', iconId: 'rabbit', say: 'Sue has held the rabbits.' },
+      { name: 'Kim', iconId: 'bone', say: 'Kim has given out the bones.' },
+      { name: 'Max', iconId: 'fishbowl', say: 'Max has cleaned the fish bowl.' },
+      { name: 'Lily', iconId: 'bird_cage', say: 'Lily has cleaned the bird cage.' },
+    ],
+    distractors: ['ball'],
+  },
+  // L44 — Food festival
+  44: {
+    example: { name: 'Tom', iconId: 'noodles', say: 'Tom has cooked some noodles.' },
+    items: [
+      { name: 'Sue', iconId: 'cheese', say: 'Sue has tasted the cheese.' },
+      { name: 'Kim', iconId: 'pizza', say: 'Kim has made a pizza.' },
+      { name: 'Max', iconId: 'burger', say: 'Max has eaten a burger.' },
+      { name: 'Joe', iconId: 'ice_cream', say: 'Joe has had an ice cream.' },
+      { name: 'Lily', iconId: 'cake', say: 'Lily has baked a cake.' },
+    ],
+    distractors: ['salad'],
+  },
+  // L45 — Eco project
+  45: {
+    example: { name: 'Sam', iconId: 'recycle_bin', say: 'Sam has filled the recycling bin.' },
+    items: [
+      { name: 'Tom', iconId: 'solar_panel', say: 'Tom has fixed a solar panel.' },
+      { name: 'Sue', iconId: 'tree', say: 'Sue has planted a tree.' },
+      { name: 'Kim', iconId: 'flower', say: 'Kim has grown some flowers.' },
+      { name: 'Max', iconId: 'watering_can', say: 'Max has watered the plants.' },
+      { name: 'Lily', iconId: 'globe', say: 'Lily has drawn the Earth.' },
+    ],
+    distractors: ['bucket'],
+  },
+  // L46 — Space exhibition
+  46: {
+    example: { name: 'Sam', iconId: 'rocket', say: 'Sam has built a model rocket.' },
+    items: [
+      { name: 'Tom', iconId: 'telescope', say: 'Tom has looked through the telescope.' },
+      { name: 'Sue', iconId: 'planet', say: 'Sue has painted a planet.' },
+      { name: 'Kim', iconId: 'astronaut_helmet', say: 'Kim has worn the astronaut helmet.' },
+      { name: 'Max', iconId: 'star', say: 'Max has drawn the stars.' },
+      { name: 'Lily', iconId: 'moon', say: 'Lily has made a model of the moon.' },
+    ],
+    distractors: ['robot'],
+  },
+  // L47 — Cooking competition
+  47: {
+    example: { name: 'Tom', iconId: 'chef_hat', say: 'Tom has put on the chef hat.' },
+    items: [
+      { name: 'Sue', iconId: 'whisk', say: 'Sue has used the whisk.' },
+      { name: 'Kim', iconId: 'knife', say: 'Kim has cut the vegetables.' },
+      { name: 'Max', iconId: 'pizza', say: 'Max has made a pizza.' },
+      { name: 'Joe', iconId: 'cake', say: 'Joe has baked a cake.' },
+      { name: 'Lily', iconId: 'soup_bowl', say: 'Lily has cooked some soup.' },
+    ],
+    distractors: ['burger'],
+  },
+  // L48 — Film making
+  48: {
+    example: { name: 'Sam', iconId: 'video_camera', say: 'Sam has filmed the scene.' },
+    items: [
+      { name: 'Tom', iconId: 'clapperboard', say: 'Tom has used the clapperboard.' },
+      { name: 'Sue', iconId: 'script_paper', say: 'Sue has written the script.' },
+      { name: 'Kim', iconId: 'light_bulb', say: 'Kim has set up the lights.' },
+      { name: 'Max', iconId: 'microphone', say: 'Max has held the microphone.' },
+      { name: 'Lily', iconId: 'tripod', say: 'Lily has set up the tripod.' },
+    ],
+    distractors: ['photo'],
+  },
+  // L49 — Photography class
+  49: {
+    example: { name: 'Eva', iconId: 'camera', say: 'Eva has taken photos with the camera.' },
+    items: [
+      { name: 'Zoe', iconId: 'tripod', say: 'Zoe has set up the tripod.' },
+      { name: 'Ava', iconId: 'lens', say: 'Ava has changed the lens.' },
+      { name: 'Mia', iconId: 'photo', say: 'Mia has printed a photo.' },
+      { name: 'Leo', iconId: 'light_bulb', say: 'Leo has fixed the light.' },
+      { name: 'Ben', iconId: 'frame', say: 'Ben has put a photo in a frame.' },
+    ],
+    distractors: ['poster'],
+  },
+  // L50 — Mountain hiking
+  50: {
+    example: { name: 'Sam', iconId: 'backpack', say: 'Sam has packed his backpack.' },
+    items: [
+      { name: 'Tom', iconId: 'mountain', say: 'Tom has climbed the mountain.' },
+      { name: 'Sue', iconId: 'compass', say: 'Sue has used the compass.' },
+      { name: 'Kim', iconId: 'map', say: 'Kim has read the map.' },
+      { name: 'Max', iconId: 'binoculars', say: 'Max has looked through the binoculars.' },
+      { name: 'Lily', iconId: 'rope', say: 'Lily has carried the rope.' },
+    ],
+    distractors: ['tent'],
+  },
+  // L51 — Sailing course
+  51: {
+    example: { name: 'Sam', iconId: 'sailboat', say: 'Sam has sailed the boat.' },
+    items: [
+      { name: 'Tom', iconId: 'sail', say: 'Tom has raised the sail.' },
+      { name: 'Sue', iconId: 'life_ring', say: 'Sue has thrown the life ring.' },
+      { name: 'Kim', iconId: 'oar', say: 'Kim has used the oars.' },
+      { name: 'Max', iconId: 'rope', say: 'Max has tied the rope.' },
+      { name: 'Lily', iconId: 'flag', say: 'Lily has put up the flag.' },
+    ],
+    distractors: ['fish'],
+  },
+  // L52 — Ancient museum
+  52: {
+    example: { name: 'Tom', iconId: 'mummy', say: 'Tom has seen the mummy.' },
+    items: [
+      { name: 'Sue', iconId: 'mask', say: 'Sue has looked at the gold mask.' },
+      { name: 'Kim', iconId: 'fossil', say: 'Kim has found a fossil.' },
+      { name: 'Max', iconId: 'statue', say: 'Max has drawn the statue.' },
+      { name: 'Joe', iconId: 'vase', say: 'Joe has photographed the vase.' },
+      { name: 'Lily', iconId: 'dinosaur', say: 'Lily has studied the dinosaur.' },
+    ],
+    distractors: ['painting'],
+  },
+  // L53 — Drama festival
+  53: {
+    example: { name: 'Eva', iconId: 'mask', say: 'Eva has worn a mask.' },
+    items: [
+      { name: 'Zoe', iconId: 'curtain', say: 'Zoe has opened the curtain.' },
+      { name: 'Ava', iconId: 'microphone', say: 'Ava has spoken into the microphone.' },
+      { name: 'Mia', iconId: 'music_note', say: 'Mia has sung a song.' },
+      { name: 'Leo', iconId: 'script_paper', say: 'Leo has learned the script.' },
+      { name: 'Ben', iconId: 'dance_ribbon', say: 'Ben has waved a ribbon.' },
+    ],
+    distractors: ['tutu'],
+  },
+  // L54 — News reporter
+  54: {
+    example: { name: 'Sam', iconId: 'microphone', say: 'Sam has reported into the microphone.' },
+    items: [
+      { name: 'Tom', iconId: 'video_camera', say: 'Tom has filmed the news.' },
+      { name: 'Sue', iconId: 'laptop', say: 'Sue has typed the report.' },
+      { name: 'Kim', iconId: 'camera', say: 'Kim has taken a photo.' },
+      { name: 'Max', iconId: 'script_paper', say: 'Max has read the script.' },
+      { name: 'Lily', iconId: 'poster', say: 'Lily has made a poster.' },
+    ],
+    distractors: ['tablet'],
+  },
+  // L55 — Job shadowing
+  55: {
+    example: { name: 'Tom', iconId: 'stethoscope', say: 'Tom has watched a doctor use a stethoscope.' },
+    items: [
+      { name: 'Sue', iconId: 'wrench', say: 'Sue has used a wrench.' },
+      { name: 'Kim', iconId: 'hammer', say: 'Kim has used a hammer.' },
+      { name: 'Max', iconId: 'laptop', say: 'Max has worked on a laptop.' },
+      { name: 'Joe', iconId: 'chef_hat', say: 'Joe has helped a chef.' },
+      { name: 'Lily', iconId: 'paintbrush', say: 'Lily has painted with an artist.' },
+    ],
+    distractors: ['camera'],
+  },
+  // L56 — Time capsule
+  56: {
+    example: { name: 'Anna', iconId: 'box', say: 'Anna has filled the time capsule box.' },
+    items: [
+      { name: 'Tom', iconId: 'photo', say: 'Tom has added a photo.' },
+      { name: 'Sue', iconId: 'envelope', say: 'Sue has written a letter.' },
+      { name: 'Kim', iconId: 'teddy', say: 'Kim has put in a toy.' },
+      { name: 'Max', iconId: 'coin', say: 'Max has added a coin.' },
+      { name: 'Lily', iconId: 'tablet', say: 'Lily has recorded a video.' },
+    ],
+    distractors: ['book'],
+  },
+  // L57 — Future career
+  57: {
+    example: { name: 'Sam', iconId: 'robot', say: 'Sam wants to build robots.' },
+    items: [
+      { name: 'Tom', iconId: 'stethoscope', say: 'Tom wants to be a doctor.' },
+      { name: 'Sue', iconId: 'chef_hat', say: 'Sue wants to be a chef.' },
+      { name: 'Kim', iconId: 'rocket', say: 'Kim wants to be an astronaut.' },
+      { name: 'Max', iconId: 'laptop', say: 'Max wants to work with computers.' },
+      { name: 'Lily', iconId: 'paintbrush', say: 'Lily wants to be an artist.' },
+    ],
+    distractors: ['camera'],
+  },
+  // L58 — Pen pals
+  58: {
+    example: { name: 'Anna', iconId: 'envelope', say: 'Anna has written a letter.' },
+    items: [
+      { name: 'Tom', iconId: 'stamp', say: 'Tom has stuck on a stamp.' },
+      { name: 'Sue', iconId: 'postbox', say: 'Sue has posted it in the postbox.' },
+      { name: 'Kim', iconId: 'parcel', say: 'Kim has sent a parcel.' },
+      { name: 'Max', iconId: 'globe', say: 'Max has found his pen pal on the globe.' },
+      { name: 'Lily', iconId: 'pen', say: 'Lily has used a special pen.' },
+    ],
+    distractors: ['book'],
+  },
+  // L59 — School olympics
+  59: {
+    example: { name: 'Sam', iconId: 'torch', say: 'Sam has carried the torch.' },
+    items: [
+      { name: 'Tom', iconId: 'medal', say: 'Tom has won a medal.' },
+      { name: 'Sue', iconId: 'trophy', say: 'Sue has held the trophy.' },
+      { name: 'Kim', iconId: 'flag', say: 'Kim has waved the flag.' },
+      { name: 'Max', iconId: 'ball', say: 'Max has thrown the ball.' },
+      { name: 'Lily', iconId: 'whistle', say: 'Lily has blown the whistle.' },
+    ],
+    distractors: ['soccer_ball'],
+  },
+  // L60 — Graduation
+  60: {
+    example: { name: 'Eva', iconId: 'graduation_cap', say: 'Eva has worn the graduation cap.' },
+    items: [
+      { name: 'Zoe', iconId: 'diploma', say: 'Zoe has received her diploma.' },
+      { name: 'Ava', iconId: 'flower', say: 'Ava has been given flowers.' },
+      { name: 'Mia', iconId: 'cake', say: 'Mia has cut the cake.' },
+      { name: 'Leo', iconId: 'camera', say: 'Leo has taken the photos.' },
+      { name: 'Ben', iconId: 'star', say: 'Ben has won a gold star.' },
+    ],
+    distractors: ['trophy'],
+  },};
 
 const MATCH_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 
