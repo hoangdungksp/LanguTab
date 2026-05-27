@@ -311,7 +311,13 @@ async function getOrGenerateAudio(req: Request, env: Env): Promise<Response> {
   // ─── Cache miss everywhere — generate fresh + cache by provider ─────
   console.log('[exam-audio] cache miss → generating:', body.audioKey);
   const ttsStart = Date.now();
-  const { bytes, provider } = await generateTTSWithProvider(env, body.audioScript, lang);
+  // Part 2/3: stitch per-question segments with 2s gaps (falls back to
+  // single-shot if stitching isn't possible for the engine).
+  const gapped = partWantsGaps(body.audioKey)
+    ? await generateWithGaps(env, body.audioScript, lang)
+    : null;
+  const { bytes, provider } = gapped
+    ?? await generateTTSWithProvider(env, body.audioScript, lang);
   const ttsMs = Date.now() - ttsStart;
   console.log(
     `[exam-audio] TTS done via ${provider} in ${ttsMs}ms (${bytes.byteLength} bytes)`,
@@ -668,6 +674,123 @@ async function generateQwenTTS(env: Env, text: string): Promise<ArrayBuffer> {
     return bytes.buffer;
   }
   throw new Error('Qwen-TTS returned no audio url/data');
+}
+
+// ─── D-23/UX: 2-second gaps between questions (Part 2 & 3 only) ─────────
+// Part 2 (write) and Part 3 (tick) are discrete numbered questions; learners
+// need a clear pause to tell them apart. TTS engines ignore SSML/text pauses,
+// so we TTS each question segment separately and stitch them with real PCM
+// silence into one WAV. Only applied to p2/p3; everything else stays single-shot.
+
+const QUESTION_GAP_SEC = 2;
+
+/** True for Part 2 / Part 3 audio keys (e.g. `level1/p2.mp3`, `zh/level5/p3.mp3`). */
+function partWantsGaps(audioKey: string): boolean {
+  return /\/p[23]\.[a-z0-9]+$/i.test(audioKey);
+}
+
+/** Split a part script into [intro, Q1, Q2, …] at the numbered-question marks. */
+function splitQuestionSegments(script: string, lang: 'en' | 'zh'): string[] {
+  const re = lang === 'zh'
+    ? /(?=[一二三四五六七八九十]+。)/
+    : /(?=(?:One|Two|Three|Four|Five|Six|Seven|Eight)\.\s)/;
+  return script.split(re).map((s) => s.trim()).filter(Boolean);
+}
+
+/** Parse a standard PCM WAV → sample rate + raw PCM data bytes. Null if not WAV. */
+function parseWavPcm(buf: ArrayBuffer): { sampleRate: number; data: Uint8Array } | null {
+  const view = new DataView(buf);
+  if (buf.byteLength < 44) return null;
+  // 'RIFF' .... 'WAVE'
+  if (view.getUint32(0, false) !== 0x52494646 || view.getUint32(8, false) !== 0x57415645) {
+    return null;
+  }
+  let offset = 12;
+  let sampleRate = 0;
+  while (offset + 8 <= buf.byteLength) {
+    const id = view.getUint32(offset, false);
+    const size = view.getUint32(offset + 4, true);
+    if (id === 0x666d7420 /* 'fmt ' */) {
+      sampleRate = view.getUint32(offset + 12, true);
+    } else if (id === 0x64617461 /* 'data' */) {
+      const start = offset + 8;
+      const end = Math.min(start + size, buf.byteLength);
+      return { sampleRate: sampleRate || 24000, data: new Uint8Array(buf.slice(start, end)) };
+    }
+    offset += 8 + size + (size % 2); // chunks are word-aligned
+  }
+  return null;
+}
+
+/** Wrap mono 16-bit PCM bytes in a WAV container. */
+function pcmToWav(pcm: Uint8Array, sampleRate: number): ArrayBuffer {
+  const out = new ArrayBuffer(44 + pcm.length);
+  const v = new DataView(out);
+  const w4 = (o: number, s: string) => { for (let i = 0; i < 4; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+  w4(0, 'RIFF'); v.setUint32(4, 36 + pcm.length, true); w4(8, 'WAVE');
+  w4(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, sampleRate, true); v.setUint32(28, sampleRate * 2, true);
+  v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+  w4(36, 'data'); v.setUint32(40, pcm.length, true);
+  new Uint8Array(out, 44).set(pcm);
+  return out;
+}
+
+/** TTS one segment → mono-16-bit PCM (+ rate). Null if engine can't give WAV/PCM. */
+async function ttsSegmentPcm(
+  env: Env,
+  text: string,
+  lang: 'en' | 'zh',
+): Promise<{ sampleRate: number; data: Uint8Array } | null> {
+  try {
+    if (lang === 'zh') {
+      if (!env.DASHSCOPE_API_KEY) return null; // melotts format unknown → skip gaps
+      return parseWavPcm(await generateQwenTTS(env, text));
+    }
+    // English: Aura-2 raw linear16 PCM (assume 24 kHz mono 16-bit).
+    const speaker = env.AURA2_VOICE || AURA2_DEFAULT_VOICE;
+    const stream = (await env.AI.run('@cf/deepgram/aura-2-en', {
+      text, speaker, encoding: 'linear16',
+    })) as unknown as ReadableStream;
+    const pcm = new Uint8Array(await new Response(stream).arrayBuffer());
+    return pcm.byteLength ? { sampleRate: 24000, data: pcm } : null;
+  } catch (err) {
+    console.warn('[exam-audio] segment TTS failed:', err);
+    return null;
+  }
+}
+
+/**
+ * Generate part audio with 2s gaps between questions. Returns null on any
+ * issue so the caller falls back to a normal single-shot generation (no gaps,
+ * never broken audio).
+ */
+async function generateWithGaps(
+  env: Env,
+  script: string,
+  lang: 'en' | 'zh',
+): Promise<{ bytes: ArrayBuffer; provider: string } | null> {
+  const segments = splitQuestionSegments(script, lang);
+  if (segments.length < 2) return null; // no question boundaries found
+
+  const pcms: { sampleRate: number; data: Uint8Array }[] = [];
+  for (const seg of segments) {
+    const pcm = await ttsSegmentPcm(env, seg, lang);
+    if (!pcm) return null; // any failure → abort, single-shot fallback
+    pcms.push(pcm);
+  }
+  const sampleRate = pcms[0].sampleRate;
+  if (pcms.some((p) => p.sampleRate !== sampleRate)) return null;
+
+  const silence = new Uint8Array(sampleRate * QUESTION_GAP_SEC * 2); // mono 16-bit
+  const total = pcms.reduce((n, p) => n + p.data.length, 0) + silence.length * (pcms.length - 1);
+  const combined = new Uint8Array(total);
+  let pos = 0;
+  pcms.forEach((p, i) => {
+    if (i > 0) { combined.set(silence, pos); pos += silence.length; }
+    combined.set(p.data, pos); pos += p.data.length;
+  });
+  return { bytes: pcmToWav(combined, sampleRate), provider: lang === 'zh' ? 'qwen' : 'aura2' };
 }
 
 // ─── Scene image: read-only user path ──────────────────────────────────

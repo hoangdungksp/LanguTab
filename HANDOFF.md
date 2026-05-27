@@ -296,6 +296,7 @@ rm -rf public && mv public.snap.YYYYMMDD_HHMMSS public   # restore public snapsh
 
 ## 📝 Recent activity log (last 10)
 
+- 2026-05-27 — Pause 2s giữa câu hỏi Part 2 & 3 (EN+ZH): worker tách script theo "One./二。" → TTS từng đoạn → nối + chèn 2s PCM silence → 1 WAV. zh=Qwen, en=Aura-2 linear16@24k. Fallback an toàn nếu engine không ra WAV. CHỈ áp p2/p3. Admin phải Regen p2/p3 để có gap. (worker-only, đã deploy)
 - 2026-05-27 — v1.8.0 (version_name hiện trong chrome://extensions để biết đã đổi code). Chinese TTS: worker route audioKey `zh/` → Qwen-TTS (nếu có DASHSCOPE_API_KEY) → fallback MeloTTS lang='zh' (free). Audio ZH vẫn admin-gen (D-19). Set Qwen: `wrangler secret put DASHSCOPE_API_KEY`
 - 2026-05-27 — D-23 PILOT: Phòng thi tiếng Trung HSK1 (20 level L101-120). Exam đa ngôn ngữ theo targetLang; planets HSK1/2/3; dùng lại ảnh English (no worker deploy). Part 2 hanzi+pinyin. Audio ZH chưa wired (cần Qwen-TTS). Frontend-only
 - 2026-05-27 — D-19 IMPLEMENTED: role-based auth (D1 users.role user/editor/admin). Migration 13 applied (Jason=admin), worker /exam/me + role check on /admin/exam/*, frontend gate theo role + mọi call admin dùng authedFetch (google token). ADMIN_TOKEN bỏ khỏi bundle (break-glass server-side). Admin mở khóa exam content qua role, không qua secret hardcode
