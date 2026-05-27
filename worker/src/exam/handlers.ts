@@ -682,7 +682,18 @@ async function generateQwenTTS(env: Env, text: string): Promise<ArrayBuffer> {
 // so we TTS each question segment separately and stitch them with real PCM
 // silence into one WAV. Only applied to p2/p3; everything else stays single-shot.
 
-const QUESTION_GAP_SEC = 3;
+// Gap AFTER a "Question N." marker is short (it belongs with its question);
+// every other gap (after a question, after an answer) is the default.
+const GAP_AFTER_MARKER_SEC = 1;
+const GAP_DEFAULT_SEC = 2;
+
+/** A relabeled question marker: "Question 3." / "第三题。". */
+function isMarker(seg: string, lang: 'en' | 'zh'): boolean {
+  const t = seg.trim();
+  return lang === 'zh'
+    ? /^第[一二三四五六七八九十]+题。$/.test(t)
+    : /^Question \d+\.$/.test(t);
+}
 
 /**
  * Relabel question markers so they're unmistakable: "One." → "Question 1.",
@@ -888,12 +899,18 @@ async function generateWithGaps(
   const sampleRate = pcms[0].sampleRate;
   if (pcms.some((p) => p.sampleRate !== sampleRate)) return null;
 
-  const silence = new Uint8Array(sampleRate * QUESTION_GAP_SEC * 2); // mono 16-bit
-  const total = pcms.reduce((n, p) => n + p.data.length, 0) + silence.length * (pcms.length - 1);
+  // Gap before segment i (i>0) depends on the PRECEDING segment: short after a
+  // "Question N." marker so it stays glued to its question, default elsewhere.
+  const gapBytesBefore = (i: number) => {
+    const sec = isMarker(segments[i - 1], lang) ? GAP_AFTER_MARKER_SEC : GAP_DEFAULT_SEC;
+    return sampleRate * sec * 2; // mono 16-bit
+  };
+  let total = pcms.reduce((n, p) => n + p.data.length, 0);
+  for (let i = 1; i < pcms.length; i++) total += gapBytesBefore(i);
   const combined = new Uint8Array(total);
   let pos = 0;
   pcms.forEach((p, i) => {
-    if (i > 0) { combined.set(silence, pos); pos += silence.length; }
+    if (i > 0) { pos += gapBytesBefore(i); } // leave zeroed silence
     combined.set(p.data, pos); pos += p.data.length;
   });
   return { bytes: pcmToWav(combined, sampleRate), provider: gapProvider(env, lang) };
