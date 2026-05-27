@@ -179,7 +179,14 @@ function AudioPlayer({
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  // Playback speed — helps learners catch fast TTS (EN + ZH). 1 = normal.
+  const [rate, setRate] = useState(1);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Keep the <audio> playbackRate in sync with the chosen speed.
+  useEffect(() => {
+    if (audioRef.current) audioRef.current.playbackRate = rate;
+  }, [rate, audioUrl]);
 
   // Reset state when audioKey changes (new question)
   useEffect(() => {
@@ -228,6 +235,7 @@ function AudioPlayer({
     if (audioRef.current.src !== url) {
       audioRef.current.src = url;
     }
+    audioRef.current.playbackRate = rate;
     if (playing) {
       audioRef.current.pause();
     } else {
@@ -342,6 +350,27 @@ function AudioPlayer({
       <span className="text-[10px] text-ink-400 tabular-nums sm:hidden">
         {fmt(currentTime)}/{fmt(duration)}
       </span>
+
+      {/* Playback speed — slow the TTS down for listening practice. */}
+      <div className="flex shrink-0 items-center gap-0.5" title="Tốc độ phát">
+        <span className="hidden text-xs text-ink-400 sm:inline">🐢</span>
+        {[0.5, 0.75, 1].map((r) => (
+          <button
+            key={r}
+            onClick={() => setRate(r)}
+            className={[
+              'rounded border px-1.5 py-0.5 font-display text-[10px] font-bold transition-colors',
+              rate === r
+                ? 'border-mint-700 bg-mint-500 text-white'
+                : 'border-ink-300 bg-paper text-ink-600 hover:bg-cream',
+            ].join(' ')}
+            aria-label={`Tốc độ ${r}x`}
+            aria-pressed={rate === r}
+          >
+            {r}×
+          </button>
+        ))}
+      </div>
 
       <audio
         ref={audioRef}
