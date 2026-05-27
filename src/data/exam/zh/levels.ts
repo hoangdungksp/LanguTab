@@ -1330,6 +1330,774 @@ const ZH_LEVEL_DEFS: Record<number, ZhLevelDef> = {
       ],
     },
   },
+
+  // L126 — 我的一周 (my week)
+  126: {
+    theme: '我的一周',
+    dragSceneId: 'zh_hsk2_l126_week',
+    dragNames: ['小明', '小红', '小华', '小英', '小刚'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小明。', a: '小明' },
+        { q: '一周有几天上学？', say: '一周有五天上学。', a: '五' },
+      ],
+      questions: [
+        { prompt: '他几点起床？', say: '他七点起床。', accepted: [...numAns(7), '七点'] },
+        { prompt: '有几本书？', say: '有三本书。', accepted: numAns(3) },
+        { prompt: '他打了几次球？', say: '他打了两次球。', accepted: [...numAns(2), '两'] },
+        { prompt: '有几个苹果？', say: '有四个苹果。', accepted: numAns(4) },
+        { prompt: '现在几点？', say: '现在八点。', accepted: [...numAns(8), '八点'] },
+      ],
+    },
+    match: {
+      example: { name: '小明', iconId: 'bus', say: '小明坐公共汽车上学。' },
+      items: [
+        { name: '小红', iconId: 'ball', say: '小红打了球。' },
+        { name: '小华', iconId: 'book', say: '小华看了书。' },
+        { name: '小英', iconId: 'apple', say: '小英吃了苹果。' },
+        { name: '小丽', iconId: 'bed', say: '小丽睡得很早。' },
+        { name: '小刚', iconId: 'clock_3', say: '小刚三点起床了。' },
+      ],
+      distractors: ['kite'],
+    },
+    tick: {
+      example: { prompt: '哪个是公共汽车？', icons: ['bus', 'ball', 'book'], correct: 0 },
+      questions: [
+        { prompt: '哪个是球？', icons: ['book', 'ball', 'bus'], correct: 1 },
+        { prompt: '哪个是书？', icons: ['book', 'apple', 'bed'], correct: 0 },
+        { prompt: '哪个是苹果？', icons: ['bed', 'apple', 'ball'], correct: 1 },
+        { prompt: '哪个是床？', icons: ['bed', 'clock_3', 'book'], correct: 0 },
+        { prompt: '哪个是三点？', icons: ['clock_5', 'clock_3', 'clock_8'], correct: 1 },
+      ],
+    },
+    colourSceneId: 'zh_hsk2_l126_week_outline',
+    colour: {
+      example: { label: '公共汽车', color: 'red' },
+      regions: [
+        { label: '球', color: 'blue' },
+        { label: '书', color: 'green' },
+        { label: '苹果', color: 'orange' },
+        { label: '床', color: 'pink' },
+        { label: '钟', color: 'yellow' },
+      ],
+    },
+  },
+  // L127 — 看医生 (visiting the doctor)
+  127: {
+    theme: '看医生',
+    dragSceneId: 'zh_hsk2_l127_doctor',
+    dragNames: ['小红', '小华', '小明', '小英', '小丽'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小红。', a: '小红' },
+        { q: '有几个医生？', say: '有两个医生。', a: '二' },
+      ],
+      questions: [
+        { prompt: '他吃了几片药？', say: '他吃了三片药。', accepted: numAns(3) },
+        { prompt: '有几张床？', say: '有四张床。', accepted: numAns(4) },
+        { prompt: '有几辆救护车？', say: '有一辆救护车。', accepted: numAns(1) },
+        { prompt: '她几岁？', say: '她六岁。', accepted: numAns(6) },
+        { prompt: '现在几点？', say: '现在五点。', accepted: [...numAns(5), '五点'] },
+      ],
+    },
+    match: {
+      example: { name: '小红', iconId: 'stethoscope', say: '小红看了医生。' },
+      items: [
+        { name: '小华', iconId: 'pill', say: '小华吃了药。' },
+        { name: '小明', iconId: 'bandage', say: '小明贴了创可贴。' },
+        { name: '小英', iconId: 'thermometer', say: '小英量了体温。' },
+        { name: '小丽', iconId: 'bed', say: '小丽躺在床上。' },
+        { name: '小刚', iconId: 'ambulance', say: '小刚坐了救护车。' },
+      ],
+      distractors: ['flower'],
+    },
+    tick: {
+      example: { prompt: '哪个是床？', icons: ['bed', 'pill', 'bandage'], correct: 0 },
+      questions: [
+        { prompt: '哪个是药？', icons: ['bandage', 'pill', 'bed'], correct: 1 },
+        { prompt: '哪个是创可贴？', icons: ['bandage', 'thermometer', 'pill'], correct: 0 },
+        { prompt: '哪个是体温计？', icons: ['pill', 'thermometer', 'bed'], correct: 1 },
+        { prompt: '哪个是救护车？', icons: ['ambulance', 'bed', 'pill'], correct: 0 },
+        { prompt: '哪个是花？', icons: ['pill', 'bandage', 'flower'], correct: 2 },
+      ],
+    },
+    colourSceneId: 'zh_hsk2_l127_doctor_outline',
+    colour: {
+      example: { label: '床', color: 'pink' },
+      regions: [
+        { label: '药', color: 'red' },
+        { label: '创可贴', color: 'yellow' },
+        { label: '体温计', color: 'blue' },
+        { label: '救护车', color: 'green' },
+        { label: '花', color: 'orange' },
+      ],
+    },
+  },
+  // L128 — 做饭 (cooking)
+  128: {
+    theme: '做饭',
+    dragSceneId: 'zh_hsk2_l128_cooking',
+    dragNames: ['小华', '小明', '小红', '小英', '小丽'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小华。', a: '小华' },
+        { q: '做了几个比萨？', say: '做了三个比萨。', a: '三' },
+      ],
+      questions: [
+        { prompt: '做了几个蛋糕？', say: '做了两个蛋糕。', accepted: [...numAns(2), '两'] },
+        { prompt: '有几把刀？', say: '有四把刀。', accepted: numAns(4) },
+        { prompt: '煮了几碗汤？', say: '煮了五碗汤。', accepted: numAns(5) },
+        { prompt: '他几岁？', say: '他七岁。', accepted: numAns(7) },
+        { prompt: '现在几点？', say: '现在六点。', accepted: [...numAns(6), '六点'] },
+      ],
+    },
+    match: {
+      example: { name: '妈妈', iconId: 'chef_hat', say: '妈妈戴了厨师帽。' },
+      items: [
+        { name: '小红', iconId: 'whisk', say: '小红用了打蛋器。' },
+        { name: '小华', iconId: 'knife', say: '小华用了刀。' },
+        { name: '小英', iconId: 'pizza', say: '小英做了比萨。' },
+        { name: '小丽', iconId: 'cake', say: '小丽做了蛋糕。' },
+        { name: '小刚', iconId: 'soup_bowl', say: '小刚煮了汤。' },
+      ],
+      distractors: ['burger'],
+    },
+    tick: {
+      example: { prompt: '哪个是厨师帽？', icons: ['chef_hat', 'whisk', 'knife'], correct: 0 },
+      questions: [
+        { prompt: '哪个是打蛋器？', icons: ['knife', 'whisk', 'chef_hat'], correct: 1 },
+        { prompt: '哪个是刀？', icons: ['knife', 'pizza', 'cake'], correct: 0 },
+        { prompt: '哪个是比萨？', icons: ['cake', 'pizza', 'soup_bowl'], correct: 1 },
+        { prompt: '哪个是蛋糕？', icons: ['cake', 'soup_bowl', 'pizza'], correct: 0 },
+        { prompt: '哪个是汤？', icons: ['pizza', 'cake', 'soup_bowl'], correct: 2 },
+      ],
+    },
+    colourSceneId: 'zh_hsk2_l128_cooking_outline',
+    colour: {
+      example: { label: '厨师帽', color: 'red' },
+      regions: [
+        { label: '打蛋器', color: 'grey' },
+        { label: '刀', color: 'blue' },
+        { label: '比萨', color: 'orange' },
+        { label: '蛋糕', color: 'pink' },
+        { label: '汤', color: 'green' },
+      ],
+    },
+  },
+  // L129 — 太空馆 (space exhibition)
+  129: {
+    theme: '太空馆',
+    dragSceneId: 'zh_hsk2_l129_space',
+    dragNames: ['小明', '小红', '小华', '小英', '小刚'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小明。', a: '小明' },
+        { q: '有几个火箭？', say: '有两个火箭。', a: '二' },
+      ],
+      questions: [
+        { prompt: '有几颗星星？', say: '有五颗星星。', accepted: numAns(5) },
+        { prompt: '有几个行星？', say: '有三个行星。', accepted: numAns(3) },
+        { prompt: '有几个头盔？', say: '有四个头盔。', accepted: numAns(4) },
+        { prompt: '他几岁？', say: '他八岁。', accepted: numAns(8) },
+        { prompt: '有几个月亮？', say: '有一个月亮。', accepted: numAns(1) },
+      ],
+    },
+    match: {
+      example: { name: '小明', iconId: 'rocket', say: '小明做了火箭。' },
+      items: [
+        { name: '小红', iconId: 'telescope', say: '小红用了望远镜。' },
+        { name: '小华', iconId: 'planet', say: '小华画了行星。' },
+        { name: '小英', iconId: 'astronaut_helmet', say: '小英戴了头盔。' },
+        { name: '小丽', iconId: 'star', say: '小丽看了星星。' },
+        { name: '小刚', iconId: 'moon', say: '小刚看了月亮。' },
+      ],
+      distractors: ['robot'],
+    },
+    tick: {
+      example: { prompt: '哪个是火箭？', icons: ['rocket', 'telescope', 'planet'], correct: 0 },
+      questions: [
+        { prompt: '哪个是望远镜？', icons: ['planet', 'telescope', 'rocket'], correct: 1 },
+        { prompt: '哪个是行星？', icons: ['planet', 'star', 'moon'], correct: 0 },
+        { prompt: '哪个是头盔？', icons: ['moon', 'astronaut_helmet', 'star'], correct: 1 },
+        { prompt: '哪个是星星？', icons: ['star', 'moon', 'planet'], correct: 0 },
+        { prompt: '哪个是月亮？', icons: ['rocket', 'star', 'moon'], correct: 2 },
+      ],
+    },
+    colourSceneId: 'zh_hsk2_l129_space_outline',
+    colour: {
+      example: { label: '火箭', color: 'red' },
+      regions: [
+        { label: '望远镜', color: 'grey' },
+        { label: '行星', color: 'blue' },
+        { label: '头盔', color: 'yellow' },
+        { label: '星星', color: 'orange' },
+        { label: '月亮', color: 'purple' },
+      ],
+    },
+  },
+  // L130 — 海边 (at the seaside)
+  130: {
+    theme: '海边',
+    dragSceneId: 'zh_hsk2_l130_seaside',
+    dragNames: ['小红', '小明', '小华', '小英', '小丽'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小红。', a: '小红' },
+        { q: '有几条船？', say: '有三条船。', a: '三' },
+      ],
+      questions: [
+        { prompt: '钓了几条鱼？', say: '钓了两条鱼。', accepted: [...numAns(2), '两'] },
+        { prompt: '有几个水桶？', say: '有四个水桶。', accepted: numAns(4) },
+        { prompt: '有几个救生圈？', say: '有五个救生圈。', accepted: numAns(5) },
+        { prompt: '她几岁？', say: '她六岁。', accepted: numAns(6) },
+        { prompt: '现在几点？', say: '现在七点。', accepted: [...numAns(7), '七点'] },
+      ],
+    },
+    match: {
+      example: { name: '小红', iconId: 'sailboat', say: '小红开了船。' },
+      items: [
+        { name: '小明', iconId: 'life_ring', say: '小明拿了救生圈。' },
+        { name: '小华', iconId: 'oar', say: '小华用了桨。' },
+        { name: '小英', iconId: 'fish', say: '小英钓了鱼。' },
+        { name: '小丽', iconId: 'bucket', say: '小丽装了一桶水。' },
+        { name: '小刚', iconId: 'fishing_rod', say: '小刚用了钓鱼竿。' },
+      ],
+      distractors: ['tree'],
+    },
+    tick: {
+      example: { prompt: '哪个是船？', icons: ['sailboat', 'life_ring', 'oar'], correct: 0 },
+      questions: [
+        { prompt: '哪个是救生圈？', icons: ['oar', 'life_ring', 'sailboat'], correct: 1 },
+        { prompt: '哪个是桨？', icons: ['oar', 'fish', 'bucket'], correct: 0 },
+        { prompt: '哪个是鱼？', icons: ['bucket', 'fish', 'oar'], correct: 1 },
+        { prompt: '哪个是水桶？', icons: ['bucket', 'fishing_rod', 'fish'], correct: 0 },
+        { prompt: '哪个是钓鱼竿？', icons: ['fish', 'bucket', 'fishing_rod'], correct: 2 },
+      ],
+    },
+    colourSceneId: 'zh_hsk2_l130_seaside_outline',
+    colour: {
+      example: { label: '船', color: 'red' },
+      regions: [
+        { label: '救生圈', color: 'orange' },
+        { label: '桨', color: 'brown' },
+        { label: '鱼', color: 'blue' },
+        { label: '水桶', color: 'green' },
+        { label: '钓鱼竿', color: 'yellow' },
+      ],
+    },
+  },
+
+  // L131 — 宠物店 (pet shop)
+  131: {
+    theme: '宠物店',
+    dragSceneId: 'zh_hsk2_l131_petshop',
+    dragNames: ['小明', '小红', '小华', '小英', '小刚'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小明。', a: '小明' },
+        { q: '有几只猫？', say: '有三只猫。', a: '三' },
+      ],
+      questions: [
+        { prompt: '有几只狗？', say: '有两只狗。', accepted: [...numAns(2), '两'] },
+        { prompt: '有几只兔子？', say: '有四只兔子。', accepted: numAns(4) },
+        { prompt: '有几只鸟？', say: '有五只鸟。', accepted: numAns(5) },
+        { prompt: '他几岁？', say: '他六岁。', accepted: numAns(6) },
+        { prompt: '有几条鱼？', say: '有七条鱼。', accepted: numAns(7) },
+      ],
+    },
+    match: {
+      example: { name: '小明', iconId: 'cat', say: '小明喂了猫。' },
+      items: [
+        { name: '小红', iconId: 'dog', say: '小红喂了狗。' },
+        { name: '小华', iconId: 'rabbit', say: '小华抱了兔子。' },
+        { name: '小英', iconId: 'bird', say: '小英看了鸟。' },
+        { name: '小丽', iconId: 'fishbowl', say: '小丽喂了鱼。' },
+        { name: '小刚', iconId: 'bone', say: '小刚拿了骨头。' },
+      ],
+      distractors: ['bird_cage'],
+    },
+    tick: {
+      example: { prompt: '哪个是猫？', icons: ['cat', 'dog', 'rabbit'], correct: 0 },
+      questions: [
+        { prompt: '哪个是狗？', icons: ['rabbit', 'dog', 'cat'], correct: 1 },
+        { prompt: '哪个是兔子？', icons: ['rabbit', 'bird', 'dog'], correct: 0 },
+        { prompt: '哪个是鸟？', icons: ['fishbowl', 'bird', 'cat'], correct: 1 },
+        { prompt: '哪个是鱼缸？', icons: ['fishbowl', 'bone', 'bird_cage'], correct: 0 },
+        { prompt: '哪个是骨头？', icons: ['bird_cage', 'fishbowl', 'bone'], correct: 2 },
+      ],
+    },
+    colourSceneId: 'zh_hsk2_l131_petshop_outline',
+    colour: {
+      example: { label: '猫', color: 'orange' },
+      regions: [
+        { label: '狗', color: 'brown' },
+        { label: '兔子', color: 'pink' },
+        { label: '鸟', color: 'yellow' },
+        { label: '鱼', color: 'blue' },
+        { label: '骨头', color: 'grey' },
+      ],
+    },
+  },
+  // L132 — 美术课 (art class)
+  132: {
+    theme: '美术课',
+    dragSceneId: 'zh_hsk2_l132_artclass',
+    dragNames: ['小红', '小华', '小明', '小英', '小丽'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小红。', a: '小红' },
+        { q: '有几个画架？', say: '有两个画架。', a: '二' },
+      ],
+      questions: [
+        { prompt: '有几支画笔？', say: '有三支画笔。', accepted: numAns(3) },
+        { prompt: '有几张画？', say: '有四张画。', accepted: numAns(4) },
+        { prompt: '有几个画框？', say: '有五个画框。', accepted: numAns(5) },
+        { prompt: '她几岁？', say: '她八岁。', accepted: numAns(8) },
+        { prompt: '现在几点？', say: '现在六点。', accepted: [...numAns(6), '六点'] },
+      ],
+    },
+    match: {
+      example: { name: '小红', iconId: 'easel', say: '小红用了画架。' },
+      items: [
+        { name: '小华', iconId: 'paintbrush', say: '小华用了画笔。' },
+        { name: '小明', iconId: 'palette', say: '小明拿了调色板。' },
+        { name: '小英', iconId: 'frame', say: '小英做了画框。' },
+        { name: '小丽', iconId: 'painting', say: '小丽看了一张画。' },
+        { name: '小刚', iconId: 'statue', say: '小刚看了雕像。' },
+      ],
+      distractors: ['vase'],
+    },
+    tick: {
+      example: { prompt: '哪个是画架？', icons: ['easel', 'paintbrush', 'palette'], correct: 0 },
+      questions: [
+        { prompt: '哪个是画笔？', icons: ['palette', 'paintbrush', 'easel'], correct: 1 },
+        { prompt: '哪个是调色板？', icons: ['palette', 'frame', 'painting'], correct: 0 },
+        { prompt: '哪个是画框？', icons: ['painting', 'frame', 'statue'], correct: 1 },
+        { prompt: '哪个是画？', icons: ['painting', 'statue', 'vase'], correct: 0 },
+        { prompt: '哪个是雕像？', icons: ['vase', 'painting', 'statue'], correct: 2 },
+      ],
+    },
+    colourSceneId: 'zh_hsk2_l132_artclass_outline',
+    colour: {
+      example: { label: '画架', color: 'brown' },
+      regions: [
+        { label: '画笔', color: 'red' },
+        { label: '调色板', color: 'blue' },
+        { label: '画框', color: 'yellow' },
+        { label: '画', color: 'green' },
+        { label: '雕像', color: 'grey' },
+      ],
+    },
+  },
+  // L133 — 摄影 (photography)
+  133: {
+    theme: '摄影',
+    dragSceneId: 'zh_hsk2_l133_photo',
+    dragNames: ['小华', '小明', '小红', '小英', '小丽'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小华。', a: '小华' },
+        { q: '有几台相机？', say: '有两台相机。', a: '二' },
+      ],
+      questions: [
+        { prompt: '洗了几张照片？', say: '洗了三张照片。', accepted: numAns(3) },
+        { prompt: '有几个三脚架？', say: '有四个三脚架。', accepted: numAns(4) },
+        { prompt: '有几个镜头？', say: '有五个镜头。', accepted: numAns(5) },
+        { prompt: '他几岁？', say: '他七岁。', accepted: numAns(7) },
+        { prompt: '现在几点？', say: '现在八点。', accepted: [...numAns(8), '八点'] },
+      ],
+    },
+    match: {
+      example: { name: '小华', iconId: 'camera', say: '小华用了照相机。' },
+      items: [
+        { name: '小明', iconId: 'video_camera', say: '小明用了摄像机。' },
+        { name: '小红', iconId: 'photo', say: '小红洗了照片。' },
+        { name: '小英', iconId: 'tripod', say: '小英用了三脚架。' },
+        { name: '小丽', iconId: 'lens', say: '小丽换了镜头。' },
+        { name: '小刚', iconId: 'clapperboard', say: '小刚用了场记板。' },
+      ],
+      distractors: ['poster'],
+    },
+    tick: {
+      example: { prompt: '哪个是照相机？', icons: ['camera', 'video_camera', 'photo'], correct: 0 },
+      questions: [
+        { prompt: '哪个是摄像机？', icons: ['photo', 'video_camera', 'camera'], correct: 1 },
+        { prompt: '哪个是照片？', icons: ['photo', 'tripod', 'lens'], correct: 0 },
+        { prompt: '哪个是三脚架？', icons: ['lens', 'tripod', 'photo'], correct: 1 },
+        { prompt: '哪个是镜头？', icons: ['lens', 'clapperboard', 'camera'], correct: 0 },
+        { prompt: '哪个是场记板？', icons: ['camera', 'photo', 'clapperboard'], correct: 2 },
+      ],
+    },
+    colourSceneId: 'zh_hsk2_l133_photo_outline',
+    colour: {
+      example: { label: '照相机', color: 'black' },
+      regions: [
+        { label: '摄像机', color: 'grey' },
+        { label: '照片', color: 'blue' },
+        { label: '三脚架', color: 'brown' },
+        { label: '镜头', color: 'red' },
+        { label: '场记板', color: 'yellow' },
+      ],
+    },
+  },
+  // L134 — 花园 (garden)
+  134: {
+    theme: '花园',
+    dragSceneId: 'zh_hsk2_l134_garden',
+    dragNames: ['小英', '小明', '小丽', '小华', '小红'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小英。', a: '小英' },
+        { q: '种了几棵树？', say: '种了三棵树。', a: '三' },
+      ],
+      questions: [
+        { prompt: '有几个花盆？', say: '有两个花盆。', accepted: [...numAns(2), '两'] },
+        { prompt: '摘了几朵花？', say: '摘了四朵花。', accepted: numAns(4) },
+        { prompt: '有几个铲子？', say: '有五个铲子。', accepted: numAns(5) },
+        { prompt: '她几岁？', say: '她六岁。', accepted: numAns(6) },
+        { prompt: '现在几点？', say: '现在七点。', accepted: [...numAns(7), '七点'] },
+      ],
+    },
+    match: {
+      example: { name: '小英', iconId: 'spade', say: '小英用了铲子。' },
+      items: [
+        { name: '小明', iconId: 'watering_can', say: '小明用了浇水壶。' },
+        { name: '小丽', iconId: 'wheelbarrow', say: '小丽推了手推车。' },
+        { name: '小华', iconId: 'flowerpot', say: '小华拿了花盆。' },
+        { name: '小红', iconId: 'tree', say: '小红种了树。' },
+        { name: '小刚', iconId: 'flower', say: '小刚摘了花。' },
+      ],
+      distractors: ['bucket'],
+    },
+    tick: {
+      example: { prompt: '哪个是铲子？', icons: ['spade', 'watering_can', 'wheelbarrow'], correct: 0 },
+      questions: [
+        { prompt: '哪个是浇水壶？', icons: ['wheelbarrow', 'watering_can', 'spade'], correct: 1 },
+        { prompt: '哪个是手推车？', icons: ['wheelbarrow', 'flowerpot', 'tree'], correct: 0 },
+        { prompt: '哪个是花盆？', icons: ['tree', 'flowerpot', 'flower'], correct: 1 },
+        { prompt: '哪个是树？', icons: ['tree', 'flower', 'spade'], correct: 0 },
+        { prompt: '哪个是花？', icons: ['spade', 'tree', 'flower'], correct: 2 },
+      ],
+    },
+    colourSceneId: 'zh_hsk2_l134_garden_outline',
+    colour: {
+      example: { label: '铲子', color: 'grey' },
+      regions: [
+        { label: '浇水壶', color: 'blue' },
+        { label: '手推车', color: 'red' },
+        { label: '花盆', color: 'brown' },
+        { label: '树', color: 'green' },
+        { label: '花', color: 'pink' },
+      ],
+    },
+  },
+  // L135 — 邮局 (post office)
+  135: {
+    theme: '邮局',
+    dragSceneId: 'zh_hsk2_l135_postoffice',
+    dragNames: ['小红', '小明', '小华', '小丽', '小刚'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小红。', a: '小红' },
+        { q: '寄了几个包裹？', say: '寄了三个包裹。', a: '三' },
+      ],
+      questions: [
+        { prompt: '有几封信？', say: '有两封信。', accepted: [...numAns(2), '两'] },
+        { prompt: '有几张邮票？', say: '有四张邮票。', accepted: numAns(4) },
+        { prompt: '有几个邮筒？', say: '有一个邮筒。', accepted: numAns(1) },
+        { prompt: '他几岁？', say: '他八岁。', accepted: numAns(8) },
+        { prompt: '现在几点？', say: '现在五点。', accepted: [...numAns(5), '五点'] },
+      ],
+    },
+    match: {
+      example: { name: '小红', iconId: 'parcel', say: '小红寄了包裹。' },
+      items: [
+        { name: '小明', iconId: 'envelope', say: '小明写了信。' },
+        { name: '小华', iconId: 'stamp', say: '小华贴了邮票。' },
+        { name: '小丽', iconId: 'scales', say: '小丽用了天平。' },
+        { name: '小刚', iconId: 'postbox', say: '小刚用了邮筒。' },
+        { name: '小英', iconId: 'pen', say: '小英拿了笔。' },
+      ],
+      distractors: ['box'],
+    },
+    tick: {
+      example: { prompt: '哪个是包裹？', icons: ['parcel', 'envelope', 'stamp'], correct: 0 },
+      questions: [
+        { prompt: '哪个是信封？', icons: ['stamp', 'envelope', 'parcel'], correct: 1 },
+        { prompt: '哪个是邮票？', icons: ['stamp', 'scales', 'postbox'], correct: 0 },
+        { prompt: '哪个是天平？', icons: ['postbox', 'scales', 'envelope'], correct: 1 },
+        { prompt: '哪个是邮筒？', icons: ['postbox', 'pen', 'stamp'], correct: 0 },
+        { prompt: '哪个是笔？', icons: ['box', 'parcel', 'pen'], correct: 2 },
+      ],
+    },
+    colourSceneId: 'zh_hsk2_l135_postoffice_outline',
+    colour: {
+      example: { label: '包裹', color: 'brown' },
+      regions: [
+        { label: '信封', color: 'yellow' },
+        { label: '邮票', color: 'red' },
+        { label: '天平', color: 'grey' },
+        { label: '邮筒', color: 'green' },
+        { label: '笔', color: 'blue' },
+      ],
+    },
+  },
+
+  // L136 — 修理 (fixing things)
+  136: {
+    theme: '修理',
+    dragSceneId: 'zh_hsk2_l136_fixing',
+    dragNames: ['小明', '小红', '小华', '小英', '小刚'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小明。', a: '小明' },
+        { q: '有几个锤子？', say: '有两个锤子。', a: '二' },
+      ],
+      questions: [
+        { prompt: '有几把扳手？', say: '有三把扳手。', accepted: numAns(3) },
+        { prompt: '有几个梯子？', say: '有四个梯子。', accepted: numAns(4) },
+        { prompt: '有几个水桶？', say: '有五个水桶。', accepted: numAns(5) },
+        { prompt: '他几岁？', say: '他七岁。', accepted: numAns(7) },
+        { prompt: '现在几点？', say: '现在六点。', accepted: [...numAns(6), '六点'] },
+      ],
+    },
+    match: {
+      example: { name: '小明', iconId: 'wrench', say: '小明用了扳手。' },
+      items: [
+        { name: '小红', iconId: 'hammer', say: '小红用了锤子。' },
+        { name: '小华', iconId: 'ladder', say: '小华爬了梯子。' },
+        { name: '小英', iconId: 'bucket', say: '小英提了水桶。' },
+        { name: '小丽', iconId: 'paintbrush', say: '小丽刷了油漆。' },
+        { name: '小刚', iconId: 'box', say: '小刚搬了箱子。' },
+      ],
+      distractors: ['book'],
+    },
+    tick: {
+      example: { prompt: '哪个是扳手？', icons: ['wrench', 'hammer', 'ladder'], correct: 0 },
+      questions: [
+        { prompt: '哪个是锤子？', icons: ['ladder', 'hammer', 'wrench'], correct: 1 },
+        { prompt: '哪个是梯子？', icons: ['ladder', 'bucket', 'box'], correct: 0 },
+        { prompt: '哪个是水桶？', icons: ['box', 'bucket', 'ladder'], correct: 1 },
+        { prompt: '哪个是油漆刷？', icons: ['paintbrush', 'box', 'hammer'], correct: 0 },
+        { prompt: '哪个是箱子？', icons: ['book', 'bucket', 'box'], correct: 2 },
+      ],
+    },
+    colourSceneId: 'zh_hsk2_l136_fixing_outline',
+    colour: {
+      example: { label: '扳手', color: 'grey' },
+      regions: [
+        { label: '锤子', color: 'brown' },
+        { label: '梯子', color: 'red' },
+        { label: '水桶', color: 'blue' },
+        { label: '油漆刷', color: 'yellow' },
+        { label: '箱子', color: 'green' },
+      ],
+    },
+  },
+  // L137 — 生日会 (birthday party)
+  137: {
+    theme: '生日会',
+    dragSceneId: 'zh_hsk2_l137_birthday',
+    dragNames: ['小红', '小华', '小明', '小英', '小丽'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小红。', a: '小红' },
+        { q: '有几个蛋糕？', say: '有两个蛋糕。', a: '二' },
+      ],
+      questions: [
+        { prompt: '有几个礼物？', say: '有三个礼物。', accepted: numAns(3) },
+        { prompt: '有几个球？', say: '有四个球。', accepted: numAns(4) },
+        { prompt: '有几面旗子？', say: '有五面旗子。', accepted: numAns(5) },
+        { prompt: '她几岁？', say: '她八岁。', accepted: numAns(8) },
+        { prompt: '现在几点？', say: '现在七点。', accepted: [...numAns(7), '七点'] },
+      ],
+    },
+    match: {
+      example: { name: '小红', iconId: 'cake', say: '小红切了蛋糕。' },
+      items: [
+        { name: '小华', iconId: 'box', say: '小华拿了礼物。' },
+        { name: '小明', iconId: 'drum', say: '小明打了鼓。' },
+        { name: '小英', iconId: 'flag', say: '小英举了旗子。' },
+        { name: '小丽', iconId: 'star', say: '小丽挂了星星灯。' },
+        { name: '小刚', iconId: 'ball', say: '小刚玩了球。' },
+      ],
+      distractors: ['book'],
+    },
+    tick: {
+      example: { prompt: '哪个是蛋糕？', icons: ['cake', 'box', 'drum'], correct: 0 },
+      questions: [
+        { prompt: '哪个是礼物？', icons: ['drum', 'box', 'cake'], correct: 1 },
+        { prompt: '哪个是鼓？', icons: ['drum', 'flag', 'star'], correct: 0 },
+        { prompt: '哪个是旗子？', icons: ['star', 'flag', 'ball'], correct: 1 },
+        { prompt: '哪个是星星？', icons: ['star', 'ball', 'box'], correct: 0 },
+        { prompt: '哪个是球？', icons: ['cake', 'drum', 'ball'], correct: 2 },
+      ],
+    },
+    colourSceneId: 'zh_hsk2_l137_birthday_outline',
+    colour: {
+      example: { label: '蛋糕', color: 'pink' },
+      regions: [
+        { label: '礼物', color: 'red' },
+        { label: '鼓', color: 'brown' },
+        { label: '旗子', color: 'green' },
+        { label: '星星', color: 'yellow' },
+        { label: '球', color: 'blue' },
+      ],
+    },
+  },
+  // L138 — 电影院 (cinema)
+  138: {
+    theme: '电影院',
+    dragSceneId: 'zh_hsk2_l138_cinema',
+    dragNames: ['小华', '小明', '小红', '小英', '小丽'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小华。', a: '小华' },
+        { q: '买了几张票？', say: '买了两张票。', a: '二' },
+      ],
+      questions: [
+        { prompt: '有几桶爆米花？', say: '有三桶爆米花。', accepted: numAns(3) },
+        { prompt: '有几个冰淇淋？', say: '有四个冰淇淋。', accepted: numAns(4) },
+        { prompt: '有几杯果汁？', say: '有五杯果汁。', accepted: numAns(5) },
+        { prompt: '他几岁？', say: '他六岁。', accepted: numAns(6) },
+        { prompt: '现在几点？', say: '现在八点。', accepted: [...numAns(8), '八点'] },
+      ],
+    },
+    match: {
+      example: { name: '小华', iconId: 'popcorn', say: '小华买了爆米花。' },
+      items: [
+        { name: '小明', iconId: 'glasses_3d', say: '小明戴了3D眼镜。' },
+        { name: '小红', iconId: 'film_screen', say: '小红看了屏幕。' },
+        { name: '小英', iconId: 'ticket', say: '小英拿了票。' },
+        { name: '小丽', iconId: 'juice_glass', say: '小丽喝了果汁。' },
+        { name: '小刚', iconId: 'ice_cream', say: '小刚吃了冰淇淋。' },
+      ],
+      distractors: ['cake'],
+    },
+    tick: {
+      example: { prompt: '哪个是爆米花？', icons: ['popcorn', 'glasses_3d', 'ticket'], correct: 0 },
+      questions: [
+        { prompt: '哪个是3D眼镜？', icons: ['ticket', 'glasses_3d', 'popcorn'], correct: 1 },
+        { prompt: '哪个是屏幕？', icons: ['film_screen', 'juice_glass', 'ticket'], correct: 0 },
+        { prompt: '哪个是票？', icons: ['ice_cream', 'ticket', 'popcorn'], correct: 1 },
+        { prompt: '哪个是果汁？', icons: ['juice_glass', 'ice_cream', 'ticket'], correct: 0 },
+        { prompt: '哪个是冰淇淋？', icons: ['popcorn', 'juice_glass', 'ice_cream'], correct: 2 },
+      ],
+    },
+    colourSceneId: 'zh_hsk2_l138_cinema_outline',
+    colour: {
+      example: { label: '爆米花', color: 'yellow' },
+      regions: [
+        { label: '3D眼镜', color: 'black' },
+        { label: '屏幕', color: 'blue' },
+        { label: '票', color: 'red' },
+        { label: '果汁', color: 'orange' },
+        { label: '冰淇淋', color: 'pink' },
+      ],
+    },
+  },
+  // L139 — 机场 (airport)
+  139: {
+    theme: '机场',
+    dragSceneId: 'zh_hsk2_l139_airport',
+    dragNames: ['小英', '小明', '小丽', '小华', '小红'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小英。', a: '小英' },
+        { q: '有几架飞机？', say: '有三架飞机。', a: '三' },
+      ],
+      questions: [
+        { prompt: '有几个行李箱？', say: '有两个行李箱。', accepted: [...numAns(2), '两'] },
+        { prompt: '有几张票？', say: '有四张票。', accepted: numAns(4) },
+        { prompt: '有几张地图？', say: '有五张地图。', accepted: numAns(5) },
+        { prompt: '他几岁？', say: '他九岁。', accepted: numAns(9) },
+        { prompt: '飞机几点起飞？', say: '飞机八点起飞。', accepted: [...numAns(8), '八点'] },
+      ],
+    },
+    match: {
+      example: { name: '小英', iconId: 'plane', say: '小英坐了飞机。' },
+      items: [
+        { name: '小明', iconId: 'suitcase', say: '小明拉了行李箱。' },
+        { name: '小丽', iconId: 'ticket', say: '小丽拿了机票。' },
+        { name: '小华', iconId: 'map', say: '小华看了地图。' },
+        { name: '小红', iconId: 'globe', say: '小红转了地球仪。' },
+        { name: '小刚', iconId: 'compass', say: '小刚用了指南针。' },
+      ],
+      distractors: ['bus'],
+    },
+    tick: {
+      example: { prompt: '哪个是飞机？', icons: ['plane', 'suitcase', 'ticket'], correct: 0 },
+      questions: [
+        { prompt: '哪个是行李箱？', icons: ['ticket', 'suitcase', 'plane'], correct: 1 },
+        { prompt: '哪个是机票？', icons: ['ticket', 'map', 'globe'], correct: 0 },
+        { prompt: '哪个是地图？', icons: ['globe', 'map', 'compass'], correct: 1 },
+        { prompt: '哪个是地球仪？', icons: ['globe', 'compass', 'map'], correct: 0 },
+        { prompt: '哪个是指南针？', icons: ['plane', 'globe', 'compass'], correct: 2 },
+      ],
+    },
+    colourSceneId: 'zh_hsk2_l139_airport_outline',
+    colour: {
+      example: { label: '飞机', color: 'blue' },
+      regions: [
+        { label: '行李箱', color: 'brown' },
+        { label: '机票', color: 'yellow' },
+        { label: '地图', color: 'orange' },
+        { label: '地球仪', color: 'green' },
+        { label: '指南针', color: 'red' },
+      ],
+    },
+  },
+  // L140 — 复习 (HSK2 big review)
+  140: {
+    theme: '复习',
+    dragSceneId: 'zh_hsk2_l140_review',
+    dragNames: ['小明', '小红', '小华', '小丽', '小刚'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小明。', a: '小明' },
+        { q: '有几个球？', say: '有三个球。', a: '三' },
+      ],
+      questions: [
+        { prompt: '有几把吉他？', say: '有两把吉他。', accepted: [...numAns(2), '两'] },
+        { prompt: '有几只狮子？', say: '有四只狮子。', accepted: numAns(4) },
+        { prompt: '有几个比萨？', say: '有五个比萨。', accepted: numAns(5) },
+        { prompt: '他几岁？', say: '他八岁。', accepted: numAns(8) },
+        { prompt: '现在几点？', say: '现在七点。', accepted: [...numAns(7), '七点'] },
+      ],
+    },
+    match: {
+      example: { name: '小明', iconId: 'soccer_ball', say: '小明踢了足球。' },
+      items: [
+        { name: '小红', iconId: 'guitar', say: '小红弹了吉他。' },
+        { name: '小华', iconId: 'lion', say: '小华看了狮子。' },
+        { name: '小英', iconId: 'pizza', say: '小英吃了比萨。' },
+        { name: '小丽', iconId: 'plane', say: '小丽坐了飞机。' },
+        { name: '小刚', iconId: 'camera', say: '小刚拍了照片。' },
+      ],
+      distractors: ['book'],
+    },
+    tick: {
+      example: { prompt: '哪个是足球？', icons: ['soccer_ball', 'guitar', 'lion'], correct: 0 },
+      questions: [
+        { prompt: '哪个是吉他？', icons: ['lion', 'guitar', 'soccer_ball'], correct: 1 },
+        { prompt: '哪个是狮子？', icons: ['lion', 'pizza', 'plane'], correct: 0 },
+        { prompt: '哪个是比萨？', icons: ['plane', 'pizza', 'camera'], correct: 1 },
+        { prompt: '哪个是飞机？', icons: ['plane', 'camera', 'guitar'], correct: 0 },
+        { prompt: '哪个是照相机？', icons: ['lion', 'pizza', 'camera'], correct: 2 },
+      ],
+    },
+    colourSceneId: 'zh_hsk2_l140_review_outline',
+    colour: {
+      example: { label: '足球', color: 'black' },
+      regions: [
+        { label: '吉他', color: 'brown' },
+        { label: '狮子', color: 'yellow' },
+        { label: '比萨', color: 'red' },
+        { label: '飞机', color: 'blue' },
+        { label: '照相机', color: 'grey' },
+      ],
+    },
+  },
 };
 
 // ─── Template fallback (L106-L120, not yet curated) ─────────────────────────

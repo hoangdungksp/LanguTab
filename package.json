@@ -1,8 +1,8 @@
 {
   "name": "lingua-newtab",
   "displayName": "LinguTab — Học tiếng Trung & Anh",
-  "version": "1.17.0",
-  "versionName": "1.17.0 — HSK2 L121–125 (5 phần có Matching, ngôn ngữ A2)",
+  "version": "1.18.0",
+  "versionName": "1.18.0 — HSK2 hoàn thiện L121–140 (20 level, 5 phần có Matching)",
   "description": "Chrome extension thay new tab thành nơi học tiếng Trung / tiếng Anh với phonetics, flashcard SRS, TTS. Dành cho người Việt.",
   "private": true,
   "type": "module",
