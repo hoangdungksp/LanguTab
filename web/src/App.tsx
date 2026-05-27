@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { signIn, getToken, clearToken } from './auth';
+import { ExamManage } from './ExamManage';
 import {
   getMe, getStats, listUsers, setUserRole, getUserProgress,
   type Me, type Stats, type AdminUser, type ProgressRow,
@@ -46,13 +47,13 @@ export function App() {
     );
   }
 
-  if (me.role !== 'admin') {
+  if (me.role === 'user') {
     return (
       <div className="center">
         <div className="card login">
           <h1>Không có quyền</h1>
           <p>{me.email} — vai trò: <b>{me.role}</b></p>
-          <p>Bảng điều khiển chỉ dành cho admin. Liên hệ quản trị viên để được cấp quyền.</p>
+          <p>Bảng điều khiển dành cho <b>editor</b> (quản lý bài thi) và <b>admin</b> (thêm quản lý người dùng). Liên hệ admin để được cấp quyền.</p>
           <button className="btn" onClick={logout}>Đăng xuất</button>
         </div>
       </div>
@@ -63,6 +64,30 @@ export function App() {
 }
 
 function Dashboard({ me, onLogout }: { me: Me; onLogout: () => void }) {
+  const isAdmin = me.role === 'admin';
+  const [view, setView] = useState<'users' | 'exam'>(isAdmin ? 'users' : 'exam');
+
+  return (
+    <div className="app">
+      <header className="topbar">
+        <b>🐼 LinguTab</b>
+        <nav className="tabs">
+          {isAdmin && (
+            <button className={`btn sm ${view === 'users' ? 'primary' : ''}`} onClick={() => setView('users')}>Người dùng</button>
+          )}
+          <button className={`btn sm ${view === 'exam' ? 'primary' : ''}`} onClick={() => setView('exam')}>Bài thi</button>
+        </nav>
+        <span className="spacer" />
+        <span className="muted">{me.email} · {me.role}</span>
+        <button className="btn" onClick={onLogout}>Đăng xuất</button>
+      </header>
+
+      {view === 'exam' ? <ExamManage /> : <UsersPanel />}
+    </div>
+  );
+}
+
+function UsersPanel() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [err, setErr] = useState('');
@@ -85,14 +110,7 @@ function Dashboard({ me, onLogout }: { me: Me; onLogout: () => void }) {
   };
 
   return (
-    <div className="app">
-      <header className="topbar">
-        <b>🐼 LinguTab · Admin</b>
-        <span className="spacer" />
-        <span className="muted">{me.email}</span>
-        <button className="btn" onClick={onLogout}>Đăng xuất</button>
-      </header>
-
+    <>
       {err && <p className="error pad">{err}</p>}
 
       {stats && (
@@ -132,7 +150,7 @@ function Dashboard({ me, onLogout }: { me: Me; onLogout: () => void }) {
       </section>
 
       {selected && <ProgressDrawer user={selected} onClose={() => setSelected(null)} />}
-    </div>
+    </>
   );
 }
 
