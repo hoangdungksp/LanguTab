@@ -17,7 +17,9 @@ export function App() {
 
   useEffect(() => {
     setOnAuthExpired(() => { setMe(null); setError('Phiên đăng nhập hết hạn — đăng nhập lại.'); });
-    if (getToken()) getMe().then(setMe).catch(() => clearToken());
+    // Silent restore probe: if the stored token is stale it just fails quietly
+    // (no clearToken — that could wipe a token a concurrent login just stored).
+    if (getToken()) getMe().then(setMe).catch(() => {});
   }, []);
 
   const login = async () => {

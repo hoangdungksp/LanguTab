@@ -4,7 +4,7 @@ import { getToken, authExpired } from './auth';
 const WORKER_URL = (import.meta.env.VITE_WORKER_URL as string)
   || 'https://lingua-newtab-worker.kspstudio.workers.dev';
 
-async function api<T>(path: string, opts: RequestInit = {}): Promise<T> {
+async function api<T>(path: string, opts: RequestInit = {}, silent = false): Promise<T> {
   const token = getToken();
   const res = await fetch(`${WORKER_URL}${path}`, {
     ...opts,
@@ -15,8 +15,12 @@ async function api<T>(path: string, opts: RequestInit = {}): Promise<T> {
     },
   });
   if (res.status === 401) {
-    authExpired();
-    throw new Error('Phiên đăng nhập hết hạn — đăng nhập lại.');
+    const body = await res.text().catch(() => '');
+    console.warn('[LinguTab] 401 tại', path, '| token?', !!token, '| silent', silent, '|', body);
+    // `silent` (the getMe probe) must NOT trigger a global logout — otherwise a
+    // stale token's late 401 can bounce a fresh, successful login.
+    if (!silent) authExpired();
+    throw new Error(`401 tại ${path}: ${body.slice(0, 120)}`);
   }
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error((data as { error?: string }).error || `HTTP ${res.status}`);
@@ -42,7 +46,7 @@ export interface ProgressRow {
   attempts: number; first_completed_at: number; last_attempt_at: number;
 }
 
-export const getMe = () => api<Me>('/exam/me');
+export const getMe = () => api<Me>('/exam/me', {}, /* silent */ true);
 export const listUsers = () => api<{ users: AdminUser[] }>('/admin/users').then((r) => r.users);
 export const getStats = () => api<Stats>('/admin/stats');
 export const setUserRole = (userId: string, role: string) =>
