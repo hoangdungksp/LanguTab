@@ -274,6 +274,50 @@ export const SCENE_IDS = [
   'zh_hsk2_l138_cinema_outline',
   'zh_hsk2_l139_airport_outline',
   'zh_hsk2_l140_review_outline',
+  // HSK3 batch 1 (L141-145)
+  'zh_hsk3_l141_science',
+  'zh_hsk3_l142_tech',
+  'zh_hsk3_l143_eco',
+  'zh_hsk3_l144_future',
+  'zh_hsk3_l145_worldtravel',
+  'zh_hsk3_l141_science_outline',
+  'zh_hsk3_l142_tech_outline',
+  'zh_hsk3_l143_eco_outline',
+  'zh_hsk3_l144_future_outline',
+  'zh_hsk3_l145_worldtravel_outline',
+  // HSK3 batch 2 (L146-150)
+  'zh_hsk3_l146_film',
+  'zh_hsk3_l147_ocean',
+  'zh_hsk3_l148_museum',
+  'zh_hsk3_l149_drama',
+  'zh_hsk3_l150_mountain',
+  'zh_hsk3_l146_film_outline',
+  'zh_hsk3_l147_ocean_outline',
+  'zh_hsk3_l148_museum_outline',
+  'zh_hsk3_l149_drama_outline',
+  'zh_hsk3_l150_mountain_outline',
+  // HSK3 batch 3 (L151-155)
+  'zh_hsk3_l151_news',
+  'zh_hsk3_l152_jobs',
+  'zh_hsk3_l153_foodfest',
+  'zh_hsk3_l154_timecapsule',
+  'zh_hsk3_l155_penpals',
+  'zh_hsk3_l151_news_outline',
+  'zh_hsk3_l152_jobs_outline',
+  'zh_hsk3_l153_foodfest_outline',
+  'zh_hsk3_l154_timecapsule_outline',
+  'zh_hsk3_l155_penpals_outline',
+  // HSK3 batch 4 (L156-160)
+  'zh_hsk3_l156_olympics',
+  'zh_hsk3_l157_charity',
+  'zh_hsk3_l158_spacetravel',
+  'zh_hsk3_l159_graduation',
+  'zh_hsk3_l160_review',
+  'zh_hsk3_l156_olympics_outline',
+  'zh_hsk3_l157_charity_outline',
+  'zh_hsk3_l158_spacetravel_outline',
+  'zh_hsk3_l159_graduation_outline',
+  'zh_hsk3_l160_review_outline',
 ] as const;
 
 export type SceneId = typeof SCENE_IDS[number];
@@ -1885,6 +1929,222 @@ export const SCENE_PROMPTS: Record<SceneId, ScenePromptSpec> = {
   zh_hsk2_l140_review_outline: {
     prompt:
       'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of objects spread across the wide image: a football, a guitar, a lion, a pizza, a plane, a camera. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+
+  // ─── D-23: HSK3 batch 1 drag scenes (L141-145) ───────────────────────────
+  zh_hsk3_l141_science: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children in a science class. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt looking through a microscope; child wearing a blue shirt holding a test tube; child wearing a green shirt holding a magnet. Bottom row left to right: child wearing a yellow shirt holding a ruler; child wearing a pink shirt holding a flask; child wearing an orange shirt holding a light bulb. Science lab background. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l142_tech: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children at a technology museum. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt with a robot; child wearing a blue shirt using a laptop; child wearing a green shirt holding a tablet. Bottom row left to right: child wearing a yellow shirt watching a television; child wearing a pink shirt holding a camera; child wearing an orange shirt holding a light bulb. Technology exhibition background. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l143_eco: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children doing an environment project. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt using a recycling bin; child wearing a blue shirt holding a solar panel; child wearing a green shirt planting a tree. Bottom row left to right: child wearing a yellow shirt holding a flower; child wearing a pink shirt with a watering can; child wearing an orange shirt holding a globe. Outdoor nature background. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l144_future: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children in a future city. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt with a robot; child wearing a blue shirt near a rocket; child wearing a green shirt holding a solar panel. Bottom row left to right: child wearing a yellow shirt holding a light bulb; child wearing a pink shirt using a laptop; child wearing an orange shirt watching a television. Futuristic city background. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l145_worldtravel: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children planning a world trip. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt holding a globe; child wearing a blue shirt near a plane; child wearing a green shirt holding a compass. Bottom row left to right: child wearing a yellow shirt reading a map; child wearing a pink shirt pulling a suitcase; child wearing an orange shirt holding a camera. World map background. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+
+  // ─── D-23: HSK3 batch 1 colour outline scenes (L141-145) ─────────────────
+  zh_hsk3_l141_science_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of objects spread across the wide image: a microscope, a test tube, a magnet, a ruler, a flask, a light bulb. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l142_tech_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of objects spread across the wide image: a robot, a laptop, a tablet, a television, a camera, a light bulb. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l143_eco_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of objects spread across the wide image: a recycling bin, a solar panel, a tree, a flower, a watering can, a globe. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l144_future_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of objects spread across the wide image: a robot, a rocket, a solar panel, a light bulb, a laptop, a television. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l145_worldtravel_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of objects spread across the wide image: a globe, a plane, a compass, a map, a suitcase, a camera. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+
+  // ─── D-23: HSK3 batch 2 drag scenes (L146-150) ───────────────────────────
+  zh_hsk3_l146_film: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children making a film. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt with a video camera; child wearing a blue shirt holding a clapperboard; child wearing a green shirt holding a script. Bottom row left to right: child wearing a yellow shirt with a light; child wearing a pink shirt holding a microphone; child wearing an orange shirt with a tripod. Film set background. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l147_ocean: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children on an ocean adventure. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt on a sailboat; child wearing a blue shirt raising a sail; child wearing a green shirt holding a life ring. Bottom row left to right: child wearing a yellow shirt holding an oar; child wearing a pink shirt holding a fish; child wearing an orange shirt holding a rope. Open sea background. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l148_museum: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children at an ancient history museum. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt looking at a mummy; child wearing a blue shirt looking at a golden mask; child wearing a green shirt holding a fossil. Bottom row left to right: child wearing a yellow shirt drawing a statue; child wearing a pink shirt photographing a vase; child wearing an orange shirt looking at a dinosaur skeleton. Museum hall background. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l149_drama: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children at a drama festival on a stage. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt wearing a theatre mask; child wearing a blue shirt by a stage curtain; child wearing a green shirt holding a microphone. Bottom row left to right: child wearing a yellow shirt singing with music notes; child wearing a pink shirt holding a script; child wearing an orange shirt waving a ribbon. Theatre stage background. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l150_mountain: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children mountaineering. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt climbing a mountain; child wearing a blue shirt holding a compass; child wearing a green shirt reading a map. Bottom row left to right: child wearing a yellow shirt using binoculars; child wearing a pink shirt with a backpack; child wearing an orange shirt holding a rope. Mountain background. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+
+  // ─── D-23: HSK3 batch 2 colour outline scenes (L146-150) ─────────────────
+  zh_hsk3_l146_film_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of objects spread across the wide image: a video camera, a clapperboard, a script, a light, a microphone, a tripod. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l147_ocean_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of objects spread across the wide image: a sailboat, a sail, a life ring, an oar, a fish, a rope. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l148_museum_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of objects spread across the wide image: a mummy, a mask, a fossil, a statue, a vase, a dinosaur. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l149_drama_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of objects spread across the wide image: a theatre mask, a stage curtain, a microphone, a music note, a script, a ribbon. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l150_mountain_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of objects spread across the wide image: a mountain, a compass, a map, binoculars, a backpack, a rope. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+
+  // ─── D-23: HSK3 batch 3 drag scenes (L151-155) ───────────────────────────
+  zh_hsk3_l151_news: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children running a news studio. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt holding a microphone; child wearing a blue shirt with a video camera; child wearing a green shirt typing on a laptop. Bottom row left to right: child wearing a yellow shirt holding a camera; child wearing a pink shirt reading a script; child wearing an orange shirt holding a poster. News studio background. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l152_jobs: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children trying different jobs. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt as a doctor with a stethoscope; child wearing a blue shirt holding a wrench; child wearing a green shirt holding a hammer. Bottom row left to right: child wearing a yellow shirt wearing a chef hat; child wearing a pink shirt holding a paintbrush; child wearing an orange shirt using a laptop. Mixed workplace background. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l153_foodfest: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children at a food festival. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt eating noodles; child wearing a blue shirt holding cheese; child wearing a green shirt eating a burger. Bottom row left to right: child wearing a yellow shirt eating a salad; child wearing a pink shirt eating an ice cream; child wearing an orange shirt drinking juice. Food festival background with stalls. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l154_timecapsule: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children making a time capsule. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt holding a box; child wearing a blue shirt holding a photo; child wearing a green shirt holding an envelope. Bottom row left to right: child wearing a yellow shirt holding a teddy bear; child wearing a pink shirt holding a coin; child wearing an orange shirt holding a tablet. Classroom background. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l155_penpals: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children writing to pen pals. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt holding an envelope; child wearing a blue shirt sticking a stamp; child wearing a green shirt by a postbox. Bottom row left to right: child wearing a yellow shirt holding a parcel; child wearing a pink shirt with a globe; child wearing an orange shirt holding a pen. Desk and world map background. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+
+  // ─── D-23: HSK3 batch 3 colour outline scenes (L151-155) ─────────────────
+  zh_hsk3_l151_news_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of objects spread across the wide image: a microphone, a video camera, a laptop, a camera, a script, a poster. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l152_jobs_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of objects spread across the wide image: a stethoscope, a wrench, a hammer, a chef hat, a paintbrush, a laptop. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l153_foodfest_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of food spread across the wide image: a bowl of noodles, a piece of cheese, a burger, a salad, an ice cream, a glass of juice. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l154_timecapsule_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of objects spread across the wide image: a box, a photo, an envelope, a teddy bear, a coin, a tablet. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l155_penpals_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of objects spread across the wide image: an envelope, a stamp, a postbox, a parcel, a globe, a pen. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+
+  // ─── D-23: HSK3 batch 4 drag scenes (L156-160) ───────────────────────────
+  zh_hsk3_l156_olympics: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children at a school olympics. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt holding an olympic torch; child wearing a blue shirt with a medal; child wearing a green shirt holding a trophy. Bottom row left to right: child wearing a yellow shirt waving a flag; child wearing a pink shirt throwing a ball; child wearing an orange shirt blowing a whistle. Stadium background. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l157_charity: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children at a charity event. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt holding coins; child wearing a blue shirt with a donation box; child wearing a green shirt holding a poster. Bottom row left to right: child wearing a yellow shirt selling a cake; child wearing a pink shirt selling tickets; child wearing an orange shirt waving a flag. Charity fair background. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l158_spacetravel: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children on a space journey. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt in a rocket; child wearing a blue shirt with a telescope; child wearing a green shirt holding a planet model. Bottom row left to right: child wearing a yellow shirt wearing an astronaut helmet; child wearing a pink shirt pointing at a star; child wearing an orange shirt pointing at the moon. Outer space background. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l159_graduation: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children at a graduation ceremony. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red gown with a graduation cap; child wearing a blue gown holding a diploma; child wearing a green gown holding flowers. Bottom row left to right: child wearing a yellow gown cutting a cake; child wearing a pink gown holding a camera; child wearing an orange gown holding a gold star. Graduation hall background. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l160_review: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children celebrating everything they have learned. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt with a microscope; child wearing a blue shirt with a rocket; child wearing a green shirt holding a globe. Bottom row left to right: child wearing a yellow shirt holding a camera; child wearing a pink shirt holding a trophy; child wearing an orange shirt with a graduation cap. Bright celebratory background. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+
+  // ─── D-23: HSK3 batch 4 colour outline scenes (L156-160) ─────────────────
+  zh_hsk3_l156_olympics_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of objects spread across the wide image: an olympic torch, a medal, a trophy, a flag, a ball, a whistle. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l157_charity_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of objects spread across the wide image: a coin, a donation box, a poster, a cake, a ticket, a flag. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l158_spacetravel_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of objects spread across the wide image: a rocket, a telescope, a planet, an astronaut helmet, a star, a moon. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l159_graduation_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of objects spread across the wide image: a graduation cap, a diploma, a flower, a cake, a camera, a star. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  zh_hsk3_l160_review_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of objects spread across the wide image: a microscope, a rocket, a globe, a camera, a trophy, a graduation cap. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
     aspect: 'landscape',
   },
 };
