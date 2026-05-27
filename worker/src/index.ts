@@ -630,6 +630,8 @@ import { handleAdminRequest } from './admin/handlers';
 import { handleSyncRequest } from './sync/handlers';
 import { handleBillingRequest } from './billing/handlers';
 import { handleExamRequest, handleAdminExamRequest } from './exam/handlers';
+import { handleProgressRequest } from './exam/progress';
+import { handleAdminUsersRequest } from './admin/users';
 import { getUserTier, quotaFor } from './billing/tier';
 import { getUserRole, canEdit } from './auth/roles';
 
@@ -783,6 +785,25 @@ export default {
           } else {
             resp = await proxyGenerateStory(req, env, user);
           }
+        }
+      } else if (url.pathname === '/exam/progress') {
+        // D-21: mirror exam progress to D1 (GET own / POST upsert). Auth-gated.
+        const r = await handleProgressRequest(req, env, user);
+        resp = r ?? new Response(JSON.stringify({ error: 'Not found' }), {
+          status: 404, headers: { 'Content-Type': 'application/json' },
+        });
+      } else if (url.pathname.startsWith('/admin/users') || url.pathname === '/admin/stats') {
+        // D-21: admin dashboard API (manage users, view progress). Admin-only.
+        if (!user) {
+          resp = new Response(JSON.stringify({ error: 'Auth required' }), {
+            status: 401, headers: { 'Content-Type': 'application/json' },
+          });
+        } else {
+          const role = await getUserRole(env.DB, user.userId);
+          const r = await handleAdminUsersRequest(req, env, role);
+          resp = r ?? new Response(JSON.stringify({ error: 'Not found' }), {
+            status: 404, headers: { 'Content-Type': 'application/json' },
+          });
         }
       } else if (url.pathname.startsWith('/exam/')) {
         // Exam routes (audio TTS, future: attempt persistence). Auth check

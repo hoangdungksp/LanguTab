@@ -16,7 +16,25 @@
  * Shape: `{ completed: { [levelNumber]: { score, completedAt } } }`
  */
 
+import { authedFetch } from './authService';
+
 const STORAGE_KEY = 'linguanewtab.exam.progress.v1';
+const WORKER_URL = 'https://lingua-newtab-worker.kspstudio.workers.dev';
+
+/**
+ * D-21: best-effort mirror of a finished level to D1 so the web dashboard can
+ * show progress. Fire-and-forget — never blocks or throws into the exam flow;
+ * silently no-ops when the user isn't signed in. lang is derived from the
+ * level number (101+ = Chinese HSK).
+ */
+export function syncExamProgressToServer(levelNumber: number, stars: number, maxStars: number): void {
+  const lang = levelNumber > 100 ? 'zh' : 'en';
+  void authedFetch(`${WORKER_URL}/exam/progress`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ levelNumber, lang, stars, maxStars }),
+  }).catch(() => { /* offline / not signed in — local progress still saved */ });
+}
 
 export interface LevelCompletion {
   /** Score 0-100 from gradeAttempt. */

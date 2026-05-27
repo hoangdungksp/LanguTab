@@ -6,7 +6,7 @@ import type {
   ExamAttemptResult,
 } from '../../types';
 import { gradeAttempt } from '../../services/examGradingService';
-import { markLevelCompleted } from '../../services/examProgressService';
+import { markLevelCompleted, syncExamProgressToServer } from '../../services/examProgressService';
 import { getPlanet, planetForLevel } from '../../data/exam/planets';
 import { ExamPartView } from './ExamPartView';
 import { ExamResultsModal } from './ExamResultsModal';
@@ -88,6 +88,8 @@ export function ExamSession({ level, onExit }: Props) {
     if (result.totalStars > 0) {
       markLevelCompleted(level.levelNumber, result.totalStars);
     }
+    // D-21: mirror to D1 for the web dashboard (best-effort, signed-in only).
+    syncExamProgressToServer(level.levelNumber, result.totalStars, level.parts.length);
   }
 
   const goNext = () => {
