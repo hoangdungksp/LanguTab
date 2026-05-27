@@ -4,16 +4,16 @@
  * Levels 101-120 (no collision with the English 1-60 range). Audio is Chinese,
  * read by Qwen-TTS Cherry (D-1); Part 2 accepts hanzi AND toneless pinyin.
  *
- * L101-L115 are HAND-CURATED unique per level (like the English Starters):
- * each has its own theme, Chinese scene image, vocabulary and questions —
- * driven by ZH_LEVEL_DEFS below. L116-L120 still use the original uniform
- * template (reusing English scenes) until later batches curate them.
+ * ALL 20 levels (L101-L120) are HAND-CURATED unique per level (like the
+ * English Starters): each has its own theme, Chinese scene image, vocabulary
+ * and questions — driven by ZH_LEVEL_DEFS below. (The template fallback
+ * functions remain only as a safety net for any future uncurated level.)
  *
  * Theme roadmap (HSK1 syllabus, progressive):
  *   101 数字·公园 · 102 家庭·家 · 103 颜色·衣服 · 104 动物 · 105 食物
  *   106 学校 · 107 数字·年龄 · 108 时间 · 109 家里物品 · 110 吃喝
  *   111 交通 · 112 玩具 · 113 动物园 · 114 野餐 · 115 购物
- *   116-120: 复习/综合… (template fallback for now)
+ *   116 复习·校园 · 117 复习·房间 · 118 复习·市场 · 119 复习·周末 · 120 复习·联欢会
  */
 import type { ExamLevel, DragNamePart, WritePart, TickPart, ColourPart } from '../../../types';
 import type { IconId } from '../examIcons';
@@ -808,6 +808,207 @@ const ZH_LEVEL_DEFS: Record<number, ZhLevelDef> = {
         { label: '票', color: 'yellow' },
         { label: '钱', color: 'green' },
         { label: '价签', color: 'orange' },
+      ],
+    },
+  },
+
+  // L116 — 复习 1 · 校园活动 (school fair, mixed review)
+  116: {
+    theme: '复习·校园',
+    dragSceneId: 'zh_hsk1_l116_schoolfair',
+    dragNames: ['小明', '小红', '小华', '小英', '小刚'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小明。', a: '小明' },
+        { q: '有几本书？', say: '有三本书。', a: '三' },
+      ],
+      questions: [
+        { prompt: '有几个球？', say: '有两个球。', accepted: [...numAns(2), '两'] },
+        { prompt: '有几只猫？', say: '有四只猫。', accepted: numAns(4) },
+        { prompt: '有几个苹果？', say: '有五个苹果。', accepted: numAns(5) },
+        { prompt: '他几岁？', say: '他七岁。', accepted: numAns(7) },
+        { prompt: '现在几点？', say: '现在八点。', accepted: [...numAns(8), '八点'] },
+      ],
+    },
+    tick: {
+      example: { prompt: '哪个是书？', icons: ['book', 'ball', 'cat'], correct: 0 },
+      questions: [
+        { prompt: '哪个是球？', icons: ['cat', 'ball', 'book'], correct: 1 },
+        { prompt: '哪个是猫？', icons: ['cat', 'apple', 'bus'], correct: 0 },
+        { prompt: '哪个是苹果？', icons: ['ball', 'apple', 'cat'], correct: 1 },
+        { prompt: '哪个是公共汽车？', icons: ['bus', 'cat', 'apple'], correct: 0 },
+        { prompt: '有几只猫？', icons: ['count_2', 'count_3', 'count_4'], correct: 1 },
+      ],
+    },
+    colourSceneId: 'zh_hsk1_l116_schoolfair_outline',
+    colour: {
+      example: { label: '书', color: 'red' },
+      regions: [
+        { label: '球', color: 'blue' },
+        { label: '猫', color: 'orange' },
+        { label: '苹果', color: 'green' },
+        { label: '公共汽车', color: 'yellow' },
+        { label: '树', color: 'brown' },
+      ],
+    },
+  },
+  // L117 — 复习 2 · 我的房间 (my room, mixed review)
+  117: {
+    theme: '复习·房间',
+    dragSceneId: 'zh_hsk1_l117_myroom',
+    dragNames: ['小红', '小华', '小明', '小英', '小丽'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小红。', a: '小红' },
+        { q: '有几张床？', say: '有两张床。', a: '二' },
+      ],
+      questions: [
+        { prompt: '有几把椅子？', say: '有四把椅子。', accepted: numAns(4) },
+        { prompt: '有几盏灯？', say: '有三盏灯。', accepted: numAns(3) },
+        { prompt: '有几台电视？', say: '有一台电视。', accepted: numAns(1) },
+        { prompt: '有几本书？', say: '有五本书。', accepted: numAns(5) },
+        { prompt: '现在几点？', say: '现在六点。', accepted: [...numAns(6), '六点'] },
+      ],
+    },
+    tick: {
+      example: { prompt: '哪个是床？', icons: ['bed', 'chair', 'lamp'], correct: 0 },
+      questions: [
+        { prompt: '哪个是椅子？', icons: ['lamp', 'chair', 'bed'], correct: 1 },
+        { prompt: '哪个是灯？', icons: ['tv', 'book', 'lamp'], correct: 2 },
+        { prompt: '哪个是电视？', icons: ['tv', 'teddy', 'lamp'], correct: 0 },
+        { prompt: '哪个是玩具熊？', icons: ['cat', 'teddy', 'dog'], correct: 1 },
+        { prompt: '哪个是书？', icons: ['book', 'ball', 'pen'], correct: 0 },
+      ],
+    },
+    colourSceneId: 'zh_hsk1_l117_myroom_outline',
+    colour: {
+      example: { label: '床', color: 'pink' },
+      regions: [
+        { label: '椅子', color: 'blue' },
+        { label: '灯', color: 'yellow' },
+        { label: '电视', color: 'black' },
+        { label: '玩具熊', color: 'brown' },
+        { label: '书', color: 'green' },
+      ],
+    },
+  },
+  // L118 — 复习 3 · 市场 (market day, food + money review)
+  118: {
+    theme: '复习·市场',
+    dragSceneId: 'zh_hsk1_l118_market',
+    dragNames: ['小华', '小明', '小红', '小英', '小丽'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小华。', a: '小华' },
+        { q: '有几个苹果？', say: '有三个苹果。', a: '三' },
+      ],
+      questions: [
+        { prompt: '有几根香蕉？', say: '有两根香蕉。', accepted: [...numAns(2), '两'] },
+        { prompt: '有几个面包？', say: '有四个面包。', accepted: numAns(4) },
+        { prompt: '有几块蛋糕？', say: '有五块蛋糕。', accepted: numAns(5) },
+        { prompt: '有几杯果汁？', say: '有六杯果汁。', accepted: numAns(6) },
+        { prompt: '有几个橙子？', say: '有三个橙子。', accepted: numAns(3) },
+      ],
+    },
+    tick: {
+      example: { prompt: '哪个是苹果？', icons: ['apple', 'banana', 'bread'], correct: 0 },
+      questions: [
+        { prompt: '哪个是香蕉？', icons: ['bread', 'banana', 'apple'], correct: 1 },
+        { prompt: '哪个是面包？', icons: ['bread', 'cake', 'banana'], correct: 0 },
+        { prompt: '哪个是蛋糕？', icons: ['apple', 'cake', 'bread'], correct: 1 },
+        { prompt: '哪个是果汁？', icons: ['juice_glass', 'apple', 'cake'], correct: 0 },
+        { prompt: '哪个是钱？', icons: ['book', 'coin', 'box'], correct: 1 },
+      ],
+    },
+    colourSceneId: 'zh_hsk1_l118_market_outline',
+    colour: {
+      example: { label: '苹果', color: 'red' },
+      regions: [
+        { label: '香蕉', color: 'yellow' },
+        { label: '面包', color: 'brown' },
+        { label: '蛋糕', color: 'pink' },
+        { label: '果汁', color: 'orange' },
+        { label: '钱包', color: 'green' },
+      ],
+    },
+  },
+  // L119 — 复习 4 · 周末出去玩 (weekend out, transport + play review)
+  119: {
+    theme: '复习·周末',
+    dragSceneId: 'zh_hsk1_l119_weekend',
+    dragNames: ['小英', '小明', '小华', '小红', '小刚'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小英。', a: '小英' },
+        { q: '有几辆车？', say: '有三辆车。', a: '三' },
+      ],
+      questions: [
+        { prompt: '有几架飞机？', say: '有两架飞机。', accepted: [...numAns(2), '两'] },
+        { prompt: '有几个球？', say: '有四个球。', accepted: numAns(4) },
+        { prompt: '有几个风筝？', say: '有五个风筝。', accepted: numAns(5) },
+        { prompt: '他几岁？', say: '他八岁。', accepted: numAns(8) },
+        { prompt: '现在几点？', say: '现在三点。', accepted: [...numAns(3), '三点'] },
+      ],
+    },
+    tick: {
+      example: { prompt: '哪个是公共汽车？', icons: ['bus', 'plane', 'sailboat'], correct: 0 },
+      questions: [
+        { prompt: '哪个是飞机？', icons: ['sailboat', 'plane', 'bus'], correct: 1 },
+        { prompt: '哪个是船？', icons: ['sailboat', 'bus', 'plane'], correct: 0 },
+        { prompt: '哪个是球？', icons: ['kite', 'ball', 'bus'], correct: 1 },
+        { prompt: '哪个是风筝？', icons: ['kite', 'ball', 'plane'], correct: 0 },
+        { prompt: '哪个是三点？', icons: ['clock_3', 'clock_5', 'clock_8'], correct: 0 },
+      ],
+    },
+    colourSceneId: 'zh_hsk1_l119_weekend_outline',
+    colour: {
+      example: { label: '公共汽车', color: 'red' },
+      regions: [
+        { label: '飞机', color: 'blue' },
+        { label: '船', color: 'green' },
+        { label: '球', color: 'orange' },
+        { label: '风筝', color: 'purple' },
+        { label: '太阳', color: 'yellow' },
+      ],
+    },
+  },
+  // L120 — 复习 5 · 联欢会 (celebration party, big mixed review)
+  120: {
+    theme: '复习·联欢会',
+    dragSceneId: 'zh_hsk1_l120_party',
+    dragNames: ['小红', '小明', '小华', '小丽', '小英'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小红。', a: '小红' },
+        { q: '有几块蛋糕？', say: '有三块蛋糕。', a: '三' },
+      ],
+      questions: [
+        { prompt: '有几个礼物？', say: '有四个礼物。', accepted: numAns(4) },
+        { prompt: '有几只猫？', say: '有两只猫。', accepted: [...numAns(2), '两'] },
+        { prompt: '有几只狗？', say: '有五只狗。', accepted: numAns(5) },
+        { prompt: '她几岁？', say: '她六岁。', accepted: numAns(6) },
+        { prompt: '现在几点？', say: '现在七点。', accepted: [...numAns(7), '七点'] },
+      ],
+    },
+    tick: {
+      example: { prompt: '哪个是蛋糕？', icons: ['cake', 'pizza', 'bread'], correct: 0 },
+      questions: [
+        { prompt: '哪个是礼物？', icons: ['box', 'ball', 'cake'], correct: 0 },
+        { prompt: '哪个是球？', icons: ['cat', 'ball', 'box'], correct: 1 },
+        { prompt: '哪个是猫？', icons: ['cat', 'dog', 'ball'], correct: 0 },
+        { prompt: '哪个是狗？', icons: ['cat', 'box', 'dog'], correct: 2 },
+        { prompt: '有几块蛋糕？', icons: ['count_3', 'count_4', 'count_5'], correct: 1 },
+      ],
+    },
+    colourSceneId: 'zh_hsk1_l120_party_outline',
+    colour: {
+      example: { label: '蛋糕', color: 'pink' },
+      regions: [
+        { label: '礼物盒', color: 'red' },
+        { label: '球', color: 'blue' },
+        { label: '猫', color: 'orange' },
+        { label: '狗', color: 'brown' },
+        { label: '气球', color: 'green' },
       ],
     },
   },
