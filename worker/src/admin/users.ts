@@ -83,13 +83,18 @@ export async function handleAdminUsersRequest(
     return json({ progress: rows });
   }
 
-  // GET /admin/stats — dashboard headline numbers.
+  // GET /admin/stats — dashboard headline numbers + breakdowns for charts.
   if (p === '/admin/stats' && req.method === 'GET') {
-    const [users, byTier, byRole, progress] = await Promise.all([
+    const planetCase = `CASE
+        WHEN level_number > 140 THEN 'HSK3' WHEN level_number > 120 THEN 'HSK2'
+        WHEN level_number > 100 THEN 'HSK1' WHEN level_number > 40 THEN 'Flyers'
+        WHEN level_number > 20 THEN 'Movers' ELSE 'Starters' END`;
+    const [users, byTier, byRole, progress, byPlanet] = await Promise.all([
       env.DB.prepare(`SELECT COUNT(*) AS n FROM users WHERE deleted_at IS NULL`).first<{ n: number }>(),
       env.DB.prepare(`SELECT tier, COUNT(*) AS n FROM users WHERE deleted_at IS NULL GROUP BY tier`).all<{ tier: string; n: number }>(),
       env.DB.prepare(`SELECT role, COUNT(*) AS n FROM users WHERE deleted_at IS NULL GROUP BY role`).all<{ role: string; n: number }>(),
       env.DB.prepare(`SELECT COUNT(*) AS n, COALESCE(SUM(best_stars),0) AS stars FROM exam_progress`).first<{ n: number; stars: number }>(),
+      env.DB.prepare(`SELECT ${planetCase} AS planet, COUNT(*) AS n, COALESCE(SUM(best_stars),0) AS stars FROM exam_progress GROUP BY planet`).all<{ planet: string; n: number; stars: number }>(),
     ]);
     return json({
       totalUsers: users?.n ?? 0,
@@ -97,6 +102,7 @@ export async function handleAdminUsersRequest(
       byRole: byRole.results ?? [],
       levelsCompleted: progress?.n ?? 0,
       starsEarned: progress?.stars ?? 0,
+      byPlanet: byPlanet.results ?? [],
     });
   }
 

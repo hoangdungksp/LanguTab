@@ -33,6 +33,13 @@ export function clearToken(): void {
   sessionStorage.removeItem(TOKEN_KEY);
 }
 
+// When a request gets 401 (token expired — GIS access tokens last ~1h), the
+// app should bounce back to the login screen instead of showing a stuck red
+// error. The API layer calls authExpired(); App registers a handler.
+let onExpired: (() => void) | null = null;
+export function setOnAuthExpired(cb: () => void): void { onExpired = cb; }
+export function authExpired(): void { clearToken(); onExpired?.(); }
+
 /** Opens the Google consent popup and resolves with an access token. */
 export function signIn(): Promise<string> {
   return new Promise((resolve, reject) => {

@@ -1,5 +1,5 @@
 /** Editor/admin exam-content endpoints (scene images, audio, scripts). */
-import { getToken, clearToken } from './auth';
+import { getToken, authExpired } from './auth';
 
 const WORKER_URL = (import.meta.env.VITE_WORKER_URL as string)
   || 'https://lingua-newtab-worker.kspstudio.workers.dev';
@@ -10,7 +10,7 @@ function authHeaders(extra: Record<string, string> = {}): Record<string, string>
 }
 
 async function asJson<T>(res: Response): Promise<T> {
-  if (res.status === 401) { clearToken(); throw new Error('Phiên hết hạn — đăng nhập lại.'); }
+  if (res.status === 401) { authExpired(); throw new Error('Phiên hết hạn — đăng nhập lại.'); }
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error((data as { error?: string }).error || `HTTP ${res.status}`);
   return data as T;
@@ -52,7 +52,7 @@ export async function audioStatus(audioKey: string, audioScript: string): Promis
 export async function generateAudio(audioKey: string, audioScript: string, force = true): Promise<{ provider: string; bytes: number }> {
   const res = await fetch(`${WORKER_URL}/admin/exam/audio/generate`,
     { method: 'POST', headers: authHeaders({ 'Content-Type': 'application/json' }), body: JSON.stringify({ audioKey, audioScript, force }) });
-  if (res.status === 401) { clearToken(); throw new Error('Phiên hết hạn — đăng nhập lại.'); }
+  if (res.status === 401) { authExpired(); throw new Error('Phiên hết hạn — đăng nhập lại.'); }
   if (!res.ok) throw new Error(`HTTP ${res.status} ${(await res.text()).slice(0, 120)}`);
   const buf = await res.arrayBuffer();
   return { provider: res.headers.get('X-Audio-Provider') || '?', bytes: buf.byteLength };

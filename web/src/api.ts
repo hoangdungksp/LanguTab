@@ -1,5 +1,5 @@
 /** Thin client for the shared worker API, attaching the Google Bearer token. */
-import { getToken, clearToken } from './auth';
+import { getToken, authExpired } from './auth';
 
 const WORKER_URL = (import.meta.env.VITE_WORKER_URL as string)
   || 'https://lingua-newtab-worker.kspstudio.workers.dev';
@@ -15,7 +15,7 @@ async function api<T>(path: string, opts: RequestInit = {}): Promise<T> {
     },
   });
   if (res.status === 401) {
-    clearToken();
+    authExpired();
     throw new Error('Phiên đăng nhập hết hạn — đăng nhập lại.');
   }
   const data = await res.json().catch(() => ({}));
@@ -35,6 +35,7 @@ export interface Stats {
   byRole: { role: string; n: number }[];
   levelsCompleted: number;
   starsEarned: number;
+  byPlanet: { planet: string; n: number; stars: number }[];
 }
 export interface ProgressRow {
   level_number: number; lang: string; best_stars: number; max_stars: number;
