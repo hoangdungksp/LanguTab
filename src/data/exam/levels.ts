@@ -6398,191 +6398,292 @@ function namesPoolForDifficulty(difficulty: Difficulty, idx: number): string[] {
  * options (6 used + 1 distractor). `say` is the spoken past-tense clue.
  */
 interface MoverMatchDef {
-  /** Spoken example clue, e.g. "Ben slept in the tent." */
-  example: { name: string; letter: string; say: string };
-  items: { name: string; letter: string; say: string }[]; // 5
-  options: { letter: string; iconId: IconId }[]; // 7
+  /** Spoken example clue + the picture it links to. */
+  example: { name: string; iconId: IconId; say: string };
+  /** 5 people to match, each with their correct picture + spoken clue. */
+  items: { name: string; iconId: IconId; say: string }[];
+  /** Extra picture(s) with no matching person (red herrings). */
+  distractors: IconId[];
+}
+
+/** Deterministic (per-seed) Fisher–Yates shuffle — mulberry32 PRNG. */
+function seededShuffle<T>(arr: T[], seed: number): T[] {
+  let a = seed >>> 0;
+  const rand = () => {
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  const out = arr.slice();
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
 }
 
 const MOVERS_MATCH_BY_LEVEL: Record<number, MoverMatchDef> = {
   // L21 — Summer camp
   21: {
-    example: { name: 'Ben', letter: 'A', say: 'Ben slept in the tent.' },
+    example: { name: 'Ben', iconId: 'tent', say: 'Ben slept in the tent.' },
     items: [
-      { name: 'Anna', letter: 'B', say: 'Anna paddled the canoe across the lake.' },
-      { name: 'Tom', letter: 'C', say: 'Tom cooked his food on the campfire.' },
-      { name: 'Sue', letter: 'D', say: 'Sue carried the big heavy backpack.' },
-      { name: 'May', letter: 'E', say: 'May caught a fish in the river.' },
-      { name: 'Jack', letter: 'F', say: 'Jack climbed the tall tree.' },
+      { name: 'Anna', iconId: 'canoe', say: 'Anna paddled the canoe across the lake.' },
+      { name: 'Tom', iconId: 'campfire', say: 'Tom cooked his food on the campfire.' },
+      { name: 'Sue', iconId: 'backpack', say: 'Sue carried the big heavy backpack.' },
+      { name: 'May', iconId: 'fish', say: 'May caught a fish in the river.' },
+      { name: 'Jack', iconId: 'tree', say: 'Jack climbed the tall tree.' },
     ],
-    options: [
-      { letter: 'A', iconId: 'tent' }, { letter: 'B', iconId: 'canoe' },
-      { letter: 'C', iconId: 'campfire' }, { letter: 'D', iconId: 'backpack' },
-      { letter: 'E', iconId: 'fish' }, { letter: 'F', iconId: 'tree' },
-      { letter: 'G', iconId: 'ball' },
-    ],
+    distractors: ['ball'],
   },
   // L22 — Music lesson
   22: {
-    example: { name: 'Mason', letter: 'A', say: 'Mason played the guitar.' },
+    example: { name: 'Mason', iconId: 'guitar', say: 'Mason played the guitar.' },
     items: [
-      { name: 'Daisy', letter: 'B', say: 'Daisy played the piano.' },
-      { name: 'Charlie', letter: 'C', say: 'Charlie played the drums.' },
-      { name: 'Emma', letter: 'D', say: 'Emma played the violin.' },
-      { name: 'Leo', letter: 'E', say: 'Leo played the trumpet.' },
-      { name: 'Mia', letter: 'F', say: 'Mia sang into the microphone.' },
+      { name: 'Daisy', iconId: 'piano', say: 'Daisy played the piano.' },
+      { name: 'Charlie', iconId: 'drum', say: 'Charlie played the drums.' },
+      { name: 'Emma', iconId: 'violin', say: 'Emma played the violin.' },
+      { name: 'Leo', iconId: 'trumpet', say: 'Leo played the trumpet.' },
+      { name: 'Mia', iconId: 'microphone', say: 'Mia sang into the microphone.' },
     ],
-    options: [
-      { letter: 'A', iconId: 'guitar' }, { letter: 'B', iconId: 'piano' },
-      { letter: 'C', iconId: 'drum' }, { letter: 'D', iconId: 'violin' },
-      { letter: 'E', iconId: 'trumpet' }, { letter: 'F', iconId: 'microphone' },
-      { letter: 'G', iconId: 'music_note' },
-    ],
+    distractors: ['music_note'],
   },
   // L23 — Football match
   23: {
-    example: { name: 'Sam', letter: 'A', say: 'Sam kicked the football.' },
+    example: { name: 'Sam', iconId: 'soccer_ball', say: 'Sam kicked the football.' },
     items: [
-      { name: 'Kim', letter: 'B', say: 'Kim blew the whistle.' },
-      { name: 'Max', letter: 'C', say: 'Max won the trophy.' },
-      { name: 'Lily', letter: 'D', say: 'Lily got a gold medal.' },
-      { name: 'Tom', letter: 'E', say: 'Tom wore the red shirt.' },
-      { name: 'Joe', letter: 'F', say: 'Joe wore the blue shirt.' },
+      { name: 'Kim', iconId: 'whistle', say: 'Kim blew the whistle.' },
+      { name: 'Max', iconId: 'trophy', say: 'Max won the trophy.' },
+      { name: 'Lily', iconId: 'medal', say: 'Lily got a gold medal.' },
+      { name: 'Tom', iconId: 'shirt_red', say: 'Tom wore the red shirt.' },
+      { name: 'Joe', iconId: 'shirt_blue', say: 'Joe wore the blue shirt.' },
     ],
-    options: [
-      { letter: 'A', iconId: 'soccer_ball' }, { letter: 'B', iconId: 'whistle' },
-      { letter: 'C', iconId: 'trophy' }, { letter: 'D', iconId: 'medal' },
-      { letter: 'E', iconId: 'shirt_red' }, { letter: 'F', iconId: 'shirt_blue' },
-      { letter: 'G', iconId: 'ball' },
-    ],
+    distractors: ['ball'],
   },
   // L24 — Dance class
   24: {
-    example: { name: 'Eva', letter: 'A', say: 'Eva wore the pink tutu.' },
+    example: { name: 'Eva', iconId: 'tutu', say: 'Eva wore the pink tutu.' },
     items: [
-      { name: 'Zoe', letter: 'B', say: 'Zoe put on the ballet shoes.' },
-      { name: 'Ava', letter: 'C', say: 'Ava waved the dance ribbon.' },
-      { name: 'Mia', letter: 'D', say: 'Mia listened to the music note.' },
-      { name: 'Lucy', letter: 'E', say: 'Lucy sang into the microphone.' },
-      { name: 'Ben', letter: 'F', say: 'Ben played the drums.' },
+      { name: 'Zoe', iconId: 'ballet_shoe', say: 'Zoe put on the ballet shoes.' },
+      { name: 'Ava', iconId: 'dance_ribbon', say: 'Ava waved the dance ribbon.' },
+      { name: 'Mia', iconId: 'music_note', say: 'Mia listened to the music.' },
+      { name: 'Lucy', iconId: 'microphone', say: 'Lucy sang into the microphone.' },
+      { name: 'Ben', iconId: 'drum', say: 'Ben played the drums.' },
     ],
-    options: [
-      { letter: 'A', iconId: 'tutu' }, { letter: 'B', iconId: 'ballet_shoe' },
-      { letter: 'C', iconId: 'dance_ribbon' }, { letter: 'D', iconId: 'music_note' },
-      { letter: 'E', iconId: 'microphone' }, { letter: 'F', iconId: 'drum' },
-      { letter: 'G', iconId: 'guitar' },
-    ],
+    distractors: ['guitar'],
   },
   // L25 — Restaurant
   25: {
-    example: { name: 'Dad', letter: 'A', say: 'Dad ate a pizza.' },
+    example: { name: 'Dad', iconId: 'pizza', say: 'Dad ate a pizza.' },
     items: [
-      { name: 'Mum', letter: 'B', say: 'Mum had a burger.' },
-      { name: 'Tom', letter: 'C', say: 'Tom ate some soup.' },
-      { name: 'Sue', letter: 'D', say: 'Sue had a green salad.' },
-      { name: 'Kim', letter: 'E', say: 'Kim drank some juice.' },
-      { name: 'Joe', letter: 'F', say: 'Joe ate an ice cream.' },
+      { name: 'Mum', iconId: 'burger', say: 'Mum had a burger.' },
+      { name: 'Tom', iconId: 'soup_bowl', say: 'Tom ate some soup.' },
+      { name: 'Sue', iconId: 'salad', say: 'Sue had a green salad.' },
+      { name: 'Kim', iconId: 'juice_glass', say: 'Kim drank some juice.' },
+      { name: 'Joe', iconId: 'ice_cream', say: 'Joe ate an ice cream.' },
     ],
-    options: [
-      { letter: 'A', iconId: 'pizza' }, { letter: 'B', iconId: 'burger' },
-      { letter: 'C', iconId: 'soup_bowl' }, { letter: 'D', iconId: 'salad' },
-      { letter: 'E', iconId: 'juice_glass' }, { letter: 'F', iconId: 'ice_cream' },
-      { letter: 'G', iconId: 'sandwich' },
-    ],
+    distractors: ['sandwich'],
   },
   // L26 — Bus journey
   26: {
-    example: { name: 'Anna', letter: 'A', say: 'Anna got on the bus.' },
+    example: { name: 'Anna', iconId: 'bus', say: 'Anna got on the bus.' },
     items: [
-      { name: 'Tom', letter: 'B', say: 'Tom held the ticket.' },
-      { name: 'Sue', letter: 'C', say: 'Sue carried the suitcase.' },
-      { name: 'Max', letter: 'D', say: 'Max read the map.' },
-      { name: 'Kim', letter: 'E', say: 'Kim used the binoculars.' },
-      { name: 'Joe', letter: 'F', say: 'Joe held the compass.' },
+      { name: 'Tom', iconId: 'ticket', say: 'Tom held the ticket.' },
+      { name: 'Sue', iconId: 'suitcase', say: 'Sue carried the suitcase.' },
+      { name: 'Max', iconId: 'map', say: 'Max read the map.' },
+      { name: 'Kim', iconId: 'binoculars', say: 'Kim used the binoculars.' },
+      { name: 'Joe', iconId: 'compass', say: 'Joe held the compass.' },
     ],
-    options: [
-      { letter: 'A', iconId: 'bus' }, { letter: 'B', iconId: 'ticket' },
-      { letter: 'C', iconId: 'suitcase' }, { letter: 'D', iconId: 'map' },
-      { letter: 'E', iconId: 'binoculars' }, { letter: 'F', iconId: 'compass' },
-      { letter: 'G', iconId: 'traffic_light' },
-    ],
+    distractors: ['traffic_light'],
   },
   // L27 — Zoo trip
   27: {
-    example: { name: 'Sam', letter: 'A', say: 'Sam saw the lion.' },
+    example: { name: 'Sam', iconId: 'lion', say: 'Sam saw the lion.' },
     items: [
-      { name: 'Kim', letter: 'B', say: 'Kim watched the monkey.' },
-      { name: 'Tom', letter: 'C', say: 'Tom fed the elephant.' },
-      { name: 'Lily', letter: 'D', say: 'Lily liked the giraffe.' },
-      { name: 'Max', letter: 'E', say: 'Max looked at the snake.' },
-      { name: 'Zoe', letter: 'F', say: 'Zoe watched the penguin.' },
+      { name: 'Kim', iconId: 'monkey', say: 'Kim watched the monkey.' },
+      { name: 'Tom', iconId: 'elephant', say: 'Tom fed the elephant.' },
+      { name: 'Lily', iconId: 'giraffe', say: 'Lily liked the giraffe.' },
+      { name: 'Max', iconId: 'snake', say: 'Max looked at the snake.' },
+      { name: 'Zoe', iconId: 'penguin', say: 'Zoe watched the penguin.' },
     ],
-    options: [
-      { letter: 'A', iconId: 'lion' }, { letter: 'B', iconId: 'monkey' },
-      { letter: 'C', iconId: 'elephant' }, { letter: 'D', iconId: 'giraffe' },
-      { letter: 'E', iconId: 'snake' }, { letter: 'F', iconId: 'penguin' },
-      { letter: 'G', iconId: 'cat' },
-    ],
+    distractors: ['cat'],
   },
   // L28 — Museum tour
   28: {
-    example: { name: 'Tom', letter: 'A', say: 'Tom saw the dinosaur.' },
+    example: { name: 'Tom', iconId: 'dinosaur', say: 'Tom saw the dinosaur.' },
     items: [
-      { name: 'Sue', letter: 'B', say: 'Sue looked at the painting.' },
-      { name: 'Max', letter: 'C', say: 'Max liked the statue.' },
-      { name: 'Kim', letter: 'D', say: 'Kim found the old vase.' },
-      { name: 'Lily', letter: 'E', say: 'Lily saw the fossil.' },
-      { name: 'Joe', letter: 'F', say: 'Joe wore the mask.' },
+      { name: 'Sue', iconId: 'painting', say: 'Sue looked at the painting.' },
+      { name: 'Max', iconId: 'statue', say: 'Max liked the statue.' },
+      { name: 'Kim', iconId: 'vase', say: 'Kim found the old vase.' },
+      { name: 'Lily', iconId: 'fossil', say: 'Lily saw the fossil.' },
+      { name: 'Joe', iconId: 'mask', say: 'Joe wore the mask.' },
     ],
-    options: [
-      { letter: 'A', iconId: 'dinosaur' }, { letter: 'B', iconId: 'painting' },
-      { letter: 'C', iconId: 'statue' }, { letter: 'D', iconId: 'vase' },
-      { letter: 'E', iconId: 'fossil' }, { letter: 'F', iconId: 'mask' },
-      { letter: 'G', iconId: 'mummy' },
-    ],
+    distractors: ['mummy'],
   },
   // L29 — Fire station
   29: {
-    example: { name: 'Sam', letter: 'A', say: 'Sam drove the fire engine.' },
+    example: { name: 'Sam', iconId: 'fire_engine', say: 'Sam drove the fire engine.' },
     items: [
-      { name: 'Tom', letter: 'B', say: 'Tom wore the fire helmet.' },
-      { name: 'Max', letter: 'C', say: 'Max climbed the ladder.' },
-      { name: 'Kim', letter: 'D', say: 'Kim held the hose.' },
-      { name: 'Joe', letter: 'E', say: 'Joe saw the ambulance.' },
-      { name: 'Lily', letter: 'F', say: 'Lily filled the bucket.' },
+      { name: 'Tom', iconId: 'fire_helmet', say: 'Tom wore the fire helmet.' },
+      { name: 'Max', iconId: 'ladder', say: 'Max climbed the ladder.' },
+      { name: 'Kim', iconId: 'hose', say: 'Kim held the hose.' },
+      { name: 'Joe', iconId: 'ambulance', say: 'Joe saw the ambulance.' },
+      { name: 'Lily', iconId: 'bucket', say: 'Lily filled the bucket.' },
     ],
-    options: [
-      { letter: 'A', iconId: 'fire_engine' }, { letter: 'B', iconId: 'fire_helmet' },
-      { letter: 'C', iconId: 'ladder' }, { letter: 'D', iconId: 'hose' },
-      { letter: 'E', iconId: 'ambulance' }, { letter: 'F', iconId: 'bucket' },
-      { letter: 'G', iconId: 'ball' },
-    ],
+    distractors: ['ball'],
   },
   // L30 — Pet competition
   30: {
-    example: { name: 'Anna', letter: 'A', say: 'Anna brought her cat.' },
+    example: { name: 'Anna', iconId: 'cat', say: 'Anna brought her cat.' },
     items: [
-      { name: 'Tom', letter: 'B', say: 'Tom walked his dog.' },
-      { name: 'Sue', letter: 'C', say: 'Sue held her rabbit.' },
-      { name: 'Kim', letter: 'D', say: 'Kim had a bird in a cage.' },
-      { name: 'Max', letter: 'E', say: 'Max had a fish in a bowl.' },
-      { name: 'Lily', letter: 'F', say: 'Lily won the rosette.' },
+      { name: 'Tom', iconId: 'dog', say: 'Tom walked his dog.' },
+      { name: 'Sue', iconId: 'rabbit', say: 'Sue held her rabbit.' },
+      { name: 'Kim', iconId: 'bird_cage', say: 'Kim had a bird in a cage.' },
+      { name: 'Max', iconId: 'fishbowl', say: 'Max had a fish in a bowl.' },
+      { name: 'Lily', iconId: 'rosette', say: 'Lily won the rosette.' },
     ],
-    options: [
-      { letter: 'A', iconId: 'cat' }, { letter: 'B', iconId: 'dog' },
-      { letter: 'C', iconId: 'rabbit' }, { letter: 'D', iconId: 'bird_cage' },
-      { letter: 'E', iconId: 'fishbowl' }, { letter: 'F', iconId: 'rosette' },
-      { letter: 'G', iconId: 'bone' },
+    distractors: ['bone'],
+  },
+  // L31 — Tree planting
+  31: {
+    example: { name: 'Sam', iconId: 'spade', say: 'Sam dug with the spade.' },
+    items: [
+      { name: 'Tom', iconId: 'tree', say: 'Tom planted a small tree.' },
+      { name: 'Sue', iconId: 'watering_can', say: 'Sue filled the watering can.' },
+      { name: 'Kim', iconId: 'wheelbarrow', say: 'Kim pushed the wheelbarrow.' },
+      { name: 'Max', iconId: 'flowerpot', say: 'Max held the flowerpot.' },
+      { name: 'Lily', iconId: 'flower', say: 'Lily picked a flower.' },
     ],
+    distractors: ['bucket'],
+  },
+  // L32 — Cinema visit
+  32: {
+    example: { name: 'Tom', iconId: 'ticket', say: 'Tom bought a ticket.' },
+    items: [
+      { name: 'Sue', iconId: 'popcorn', say: 'Sue ate some popcorn.' },
+      { name: 'Max', iconId: 'glasses_3d', say: 'Max wore the 3D glasses.' },
+      { name: 'Kim', iconId: 'film_screen', say: 'Kim watched the big screen.' },
+      { name: 'Joe', iconId: 'juice_glass', say: 'Joe drank some juice.' },
+      { name: 'Lily', iconId: 'ice_cream', say: 'Lily had an ice cream.' },
+    ],
+    distractors: ['cookie'],
+  },
+  // L33 — Bakery shopping
+  33: {
+    example: { name: 'Mum', iconId: 'bread', say: 'Mum bought some bread.' },
+    items: [
+      { name: 'Tom', iconId: 'croissant', say: 'Tom ate a croissant.' },
+      { name: 'Sue', iconId: 'cookie', say: 'Sue had a cookie.' },
+      { name: 'Kim', iconId: 'pie', say: 'Kim chose a pie.' },
+      { name: 'Max', iconId: 'cupcake', say: 'Max picked a cupcake.' },
+      { name: 'Lily', iconId: 'cake', say: 'Lily bought a big cake.' },
+    ],
+    distractors: ['pizza'],
+  },
+  // L34 — Fishing trip
+  34: {
+    example: { name: 'Sam', iconId: 'fishing_rod', say: 'Sam used the fishing rod.' },
+    items: [
+      { name: 'Tom', iconId: 'fishing_net', say: 'Tom held the fishing net.' },
+      { name: 'Sue', iconId: 'bucket', say: 'Sue filled the bucket.' },
+      { name: 'Kim', iconId: 'worm', say: 'Kim put on a worm.' },
+      { name: 'Max', iconId: 'fish', say: 'Max caught a big fish.' },
+      { name: 'Joe', iconId: 'canoe', say: 'Joe sat in the canoe.' },
+    ],
+    distractors: ['tree'],
+  },
+  // L35 — Garage sale
+  35: {
+    example: { name: 'Anna', iconId: 'lamp', say: 'Anna sold the lamp.' },
+    items: [
+      { name: 'Tom', iconId: 'teddy', say: 'Tom bought a teddy bear.' },
+      { name: 'Sue', iconId: 'price_tag', say: 'Sue read the price tag.' },
+      { name: 'Kim', iconId: 'box', say: 'Kim carried a box.' },
+      { name: 'Max', iconId: 'chair', say: 'Max sat on an old chair.' },
+      { name: 'Lily', iconId: 'book', say: 'Lily bought a book.' },
+    ],
+    distractors: ['ball'],
+  },
+  // L36 — Hospital visit
+  36: {
+    example: { name: 'Tom', iconId: 'bed', say: 'Tom lay on the bed.' },
+    items: [
+      { name: 'Sue', iconId: 'pill', say: 'Sue took a pill.' },
+      { name: 'Kim', iconId: 'bandage', say: 'Kim put on a bandage.' },
+      { name: 'Max', iconId: 'thermometer', say: 'Max used the thermometer.' },
+      { name: 'Joe', iconId: 'ambulance', say: 'Joe saw the ambulance.' },
+      { name: 'Lily', iconId: 'flower', say: 'Lily brought some flowers.' },
+    ],
+    distractors: ['book'],
+  },
+  // L37 — Post office
+  37: {
+    example: { name: 'Anna', iconId: 'parcel', say: 'Anna sent a parcel.' },
+    items: [
+      { name: 'Tom', iconId: 'envelope', say: 'Tom wrote on an envelope.' },
+      { name: 'Sue', iconId: 'stamp', say: 'Sue stuck on a stamp.' },
+      { name: 'Kim', iconId: 'scales', say: 'Kim weighed it on the scales.' },
+      { name: 'Max', iconId: 'postbox', say: 'Max used the postbox.' },
+      { name: 'Lily', iconId: 'pen', say: 'Lily held a pen.' },
+    ],
+    distractors: ['box'],
+  },
+  // L38 — Camping in the mountains
+  38: {
+    example: { name: 'Sam', iconId: 'tent', say: 'Sam put up the tent.' },
+    items: [
+      { name: 'Tom', iconId: 'compass', say: 'Tom used the compass.' },
+      { name: 'Sue', iconId: 'map', say: 'Sue read the map.' },
+      { name: 'Kim', iconId: 'mountain', say: 'Kim climbed the mountain.' },
+      { name: 'Max', iconId: 'binoculars', say: 'Max looked through the binoculars.' },
+      { name: 'Joe', iconId: 'backpack', say: 'Joe carried the backpack.' },
+    ],
+    distractors: ['canoe'],
+  },
+  // L39 — Art exhibition
+  39: {
+    example: { name: 'Eva', iconId: 'easel', say: 'Eva set up the easel.' },
+    items: [
+      { name: 'Zoe', iconId: 'paintbrush', say: 'Zoe used a paintbrush.' },
+      { name: 'Ava', iconId: 'palette', say: 'Ava held the palette.' },
+      { name: 'Mia', iconId: 'frame', say: 'Mia made a picture frame.' },
+      { name: 'Leo', iconId: 'painting', say: 'Leo looked at a painting.' },
+      { name: 'Ben', iconId: 'statue', say: 'Ben saw a statue.' },
+    ],
+    distractors: ['vase'],
+  },
+  // L40 — New baby
+  40: {
+    example: { name: 'Mum', iconId: 'baby', say: 'Mum held the baby.' },
+    items: [
+      { name: 'Dad', iconId: 'cot', say: 'Dad made the cot.' },
+      { name: 'Sue', iconId: 'bottle', say: 'Sue gave a bottle.' },
+      { name: 'Kim', iconId: 'rattle', say: 'Kim shook the rattle.' },
+      { name: 'Tom', iconId: 'pram', say: 'Tom pushed the pram.' },
+      { name: 'Lily', iconId: 'teddy', say: 'Lily brought a teddy bear.' },
+    ],
+    distractors: ['ball'],
   },
 };
+
+const MATCH_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 
 function makeMatchPart(levelNumber: number, partId: string, audioKey: string): MatchPart | null {
   const def = MOVERS_MATCH_BY_LEVEL[levelNumber];
   if (!def) return null;
   const idOf = (name: string) => name.toLowerCase();
+
+  // Shuffle the picture order (deterministic per level) so the correct answers
+  // are NOT in a top-to-bottom sequence the child could guess without listening.
+  const iconPool = [def.example.iconId, ...def.items.map((it) => it.iconId), ...def.distractors];
+  const uniqueIcons = [...new Set(iconPool)];
+  const shuffled = seededShuffle(uniqueIcons, levelNumber * 101 + 17);
+  const options = shuffled.map((iconId, i) => ({ letter: MATCH_LETTERS[i], iconId }));
+  const iconToLetter = new Map(options.map((o) => [o.iconId, o.letter]));
+
   const correctMapping: Record<string, string> = {};
-  for (const it of def.items) correctMapping[idOf(it.name)] = it.letter;
+  for (const it of def.items) correctMapping[idOf(it.name)] = iconToLetter.get(it.iconId)!;
+
   return {
     type: 'listening_match',
     partId,
@@ -6592,9 +6693,9 @@ function makeMatchPart(levelNumber: number, partId: string, audioKey: string): M
       `Now listen and draw a line from each name to the correct picture. ` +
       def.items.map((it) => it.say).join(' '),
     exampleItem: { id: `ex_${idOf(def.example.name)}`, label: def.example.name },
-    exampleLetter: def.example.letter,
+    exampleLetter: iconToLetter.get(def.example.iconId)!,
     items: def.items.map((it) => ({ id: idOf(it.name), label: it.name })),
-    options: def.options.map((o) => ({ letter: o.letter, iconId: o.iconId })),
+    options,
     correctMapping,
   };
 }
