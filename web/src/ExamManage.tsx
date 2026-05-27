@@ -13,25 +13,30 @@ export function ExamManage() {
   const level: CatLevel | undefined = levels.find((l) => l.levelNumber === levelNumber) ?? levels[0];
 
   return (
-    <section className="card">
-      <div className="row">
-        <h2>Quản lý bài thi</h2>
-        <span className="spacer" />
-        <div className="tabs">
-          <button className={`btn sm ${lang === 'en' ? 'primary' : ''}`} onClick={() => { setLang('en'); setLevelNumber(1); }}>English</button>
-          <button className={`btn sm ${lang === 'zh' ? 'primary' : ''}`} onClick={() => { setLang('zh'); setLevelNumber(101); }}>中文 HSK</button>
-        </div>
-        <select value={level?.levelNumber} onChange={(e) => setLevelNumber(Number(e.target.value))}>
-          {levels.map((l) => (
-            <option key={l.levelNumber} value={l.levelNumber}>{l.title}</option>
-          ))}
-        </select>
+    <>
+      <div className="page-head">
+        <h1>Quản lý bài thi</h1>
+        <p>Chọn ngôn ngữ và level để sửa nội dung, sinh ảnh, tạo audio.</p>
       </div>
+      <div className="card">
+        <div className="toolbar">
+          <div className="tabs">
+            <button className={`btn sm ${lang === 'en' ? 'primary' : ''}`} onClick={() => { setLang('en'); setLevelNumber(1); }}>English</button>
+            <button className={`btn sm ${lang === 'zh' ? 'primary' : ''}`} onClick={() => { setLang('zh'); setLevelNumber(101); }}>中文 HSK</button>
+          </div>
+          <span className="spacer" />
+          <select value={level?.levelNumber} onChange={(e) => setLevelNumber(Number(e.target.value))}>
+            {levels.map((l) => (
+              <option key={l.levelNumber} value={l.levelNumber}>{l.title}</option>
+            ))}
+          </select>
+        </div>
 
-      {level && level.parts.map((p) => (
-        <PartCard key={p.partId} levelNumber={level.levelNumber} part={p} />
-      ))}
-    </section>
+        {level && level.parts.map((p) => (
+          <PartCard key={p.partId} levelNumber={level.levelNumber} part={p} />
+        ))}
+      </div>
+    </>
   );
 }
 

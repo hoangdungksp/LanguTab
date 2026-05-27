@@ -11,37 +11,29 @@ export function App() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Restore session: if a token is present, fetch /exam/me.
   useEffect(() => {
-    if (getToken()) {
-      getMe().then(setMe).catch(() => clearToken());
-    }
+    if (getToken()) getMe().then(setMe).catch(() => clearToken());
   }, []);
 
   const login = async () => {
     setError(''); setLoading(true);
-    try {
-      await signIn();
-      setMe(await getMe());
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-    } finally {
-      setLoading(false);
-    }
+    try { await signIn(); setMe(await getMe()); }
+    catch (e) { setError(e instanceof Error ? e.message : String(e)); }
+    finally { setLoading(false); }
   };
-
   const logout = () => { clearToken(); setMe(null); };
 
   if (!me) {
     return (
       <div className="center">
-        <div className="card login">
-          <h1>🐼 LinguTab</h1>
+        <div className="login">
+          <div className="logo">🐼</div>
+          <h1>LinguTab</h1>
           <p>Bảng điều khiển quản lý</p>
           <button className="btn primary" onClick={login} disabled={loading}>
             {loading ? 'Đang đăng nhập…' : 'Đăng nhập với Google'}
           </button>
-          {error && <p className="error">{error}</p>}
+          {error && <p className="error" style={{ marginTop: 14 }}>{error}</p>}
         </div>
       </div>
     );
@@ -50,130 +42,167 @@ export function App() {
   if (me.role === 'user') {
     return (
       <div className="center">
-        <div className="card login">
-          <h1>Không có quyền</h1>
-          <p>{me.email} — vai trò: <b>{me.role}</b></p>
-          <p>Bảng điều khiển dành cho <b>editor</b> (quản lý bài thi) và <b>admin</b> (thêm quản lý người dùng). Liên hệ admin để được cấp quyền.</p>
+        <div className="login">
+          <div className="logo">🔒</div>
+          <h1>Chưa có quyền</h1>
+          <p>{me.email} — vai trò <b>{me.role}</b>.<br />Liên hệ admin để được cấp quyền editor/admin.</p>
           <button className="btn" onClick={logout}>Đăng xuất</button>
         </div>
       </div>
     );
   }
 
-  return <Dashboard me={me} onLogout={logout} />;
+  return <Shell me={me} onLogout={logout} />;
 }
 
-function Dashboard({ me, onLogout }: { me: Me; onLogout: () => void }) {
+type View = 'overview' | 'users' | 'exam';
+
+function Shell({ me, onLogout }: { me: Me; onLogout: () => void }) {
   const isAdmin = me.role === 'admin';
-  const [view, setView] = useState<'users' | 'exam'>(isAdmin ? 'users' : 'exam');
+  const [view, setView] = useState<View>(isAdmin ? 'overview' : 'exam');
+
+  const NavItem = ({ id, ico, label }: { id: View; ico: string; label: string }) => (
+    <button className={`nav-item ${view === id ? 'active' : ''}`} onClick={() => setView(id)}>
+      <span className="ico">{ico}</span><span>{label}</span>
+    </button>
+  );
 
   return (
-    <div className="app">
-      <header className="topbar">
-        <b>🐼 LinguTab</b>
-        <nav className="tabs">
-          {isAdmin && (
-            <button className={`btn sm ${view === 'users' ? 'primary' : ''}`} onClick={() => setView('users')}>Người dùng</button>
-          )}
-          <button className={`btn sm ${view === 'exam' ? 'primary' : ''}`} onClick={() => setView('exam')}>Bài thi</button>
+    <div className="shell">
+      <aside className="sidebar">
+        <div className="brand"><span className="dot">🐼</span><span>LinguTab</span></div>
+        <nav className="nav">
+          {isAdmin && <NavItem id="overview" ico="📊" label="Tổng quan" />}
+          {isAdmin && <NavItem id="users" ico="👥" label="Người dùng" />}
+          <NavItem id="exam" ico="📝" label="Bài thi" />
         </nav>
-        <span className="spacer" />
-        <span className="muted">{me.email} · {me.role}</span>
-        <button className="btn" onClick={onLogout}>Đăng xuất</button>
-      </header>
+        <div className="sidebar-foot">
+          <div className="avatar">{me.email[0]?.toUpperCase()}</div>
+          <div className="who"><b>{me.email}</b><span>{me.role}</span></div>
+          <button className="btn ghost sm" title="Đăng xuất" onClick={onLogout}>⎋</button>
+        </div>
+      </aside>
 
-      {view === 'exam' ? <ExamManage /> : <UsersPanel />}
+      <main className="main">
+        {view === 'exam' && <ExamManage />}
+        {view === 'users' && <UsersPanel showStats={false} />}
+        {view === 'overview' && <UsersPanel showStats overviewOnly />}
+      </main>
     </div>
   );
 }
 
-function UsersPanel() {
+function UsersPanel({ showStats = true, overviewOnly = false }: { showStats?: boolean; overviewOnly?: boolean }) {
   const [stats, setStats] = useState<Stats | null>(null);
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [err, setErr] = useState('');
   const [selected, setSelected] = useState<AdminUser | null>(null);
 
-  const reload = () => {
+  useEffect(() => {
     Promise.all([getStats(), listUsers()])
       .then(([s, u]) => { setStats(s); setUsers(u); })
       .catch((e) => setErr(e.message));
-  };
-  useEffect(reload, []);
+  }, []);
 
   const changeRole = async (u: AdminUser, role: string) => {
     try {
       await setUserRole(u.id, role);
       setUsers((prev) => prev.map((x) => (x.id === u.id ? { ...x, role } : x)));
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : String(e));
-    }
+    } catch (e) { setErr(e instanceof Error ? e.message : String(e)); }
   };
 
   return (
     <>
-      {err && <p className="error pad">{err}</p>}
+      <div className="page-head">
+        <h1>{overviewOnly ? 'Tổng quan' : 'Người dùng'}</h1>
+        <p>{overviewOnly ? 'Số liệu nhanh về người dùng và bài thi.' : 'Quản lý vai trò và xem tiến độ học.'}</p>
+      </div>
+      {err && <p className="error">{err}</p>}
 
-      {stats && (
-        <section className="stats">
-          <Stat label="Người dùng" value={stats.totalUsers} />
-          <Stat label="Level hoàn thành" value={stats.levelsCompleted} />
-          <Stat label="Sao đạt được" value={stats.starsEarned} />
-          <Stat label="Pro" value={stats.byTier.find((t) => t.tier === 'pro')?.n ?? 0} />
-        </section>
+      {showStats && stats && (
+        <div className="stats">
+          <Stat ico="👥" color="#eef2ff" label="Người dùng" value={stats.totalUsers} />
+          <Stat ico="✅" color="#dcfce7" label="Level hoàn thành" value={stats.levelsCompleted} />
+          <Stat ico="⭐" color="#fef9c3" label="Sao đạt được" value={stats.starsEarned} />
+          <Stat ico="💎" color="#fff1e6" label="Tài khoản Pro" value={stats.byTier.find((t) => t.tier === 'pro')?.n ?? 0} />
+        </div>
       )}
 
-      <section className="card">
-        <h2>Người dùng ({users.length})</h2>
-        <table>
-          <thead>
-            <tr><th>Email</th><th>Tên</th><th>Vai trò</th><th>Gói</th><th>Hoạt động</th><th></th></tr>
-          </thead>
-          <tbody>
-            {users.map((u) => (
-              <tr key={u.id}>
-                <td>{u.email}</td>
-                <td>{u.display_name || '—'}</td>
-                <td>
-                  <select value={u.role || 'user'} onChange={(e) => changeRole(u, e.target.value)}>
-                    <option value="user">user</option>
-                    <option value="editor">editor</option>
-                    <option value="admin">admin</option>
-                  </select>
-                </td>
-                <td>{u.tier || 'free'}</td>
-                <td className="muted">{timeAgo(u.last_active_at)}</td>
-                <td><button className="btn sm" onClick={() => setSelected(u)}>Tiến độ</button></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
+      {!overviewOnly && (
+        <div className="card">
+          <h2>Tất cả người dùng ({users.length})</h2>
+          <table>
+            <thead>
+              <tr><th>Người dùng</th><th>Vai trò</th><th>Gói</th><th>Hoạt động</th><th></th></tr>
+            </thead>
+            <tbody>
+              {users.map((u) => (
+                <tr key={u.id}>
+                  <td>
+                    <div style={{ fontWeight: 600 }}>{u.display_name || u.email.split('@')[0]}</div>
+                    <div className="mono">{u.email}</div>
+                  </td>
+                  <td>
+                    <select value={u.role || 'user'} onChange={(e) => changeRole(u, e.target.value)}>
+                      <option value="user">user</option>
+                      <option value="editor">editor</option>
+                      <option value="admin">admin</option>
+                    </select>
+                  </td>
+                  <td><span className={`badge ${u.tier === 'pro' ? 'pro' : 'free'}`}>{u.tier || 'free'}</span></td>
+                  <td className="muted">{timeAgo(u.last_active_at)}</td>
+                  <td><button className="btn sm" onClick={() => setSelected(u)}>Tiến độ →</button></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {overviewOnly && stats && (
+        <div className="card">
+          <h2>Phân bổ</h2>
+          <table>
+            <thead><tr><th>Vai trò</th><th>Số lượng</th></tr></thead>
+            <tbody>
+              {stats.byRole.map((r) => (
+                <tr key={r.role}><td><span className="tag">{r.role || 'user'}</span></td><td>{r.n}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {selected && <ProgressDrawer user={selected} onClose={() => setSelected(null)} />}
     </>
   );
 }
 
-function Stat({ label, value }: { label: string; value: number }) {
-  return <div className="stat"><div className="num">{value}</div><div className="muted">{label}</div></div>;
+function Stat({ ico, color, label, value }: { ico: string; color: string; label: string; value: number }) {
+  return (
+    <div className="stat">
+      <div className="chip" style={{ background: color }}>{ico}</div>
+      <div><div className="num">{value}</div><div className="lbl">{label}</div></div>
+    </div>
+  );
 }
 
 function ProgressDrawer({ user, onClose }: { user: AdminUser; onClose: () => void }) {
   const [rows, setRows] = useState<ProgressRow[] | null>(null);
   const [err, setErr] = useState('');
-  useEffect(() => {
-    getUserProgress(user.id).then(setRows).catch((e) => setErr(e.message));
-  }, [user.id]);
+  useEffect(() => { getUserProgress(user.id).then(setRows).catch((e) => setErr(e.message)); }, [user.id]);
 
   const planet = (n: number) =>
-    n > 140 ? 'HSK3' : n > 120 ? 'HSK2' : n > 100 ? 'HSK1'
-    : n > 40 ? 'Flyers' : n > 20 ? 'Movers' : 'Starters';
+    n > 140 ? 'HSK3' : n > 120 ? 'HSK2' : n > 100 ? 'HSK1' : n > 40 ? 'Flyers' : n > 20 ? 'Movers' : 'Starters';
   const display = (n: number) => (n > 100 ? n - 100 : n);
 
   return (
     <div className="drawer-bg" onClick={onClose}>
       <div className="drawer" onClick={(e) => e.stopPropagation()}>
-        <header><b>Tiến độ — {user.email}</b><button className="btn sm" onClick={onClose}>✕</button></header>
+        <header>
+          <div><b>Tiến độ học</b><div className="mono">{user.email}</div></div>
+          <button className="btn sm" onClick={onClose}>✕</button>
+        </header>
         {err && <p className="error">{err}</p>}
         {!rows ? <p className="muted">Đang tải…</p>
           : rows.length === 0 ? <p className="muted">Chưa làm bài thi nào.</p>
@@ -183,7 +212,7 @@ function ProgressDrawer({ user, onClose }: { user: AdminUser; onClose: () => voi
               <tbody>
                 {rows.map((r) => (
                   <tr key={r.level_number}>
-                    <td>{planet(r.level_number)}</td>
+                    <td><span className="tag">{planet(r.level_number)}</span></td>
                     <td>{display(r.level_number)}</td>
                     <td>{'⭐'.repeat(r.best_stars)}<span className="muted"> {r.best_stars}/{r.max_stars}</span></td>
                     <td className="muted">{r.attempts}</td>
@@ -198,8 +227,7 @@ function ProgressDrawer({ user, onClose }: { user: AdminUser; onClose: () => voi
 }
 
 function timeAgo(ms: number): string {
-  const d = Date.now() - ms;
-  const h = Math.floor(d / 3600000);
+  const h = Math.floor((Date.now() - ms) / 3600000);
   if (h < 1) return 'vừa xong';
   if (h < 24) return `${h} giờ trước`;
   return `${Math.floor(h / 24)} ngày trước`;
