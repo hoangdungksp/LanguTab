@@ -682,7 +682,30 @@ async function generateQwenTTS(env: Env, text: string): Promise<ArrayBuffer> {
 // so we TTS each question segment separately and stitch them with real PCM
 // silence into one WAV. Only applied to p2/p3; everything else stays single-shot.
 
-const QUESTION_GAP_SEC = 5;
+const QUESTION_GAP_SEC = 3;
+
+/**
+ * Relabel question markers so they're unmistakable: "One." → "Question 1.",
+ * "一。" → "第一题。". A lone ordinal segment is a MARKER (not a number answer
+ * read-back) iff the NEXT segment is a question (ends with ? / ？). This stops
+ * the "Two" (marker) vs "Two" (answer = 2) confusion.
+ */
+function relabelQuestionMarkers(segs: string[], lang: 'en' | 'zh'): string[] {
+  const isQuestion = (s?: string) => !!s && /[?？]\s*$/.test(s.trim());
+  if (lang === 'zh') {
+    return segs.map((s, i) => {
+      const m = s.trim().match(/^([一二三四五六七八九十]+)。$/);
+      return m && isQuestion(segs[i + 1]) ? `第${m[1]}题。` : s;
+    });
+  }
+  const ord: Record<string, number> = {
+    One: 1, Two: 2, Three: 3, Four: 4, Five: 5, Six: 6, Seven: 7, Eight: 8,
+  };
+  return segs.map((s, i) => {
+    const m = s.trim().match(/^(One|Two|Three|Four|Five|Six|Seven|Eight)\.$/);
+    return m && isQuestion(segs[i + 1]) ? `Question ${ord[m[1]]}.` : s;
+  });
+}
 
 /** True for Part 2 / Part 3 audio keys (e.g. `level1/p2.mp3`, `zh/level5/p3.mp3`). */
 function partWantsGaps(audioKey: string): boolean {
@@ -830,8 +853,9 @@ async function generateWithGaps(
   script: string,
   lang: 'en' | 'zh',
 ): Promise<{ bytes: ArrayBuffer; provider: string } | null> {
-  const segments = splitQuestionSegments(script, lang);
-  if (segments.length < 2) return null; // no question boundaries found
+  const rawSegments = splitQuestionSegments(script, lang);
+  if (rawSegments.length < 2) return null; // no question boundaries found
+  const segments = relabelQuestionMarkers(rawSegments, lang); // One. → Question 1.
 
   const pcms: { sampleRate: number; data: Uint8Array }[] = [];
   for (const seg of segments) {

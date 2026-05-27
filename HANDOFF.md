@@ -296,6 +296,7 @@ rm -rf public && mv public.snap.YYYYMMDD_HHMMSS public   # restore public snapsh
 
 ## 📝 Recent activity log (last 10)
 
+- 2026-05-27 — v1.8.3: gap 5s→3s; marker câu hỏi đổi "One."→"Question 1." / "一。"→"第一题。" (worker relabel khi câu kế là "?", phân biệt marker vs đáp án số). EN gap dùng ElevenLabs PCM (khớp read + giọng nhất quán). Bump version mỗi thay đổi (kể cả worker) để Jason có tín hiệu.
 - 2026-05-27 — Pause 5s + slow spelling, Part 2 & 3 (EN+ZH): worker tách script theo TỪNG CÂU (sau . ? / 。？), giữ phần intro liền (tới "Now listen/现在听"), TTS từng đoạn → nối + 5s PCM silence → 1 WAV. Spelling "B-U-D-D-Y"→"B, U, D, D, Y" (đọc chậm). zh=Qwen, en=Aura-2 PCM. CHỈ p2/p3, fallback an toàn. Admin phải Regen + reload extension để nghe. (worker-only)
 - 2026-05-27 — v1.8.0 (version_name hiện trong chrome://extensions để biết đã đổi code). Chinese TTS: worker route audioKey `zh/` → Qwen-TTS (nếu có DASHSCOPE_API_KEY) → fallback MeloTTS lang='zh' (free). Audio ZH vẫn admin-gen (D-19). Set Qwen: `wrangler secret put DASHSCOPE_API_KEY`
 - 2026-05-27 — D-23 PILOT: Phòng thi tiếng Trung HSK1 (20 level L101-120). Exam đa ngôn ngữ theo targetLang; planets HSK1/2/3; dùng lại ảnh English (no worker deploy). Part 2 hanzi+pinyin. Audio ZH chưa wired (cần Qwen-TTS). Frontend-only

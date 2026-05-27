@@ -1,8 +1,8 @@
 {
   "name": "lingua-newtab",
   "displayName": "LinguTab — Học tiếng Trung & Anh",
-  "version": "1.8.2",
-  "versionName": "1.8.2 — Audio: pause 5s + đọc chậm spelling (Part 2/3)",
+  "version": "1.8.3",
+  "versionName": "1.8.3 — Audio: pause 3s + marker Question 1/2/3",
   "description": "Chrome extension thay new tab thành nơi học tiếng Trung / tiếng Anh với phonetics, flashcard SRS, TTS. Dành cho người Việt.",
   "private": true,
   "type": "module",
