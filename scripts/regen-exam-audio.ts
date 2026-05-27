@@ -34,7 +34,8 @@ const GEN_ENDPOINT = `${WORKER_URL}/admin/exam/audio/generate`;
 
 interface Args {
   lang: 'en' | 'zh' | 'all';
-  parts: 'p23' | 'all';
+  /** Raw --parts flag: "all", "p23" (default), or an explicit list like "p3,p4,p5". */
+  parts: string;
   from: number;
   to: number;
   delay: number;
@@ -48,12 +49,31 @@ function parseArgs(argv: string[]): Args {
   };
   return {
     lang: (get('--lang') as Args['lang']) ?? 'all',
-    parts: get('--parts') === 'all' ? 'all' : 'p23',
+    parts: get('--parts') ?? 'p23',
     from: Number(get('--from') ?? 1),
     to: Number(get('--to') ?? 999),
     delay: Number(get('--delay') ?? 1200),
     dryRun: argv.includes('--dry-run'),
   };
+}
+
+/** Part number from an audioKey like "level21/p4.mp3" → 4 (or 0 if none). */
+const partNum = (audioKey: string): number => {
+  const m = audioKey.match(/\/p(\d+)\.[a-z0-9]+$/i);
+  return m ? Number(m[1]) : 0;
+};
+
+/**
+ * Which part numbers to regen, from the --parts flag:
+ *   "all"        → every part
+ *   "p23"        → p2,p3 (default; the gap parts)
+ *   "p3,p4,p5"   → explicit list
+ */
+function allowedParts(parts: string): 'all' | Set<number> {
+  if (parts === 'all') return 'all';
+  const nums = parts.match(/\d+/g);
+  if (nums && nums.length) return new Set(nums.map(Number));
+  return new Set([2, 3]);
 }
 
 interface Target {
@@ -64,19 +84,17 @@ interface Target {
   audioScript: string;
 }
 
-/** p2/p3 are the parts whose audio the worker stitches with gaps. */
-const wantsGaps = (audioKey: string) => /\/p[23]\.[a-z0-9]+$/i.test(audioKey);
-
 function collectTargets(args: Args): Target[] {
   const langs: ExamLang[] =
     args.lang === 'all' ? ['en', 'zh'] : [args.lang];
+  const allow = allowedParts(args.parts);
   const targets: Target[] = [];
   for (const lang of langs) {
     for (const level of getLevelsForLang(lang)) {
       if (level.levelNumber < args.from || level.levelNumber > args.to) continue;
       for (const part of level.parts as Array<{ partId: string; audioKey?: string; audioScript?: string }>) {
         if (!part.audioKey || !part.audioScript) continue;
-        if (args.parts === 'p23' && !wantsGaps(part.audioKey)) continue;
+        if (allow !== 'all' && !allow.has(partNum(part.audioKey))) continue;
         targets.push({
           lang,
           levelNumber: level.levelNumber,
