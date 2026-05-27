@@ -686,6 +686,9 @@ async function generateQwenTTS(env: Env, text: string): Promise<ArrayBuffer> {
 // every other gap (after a question, after an answer) is the default.
 const GAP_AFTER_MARKER_SEC = 1;
 const GAP_DEFAULT_SEC = 2;
+// Gap right before the NEXT "Question N." marker = time for the child to write
+// their answer; longer than the rest.
+const GAP_BEFORE_NEXT_Q_SEC = 4;
 
 /** A relabeled question marker: "Question 3." / "第三题。". */
 function isMarker(seg: string, lang: 'en' | 'zh'): boolean {
@@ -758,11 +761,12 @@ function isReadback(seg: string, lang: 'en' | 'zh'): boolean {
 }
 
 /**
- * Slow down spelled-out names: "B-U-D-D-Y" reads too fast. Turning hyphens
- * into commas makes the TTS pause briefly between letters → clearer spelling.
+ * Slow down spelled-out names: "B-U-D-D-Y" reads too fast. Turning each hyphen
+ * into a period makes the TTS treat every letter as its own clause → a longer
+ * pause between letters than a comma gives, so the spelling is clearer/slower.
  */
 function slowSpelling(text: string): string {
-  return text.replace(/\b([A-Za-z](?:-[A-Za-z]){1,})\b/g, (m) => m.split('-').join(', '));
+  return text.replace(/\b([A-Za-z](?:-[A-Za-z]){1,})\b/g, (m) => m.split('-').join('. '));
 }
 
 /** Parse a standard PCM WAV → sample rate + raw PCM data bytes. Null if not WAV. */
@@ -902,7 +906,10 @@ async function generateWithGaps(
   // Gap before segment i (i>0) depends on the PRECEDING segment: short after a
   // "Question N." marker so it stays glued to its question, default elsewhere.
   const gapBytesBefore = (i: number) => {
-    const sec = isMarker(segments[i - 1], lang) ? GAP_AFTER_MARKER_SEC : GAP_DEFAULT_SEC;
+    let sec: number;
+    if (isMarker(segments[i - 1], lang)) sec = GAP_AFTER_MARKER_SEC; // 1s after "Question N"
+    else if (i - 1 > 0 && isMarker(segments[i], lang)) sec = GAP_BEFORE_NEXT_Q_SEC; // 4s to write answer
+    else sec = GAP_DEFAULT_SEC; // 2s elsewhere
     return sampleRate * sec * 2; // mono 16-bit
   };
   let total = pcms.reduce((n, p) => n + p.data.length, 0);
