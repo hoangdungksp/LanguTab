@@ -68,6 +68,17 @@ export interface Env {
    */
   AURA2_VOICE?: string;
   /**
+   * D-23: DashScope (Alibaba) API key for Qwen-TTS — the production Chinese
+   * voice (D-1: qwen3-tts-flash, voice Cherry, Singapore region). Set via
+   * `wrangler secret put DASHSCOPE_API_KEY`. If absent, Chinese audio falls
+   * back to Workers-AI MeloTTS with lang='zh' (free, lower quality).
+   */
+  DASHSCOPE_API_KEY?: string;
+  /** Qwen-TTS model id. Default: `qwen3-tts-flash`. */
+  QWEN_TTS_MODEL?: string;
+  /** Qwen-TTS voice. Default: `Cherry`. */
+  QWEN_TTS_VOICE?: string;
+  /**
    * Cache version prefix for exam audio in R2. Bump (e.g. "v1" → "v2") to
    * force regeneration of all cached audio after a voice/provider change.
    * Old cache entries are left in R2 (manually delete to free storage).

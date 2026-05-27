@@ -179,7 +179,7 @@ async function getAudioFromCacheReadOnly(req: Request, env: Env): Promise<Respon
   const cacheVersion = env.AUDIO_CACHE_VERSION || 'v1';
   const scriptHash = await sha256Short(body.audioScript);
 
-  for (const provider of preferredProvidersForLookup(env)) {
+  for (const provider of preferredProvidersForLookup(env, langFromAudioKey(body.audioKey))) {
     const r2Key = `exam-audio/${cacheVersion}/${provider}/${body.audioKey}.${scriptHash}`;
     const cached = await env.IMAGES.get(r2Key);
     if (cached) {
@@ -234,7 +234,7 @@ async function adminAudioStatus(req: Request, env: Env): Promise<Response> {
   }
   const cacheVersion = env.AUDIO_CACHE_VERSION || 'v1';
   const scriptHash = await sha256Short(body.audioScript);
-  for (const provider of preferredProvidersForLookup(env)) {
+  for (const provider of preferredProvidersForLookup(env, langFromAudioKey(body.audioKey))) {
     const r2Key = `exam-audio/${cacheVersion}/${provider}/${body.audioKey}.${scriptHash}`;
     const head = await env.IMAGES.head(r2Key);
     if (head) {
@@ -288,7 +288,8 @@ async function getOrGenerateAudio(req: Request, env: Env): Promise<Response> {
 
   // ─── Cache lookup: try each provider in preferred quality order ─────
   // Skipped when admin requests force re-generation (Regen → overwrite).
-  const lookupOrder = preferredProvidersForLookup(env);
+  const lang = langFromAudioKey(body.audioKey);
+  const lookupOrder = preferredProvidersForLookup(env, lang);
   for (const provider of body.force ? [] : lookupOrder) {
     const r2Key = `exam-audio/${cacheVersion}/${provider}/${body.audioKey}.${scriptHash}`;
     const cached = await env.IMAGES!.get(r2Key);
@@ -310,7 +311,7 @@ async function getOrGenerateAudio(req: Request, env: Env): Promise<Response> {
   // ─── Cache miss everywhere — generate fresh + cache by provider ─────
   console.log('[exam-audio] cache miss → generating:', body.audioKey);
   const ttsStart = Date.now();
-  const { bytes, provider } = await generateTTSWithProvider(env, body.audioScript);
+  const { bytes, provider } = await generateTTSWithProvider(env, body.audioScript, lang);
   const ttsMs = Date.now() - ttsStart;
   console.log(
     `[exam-audio] TTS done via ${provider} in ${ttsMs}ms (${bytes.byteLength} bytes)`,
@@ -361,7 +362,13 @@ async function getOrGenerateAudio(req: Request, env: Env): Promise<Response> {
  * worth checking — no point looking up ElevenLabs cache if ElevenLabs key
  * isn't configured (would never have been generated/cached).
  */
-function preferredProvidersForLookup(env: Env): string[] {
+function preferredProvidersForLookup(env: Env, lang: 'en' | 'zh' = 'en'): string[] {
+  // D-23: Chinese uses Qwen-TTS (if key) → MeloTTS-zh. The English-only
+  // providers (Aura-2, ElevenLabs Dorothy) don't apply.
+  if (lang === 'zh') {
+    return env.DASHSCOPE_API_KEY ? ['qwen', 'melotts'] : ['melotts'];
+  }
+
   // Forced provider modes — only check that one provider's cache
   if (env.TTS_PROVIDER === 'elevenlabs') return ['elevenlabs'];
   if (env.TTS_PROVIDER === 'aura2') return ['aura2'];
@@ -372,6 +379,11 @@ function preferredProvidersForLookup(env: Env): string[] {
     return ['elevenlabs', 'aura2', 'melotts'];
   }
   return ['aura2', 'melotts'];
+}
+
+/** Detect exam language from the audioKey prefix (`zh/...` = Chinese). */
+function langFromAudioKey(audioKey: string): 'en' | 'zh' {
+  return audioKey.startsWith('zh/') ? 'zh' : 'en';
 }
 
 /** Fallback path used if R2 binding is missing — generate every request. */
@@ -468,7 +480,22 @@ const AURA2_DEFAULT_VOICE = 'asteria';
 async function generateTTSWithProvider(
   env: Env,
   text: string,
+  lang: 'en' | 'zh' = 'en',
 ): Promise<{ bytes: ArrayBuffer; provider: string }> {
+  // ─── D-23: Chinese audio ────────────────────────────────────────────
+  // Qwen-TTS (Cherry voice, D-1) when DASHSCOPE_API_KEY is set; otherwise
+  // free Workers-AI MeloTTS with lang='zh'. Aura-2/ElevenLabs are English.
+  if (lang === 'zh') {
+    if (env.DASHSCOPE_API_KEY) {
+      try {
+        return { bytes: await generateQwenTTS(env, text), provider: 'qwen' };
+      } catch (err) {
+        console.warn('[exam-audio] Qwen-TTS failed, falling back to MeloTTS-zh:', err);
+      }
+    }
+    return { bytes: await generateMeloTTS(env, text, 'zh'), provider: 'melotts' };
+  }
+
   const forced = env.TTS_PROVIDER;
 
   // Forced provider modes — used for testing/debugging. Errors propagate
@@ -575,10 +602,10 @@ async function generateElevenLabsTTS(env: Env, text: string): Promise<ArrayBuffe
  * Fallback: Workers AI melotts. Free, robotic, but always available.
  * Returns JSON { audio: "base64..." }. We decode and return raw bytes.
  */
-async function generateMeloTTS(env: Env, text: string): Promise<ArrayBuffer> {
+async function generateMeloTTS(env: Env, text: string, lang: 'en' | 'zh' = 'en'): Promise<ArrayBuffer> {
   const aiResp = (await env.AI.run(TTS_MODEL, {
     prompt: text,
-    lang: 'en',
+    lang,
   })) as { audio?: string;[key: string]: unknown };
 
   if (!aiResp.audio || typeof aiResp.audio !== 'string') {
@@ -593,6 +620,54 @@ async function generateMeloTTS(env: Env, text: string): Promise<ArrayBuffer> {
     bytes[i] = binStr.charCodeAt(i);
   }
   return bytes.buffer;
+}
+
+/**
+ * D-23: Qwen-TTS via Alibaba DashScope (D-1: qwen3-tts-flash, voice Cherry,
+ * Singapore/intl region). Production Chinese voice. Requires DASHSCOPE_API_KEY.
+ *
+ * DashScope returns an audio URL (short-lived) which we then download into an
+ * ArrayBuffer for R2 caching. Throws on any failure so the caller falls back
+ * to MeloTTS-zh. NOTE: endpoint/response shape per DashScope qwen-tts docs —
+ * validate end-to-end once the key is configured.
+ */
+async function generateQwenTTS(env: Env, text: string): Promise<ArrayBuffer> {
+  if (!env.DASHSCOPE_API_KEY) throw new Error('DASHSCOPE_API_KEY not configured');
+  const model = env.QWEN_TTS_MODEL || 'qwen3-tts-flash';
+  const voice = env.QWEN_TTS_VOICE || 'Cherry';
+
+  const res = await fetch(
+    'https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation',
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${env.DASHSCOPE_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ model, input: { text, voice } }),
+    },
+  );
+  if (!res.ok) {
+    const body = await res.text().catch(() => '');
+    throw new Error(`Qwen-TTS HTTP ${res.status}: ${body.slice(0, 200)}`);
+  }
+  const data = (await res.json()) as {
+    output?: { audio?: { url?: string; data?: string } };
+  };
+  const audioUrl = data.output?.audio?.url;
+  const audioData = data.output?.audio?.data;
+  if (audioUrl) {
+    const audioRes = await fetch(audioUrl);
+    if (!audioRes.ok) throw new Error(`Qwen-TTS audio download HTTP ${audioRes.status}`);
+    return await audioRes.arrayBuffer();
+  }
+  if (audioData) {
+    const bin = atob(audioData);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return bytes.buffer;
+  }
+  throw new Error('Qwen-TTS returned no audio url/data');
 }
 
 // ─── Scene image: read-only user path ──────────────────────────────────

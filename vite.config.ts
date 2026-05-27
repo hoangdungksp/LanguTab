@@ -6,7 +6,13 @@ import pkg from './package.json' with { type: 'json' };
 
 // Version truth lives in package.json. We sync it into manifest.json at build
 // time so Chrome Web Store and the footer never drift apart.
-const manifest = { ...manifestJson, version: pkg.version };
+// `version` must be dotted numbers; `version_name` is a freeform label shown
+// in chrome://extensions so it's obvious a reload picked up new code.
+const manifest = {
+  ...manifestJson,
+  version: pkg.version,
+  version_name: pkg.versionName ?? pkg.version,
+};
 
 export default defineConfig({
   plugins: [react(), crx({ manifest })],
