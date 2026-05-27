@@ -682,19 +682,38 @@ async function generateQwenTTS(env: Env, text: string): Promise<ArrayBuffer> {
 // so we TTS each question segment separately and stitch them with real PCM
 // silence into one WAV. Only applied to p2/p3; everything else stays single-shot.
 
-const QUESTION_GAP_SEC = 2;
+const QUESTION_GAP_SEC = 5;
 
 /** True for Part 2 / Part 3 audio keys (e.g. `level1/p2.mp3`, `zh/level5/p3.mp3`). */
 function partWantsGaps(audioKey: string): boolean {
   return /\/p[23]\.[a-z0-9]+$/i.test(audioKey);
 }
 
-/** Split a part script into [intro, Q1, Q2, …] at the numbered-question marks. */
+/**
+ * Split a part script into individual sentences so we can pause after EACH
+ * one — after the question AND after the answer. EN splits on . ? ! followed
+ * by space; ZH splits after 。？！.
+ */
 function splitQuestionSegments(script: string, lang: 'en' | 'zh'): string[] {
-  const re = lang === 'zh'
-    ? /(?=[一二三四五六七八九十]+。)/
-    : /(?=(?:One|Two|Three|Four|Five|Six|Seven|Eight)\.\s)/;
-  return script.split(re).map((s) => s.trim()).filter(Boolean);
+  const re = lang === 'zh' ? /(?<=[。？！])/ : /(?<=[.?!])\s+/;
+  const all = script.split(re).map((s) => s.trim()).filter(Boolean);
+  // Keep the intro (everything up to & including the "Now listen…" / "现在听…"
+  // transition) as ONE segment — no point pausing between intro sentences.
+  // Pause only between the actual question/answer sentences that follow.
+  const transRe = lang === 'zh' ? /现在.{0,4}(听|写)/ : /Now\s+listen/i;
+  const idx = all.findIndex((s) => transRe.test(s));
+  if (idx >= 0 && idx < all.length - 1) {
+    return [all.slice(0, idx + 1).join(' '), ...all.slice(idx + 1)];
+  }
+  return all;
+}
+
+/**
+ * Slow down spelled-out names: "B-U-D-D-Y" reads too fast. Turning hyphens
+ * into commas makes the TTS pause briefly between letters → clearer spelling.
+ */
+function slowSpelling(text: string): string {
+  return text.replace(/\b([A-Za-z](?:-[A-Za-z]){1,})\b/g, (m) => m.split('-').join(', '));
 }
 
 /** Parse a standard PCM WAV → sample rate + raw PCM data bytes. Null if not WAV. */
@@ -739,9 +758,10 @@ function pcmToWav(pcm: Uint8Array, sampleRate: number): ArrayBuffer {
 /** TTS one segment → mono-16-bit PCM (+ rate). Null if engine can't give WAV/PCM. */
 async function ttsSegmentPcm(
   env: Env,
-  text: string,
+  rawText: string,
   lang: 'en' | 'zh',
 ): Promise<{ sampleRate: number; data: Uint8Array } | null> {
+  const text = slowSpelling(rawText); // space out spelled letters so they're clear
   try {
     if (lang === 'zh') {
       if (!env.DASHSCOPE_API_KEY) return null; // melotts format unknown → skip gaps
