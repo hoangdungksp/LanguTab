@@ -313,7 +313,7 @@ async function getOrGenerateAudio(req: Request, env: Env): Promise<Response> {
   const ttsStart = Date.now();
   // Part 2/3: stitch per-question segments with 2s gaps (falls back to
   // single-shot if stitching isn't possible for the engine).
-  const gapped = partWantsGaps(body.audioKey)
+  const gapped = partWantsGaps(body.audioKey, body.audioScript)
     ? await generateWithGaps(env, body.audioScript, lang)
     : null;
   const { bytes, provider } = gapped
@@ -721,9 +721,23 @@ function relabelQuestionMarkers(segs: string[], lang: 'en' | 'zh'): string[] {
   });
 }
 
-/** True for Part 2 / Part 3 audio keys (e.g. `level1/p2.mp3`, `zh/level5/p3.mp3`). */
-function partWantsGaps(audioKey: string): boolean {
-  return /\/p[23]\.[a-z0-9]+$/i.test(audioKey);
+/**
+ * Whether to stitch question-gaps into this part's audio.
+ *
+ * Position alone is ambiguous now that levels can have 5 parts (p4 is COLOUR
+ * in 4-part Starters/HSK1 but TICK in 5-part Movers/Flyers/HSK2/HSK3). So we
+ * decide by content instead: gaps for every multi-question part (write, tick,
+ * match) but NOT the drag intro (p1) or the colour part (detected by its
+ * "colour"/"涂" instructions). This keeps pauses between tick questions even
+ * when tick sits at p4.
+ */
+function partWantsGaps(audioKey: string, audioScript = ''): boolean {
+  if (/\/p1\.[a-z0-9]+$/i.test(audioKey)) return false; // drag — no gaps
+  // Colour part — detected by its colour INSTRUCTION ("涂成…" / "colour the …"),
+  // not any mention of a colour (a write/tick question may ask "what colour…").
+  const isColour = /涂成/.test(audioScript) || /colou?r the /i.test(audioScript);
+  if (isColour) return false;
+  return true;
 }
 
 /**
