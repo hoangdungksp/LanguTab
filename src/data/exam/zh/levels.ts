@@ -1,8 +1,10 @@
 /**
- * D-23: Chinese (HSK1) exam.
+ * D-23: Chinese (HSK) exam.
  *
- * Levels 101-120 (no collision with the English 1-60 range). Audio is Chinese,
- * read by Qwen-TTS Cherry (D-1); Part 2 accepts hanzi AND toneless pinyin.
+ * Levels 101+ (display as 1-60; no collision with the English 1-60 range).
+ * HSK1 = 101-120 (4-part), HSK2 = 121-140 (5-part with a Matching part, like
+ * Movers), HSK3 = 141-160. Audio is Chinese, read by Qwen-TTS Cherry (D-1);
+ * Part 2 accepts hanzi AND toneless pinyin.
  *
  * ALL 20 levels (L101-L120) are HAND-CURATED unique per level (like the
  * English Starters): each has its own theme, Chinese scene image, vocabulary
@@ -15,7 +17,7 @@
  *   111 交通 · 112 玩具 · 113 动物园 · 114 野餐 · 115 购物
  *   116 复习·校园 · 117 复习·房间 · 118 复习·市场 · 119 复习·周末 · 120 复习·联欢会
  */
-import type { ExamLevel, DragNamePart, WritePart, TickPart, ColourPart } from '../../../types';
+import type { ExamLevel, DragNamePart, WritePart, TickPart, ColourPart, MatchPart } from '../../../types';
 import type { IconId } from '../examIcons';
 import { STARTERS_SCENE_IDS_BY_LEVEL } from '../sceneCharacters';
 
@@ -81,6 +83,18 @@ interface ZhColourObj {
   label: string;
   color: string;
 }
+/** One match row: a person + the picture (icon) the audio links them to. */
+interface ZhMatchObj {
+  name: string;
+  iconId: IconId;
+  /** Spoken Chinese clue, e.g. "小明踢了足球。" */
+  say: string;
+}
+interface ZhMatchDef {
+  example: ZhMatchObj;
+  items: ZhMatchObj[]; // 5
+  distractors: IconId[];
+}
 interface ZhLevelDef {
   /** Short Chinese theme label for the level title. */
   theme: string;
@@ -94,6 +108,8 @@ interface ZhLevelDef {
   tick: { example: ZhTickDef; questions: ZhTickDef[] };
   colourSceneId: string;
   colour: { example: ZhColourObj; regions: ZhColourObj[] };
+  /** HSK2+ only: a Matching part (Part 3) → makes the level 5-part. */
+  match?: ZhMatchDef;
 }
 
 // ─── Part builders (curated, def-driven) ────────────────────────────────────
@@ -161,12 +177,12 @@ function makeTickItem(questionId: string, def: ZhTickDef) {
   };
 }
 
-function zhTick(levelNumber: number, def: ZhLevelDef): TickPart {
+function zhTick(levelNumber: number, def: ZhLevelDef, pos = 3): TickPart {
   const qLines = def.tick.questions.map((q, i) => `${ZH_NUM[i]}。${q.prompt}`).join('');
   return {
     type: 'listening_tick',
-    partId: `zh_lvl${levelNumber}_p3`,
-    audioKey: `zh/level${levelNumber}/p3.mp3`,
+    partId: `zh_lvl${levelNumber}_p${pos}`,
+    audioKey: `zh/level${levelNumber}/p${pos}.mp3`,
     audioScript:
       `听一听，选一选。有一个例子。${def.tick.example.prompt}` +
       `现在听。` +
@@ -176,7 +192,7 @@ function zhTick(levelNumber: number, def: ZhLevelDef): TickPart {
   };
 }
 
-function zhColour(levelNumber: number, def: ZhLevelDef): ColourPart {
+function zhColour(levelNumber: number, def: ZhLevelDef, pos = 4): ColourPart {
   const ex = def.colour.example;
   const regions = def.colour.regions.slice(0, 5);
   const exSlot = COLOUR_SLOTS[0];
@@ -193,14 +209,59 @@ function zhColour(levelNumber: number, def: ZhLevelDef): ColourPart {
   });
   return {
     type: 'listening_colour',
-    partId: `zh_lvl${levelNumber}_p4`,
-    audioKey: `zh/level${levelNumber}/p4.mp3`,
+    partId: `zh_lvl${levelNumber}_p${pos}`,
+    audioKey: `zh/level${levelNumber}/p${pos}.mp3`,
     audioScript: lines.join(''),
     sceneId: def.colourSceneId,
     example: { regionId: 'obj_ex', color: ex.color, x: exSlot.x, y: exSlot.y, width: exSlot.width, height: exSlot.height },
     regions: regionObjs,
     correctColors,
     palette: COLOUR_PALETTE,
+  };
+}
+
+const MATCH_LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+
+/** Deterministic Fisher–Yates shuffle (mulberry32) so picture order is stable
+ *  per level but NOT in answer order. */
+function zhSeededShuffle<T>(arr: T[], seed: number): T[] {
+  let a = seed >>> 0;
+  const rand = () => {
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  const out = arr.slice();
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
+/** Part 3 (HSK2+) — listen & draw a line from each name to the right picture. */
+function zhMatch(levelNumber: number, def: ZhMatchDef, pos = 3): MatchPart {
+  const idOf = (name: string) => name; // Chinese names are unique enough as ids
+  const iconPool = [def.example.iconId, ...def.items.map((it) => it.iconId), ...def.distractors];
+  const shuffled = zhSeededShuffle([...new Set(iconPool)], levelNumber * 101 + 17);
+  const options = shuffled.map((iconId, i) => ({ letter: MATCH_LETTERS[i], iconId }));
+  const iconToLetter = new Map(options.map((o) => [o.iconId, o.letter]));
+  const correctMapping: Record<string, string> = {};
+  for (const it of def.items) correctMapping[idOf(it.name)] = iconToLetter.get(it.iconId)!;
+  return {
+    type: 'listening_match',
+    partId: `zh_lvl${levelNumber}_p${pos}`,
+    audioKey: `zh/level${levelNumber}/p${pos}.mp3`,
+    audioScript:
+      `听一听，连线。有一个例子。${def.example.say}` +
+      `现在听，把名字和图片连起来。` +
+      def.items.map((it) => it.say).join(''),
+    exampleItem: { id: `ex_${def.example.name}`, label: def.example.name },
+    exampleLetter: iconToLetter.get(def.example.iconId)!,
+    items: def.items.map((it) => ({ id: idOf(it.name), label: it.name })),
+    options,
+    correctMapping,
   };
 }
 
@@ -1012,6 +1073,263 @@ const ZH_LEVEL_DEFS: Record<number, ZhLevelDef> = {
       ],
     },
   },
+
+  // ─── HSK2 (L121-140): 5-part with Matching (Part 3), A2-level language ───
+  // L121 — 运动会 (sports day)
+  121: {
+    theme: '运动会',
+    dragSceneId: 'zh_hsk2_l121_sportsday',
+    dragNames: ['小明', '小红', '小华', '小英', '小刚'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小明。', a: '小明' },
+        { q: '有几个球？', say: '有三个球。', a: '三' },
+      ],
+      questions: [
+        { prompt: '有几个奖杯？', say: '有两个奖杯。', accepted: [...numAns(2), '两'] },
+        { prompt: '有几块奖牌？', say: '有四块奖牌。', accepted: numAns(4) },
+        { prompt: '有几个人跑步？', say: '有五个人跑步。', accepted: numAns(5) },
+        { prompt: '他跑了第几名？', say: '他跑了第一名。', accepted: [...numAns(1), '第一'] },
+        { prompt: '现在几点？', say: '现在八点。', accepted: [...numAns(8), '八点'] },
+      ],
+    },
+    match: {
+      example: { name: '小明', iconId: 'soccer_ball', say: '小明踢了足球。' },
+      items: [
+        { name: '小红', iconId: 'ball', say: '小红打了篮球。' },
+        { name: '小华', iconId: 'trophy', say: '小华拿了奖杯。' },
+        { name: '小英', iconId: 'medal', say: '小英得了奖牌。' },
+        { name: '小丽', iconId: 'whistle', say: '小丽吹了哨子。' },
+        { name: '小刚', iconId: 'microphone', say: '小刚唱了歌。' },
+      ],
+      distractors: ['ballet_shoe'],
+    },
+    tick: {
+      example: { prompt: '哪个是足球？', icons: ['soccer_ball', 'ball', 'trophy'], correct: 0 },
+      questions: [
+        { prompt: '哪个是篮球？', icons: ['trophy', 'ball', 'soccer_ball'], correct: 1 },
+        { prompt: '哪个是奖杯？', icons: ['trophy', 'medal', 'ball'], correct: 0 },
+        { prompt: '哪个是奖牌？', icons: ['whistle', 'medal', 'trophy'], correct: 1 },
+        { prompt: '哪个是哨子？', icons: ['whistle', 'ball', 'medal'], correct: 0 },
+        { prompt: '有几个奖杯？', icons: ['count_2', 'count_3', 'count_4'], correct: 0 },
+      ],
+    },
+    colourSceneId: 'zh_hsk2_l121_sportsday_outline',
+    colour: {
+      example: { label: '足球', color: 'black' },
+      regions: [
+        { label: '篮球', color: 'orange' },
+        { label: '奖杯', color: 'yellow' },
+        { label: '奖牌', color: 'red' },
+        { label: '哨子', color: 'blue' },
+        { label: '旗子', color: 'green' },
+      ],
+    },
+  },
+  // L122 — 音乐课 (music lesson)
+  122: {
+    theme: '音乐课',
+    dragSceneId: 'zh_hsk2_l122_music',
+    dragNames: ['小红', '小华', '小明', '小英', '小丽'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小红。', a: '小红' },
+        { q: '有几把吉他？', say: '有两把吉他。', a: '二' },
+      ],
+      questions: [
+        { prompt: '有几个鼓？', say: '有三个鼓。', accepted: numAns(3) },
+        { prompt: '有几个人唱歌？', say: '有四个人唱歌。', accepted: numAns(4) },
+        { prompt: '有几架钢琴？', say: '有一架钢琴。', accepted: numAns(1) },
+        { prompt: '她几岁？', say: '她七岁。', accepted: numAns(7) },
+        { prompt: '现在几点？', say: '现在五点。', accepted: [...numAns(5), '五点'] },
+      ],
+    },
+    match: {
+      example: { name: '小红', iconId: 'guitar', say: '小红弹了吉他。' },
+      items: [
+        { name: '小华', iconId: 'piano', say: '小华弹了钢琴。' },
+        { name: '小明', iconId: 'drum', say: '小明打了鼓。' },
+        { name: '小英', iconId: 'violin', say: '小英拉了小提琴。' },
+        { name: '小丽', iconId: 'trumpet', say: '小丽吹了小号。' },
+        { name: '小刚', iconId: 'microphone', say: '小刚唱了歌。' },
+      ],
+      distractors: ['music_note'],
+    },
+    tick: {
+      example: { prompt: '哪个是吉他？', icons: ['guitar', 'piano', 'drum'], correct: 0 },
+      questions: [
+        { prompt: '哪个是钢琴？', icons: ['drum', 'piano', 'guitar'], correct: 1 },
+        { prompt: '哪个是鼓？', icons: ['drum', 'violin', 'piano'], correct: 0 },
+        { prompt: '哪个是小提琴？', icons: ['trumpet', 'violin', 'guitar'], correct: 1 },
+        { prompt: '哪个是小号？', icons: ['trumpet', 'drum', 'violin'], correct: 0 },
+        { prompt: '哪个是麦克风？', icons: ['music_note', 'microphone', 'drum'], correct: 1 },
+      ],
+    },
+    colourSceneId: 'zh_hsk2_l122_music_outline',
+    colour: {
+      example: { label: '吉他', color: 'brown' },
+      regions: [
+        { label: '钢琴', color: 'black' },
+        { label: '鼓', color: 'red' },
+        { label: '小提琴', color: 'yellow' },
+        { label: '小号', color: 'orange' },
+        { label: '音符', color: 'blue' },
+      ],
+    },
+  },
+  // L123 — 在动物园 (at the zoo)
+  123: {
+    theme: '在动物园',
+    dragSceneId: 'zh_hsk2_l123_zoo',
+    dragNames: ['小华', '小明', '小红', '小英', '小丽'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小华。', a: '小华' },
+        { q: '有几只狮子？', say: '有两只狮子。', a: '二' },
+      ],
+      questions: [
+        { prompt: '有几只猴子？', say: '有三只猴子。', accepted: numAns(3) },
+        { prompt: '有几只大象？', say: '有四只大象。', accepted: numAns(4) },
+        { prompt: '有几只企鹅？', say: '有五只企鹅。', accepted: numAns(5) },
+        { prompt: '他喜欢几只动物？', say: '他喜欢六只动物。', accepted: numAns(6) },
+        { prompt: '现在几点？', say: '现在三点。', accepted: [...numAns(3), '三点'] },
+      ],
+    },
+    match: {
+      example: { name: '小华', iconId: 'lion', say: '小华看了狮子。' },
+      items: [
+        { name: '小明', iconId: 'elephant', say: '小明喂了大象。' },
+        { name: '小红', iconId: 'monkey', say: '小红看了猴子。' },
+        { name: '小英', iconId: 'giraffe', say: '小英喜欢长颈鹿。' },
+        { name: '小丽', iconId: 'snake', say: '小丽怕那条蛇。' },
+        { name: '小刚', iconId: 'penguin', say: '小刚看了企鹅。' },
+      ],
+      distractors: ['cat'],
+    },
+    tick: {
+      example: { prompt: '哪个是狮子？', icons: ['lion', 'monkey', 'elephant'], correct: 0 },
+      questions: [
+        { prompt: '哪个是大象？', icons: ['giraffe', 'elephant', 'lion'], correct: 1 },
+        { prompt: '哪个是猴子？', icons: ['monkey', 'snake', 'penguin'], correct: 0 },
+        { prompt: '哪个是长颈鹿？', icons: ['snake', 'giraffe', 'monkey'], correct: 1 },
+        { prompt: '哪个是蛇？', icons: ['snake', 'penguin', 'lion'], correct: 0 },
+        { prompt: '哪个是企鹅？', icons: ['lion', 'monkey', 'penguin'], correct: 2 },
+      ],
+    },
+    colourSceneId: 'zh_hsk2_l123_zoo_outline',
+    colour: {
+      example: { label: '狮子', color: 'yellow' },
+      regions: [
+        { label: '大象', color: 'grey' },
+        { label: '猴子', color: 'brown' },
+        { label: '长颈鹿', color: 'orange' },
+        { label: '蛇', color: 'green' },
+        { label: '企鹅', color: 'black' },
+      ],
+    },
+  },
+  // L124 — 在餐厅 (at the restaurant)
+  124: {
+    theme: '在餐厅',
+    dragSceneId: 'zh_hsk2_l124_restaurant',
+    dragNames: ['小英', '小明', '小丽', '小华', '小红'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小英。', a: '小英' },
+        { q: '有几个汉堡？', say: '有三个汉堡。', a: '三' },
+      ],
+      questions: [
+        { prompt: '有几碗面条？', say: '有两碗面条。', accepted: [...numAns(2), '两'] },
+        { prompt: '有几杯果汁？', say: '有四杯果汁。', accepted: numAns(4) },
+        { prompt: '有几个冰淇淋？', say: '有五个冰淇淋。', accepted: numAns(5) },
+        { prompt: '他们几个人？', say: '他们六个人。', accepted: numAns(6) },
+        { prompt: '现在几点？', say: '现在七点。', accepted: [...numAns(7), '七点'] },
+      ],
+    },
+    match: {
+      example: { name: '爸爸', iconId: 'pizza', say: '爸爸吃了比萨。' },
+      items: [
+        { name: '妈妈', iconId: 'burger', say: '妈妈吃了汉堡。' },
+        { name: '小华', iconId: 'noodles', say: '小华吃了面条。' },
+        { name: '小英', iconId: 'juice_glass', say: '小英喝了果汁。' },
+        { name: '小丽', iconId: 'ice_cream', say: '小丽吃了冰淇淋。' },
+        { name: '小刚', iconId: 'soup_bowl', say: '小刚喝了汤。' },
+      ],
+      distractors: ['salad'],
+    },
+    tick: {
+      example: { prompt: '哪个是比萨？', icons: ['pizza', 'burger', 'noodles'], correct: 0 },
+      questions: [
+        { prompt: '哪个是汉堡？', icons: ['noodles', 'burger', 'pizza'], correct: 1 },
+        { prompt: '哪个是面条？', icons: ['noodles', 'soup_bowl', 'pizza'], correct: 0 },
+        { prompt: '哪个是果汁？', icons: ['ice_cream', 'juice_glass', 'soup_bowl'], correct: 1 },
+        { prompt: '哪个是冰淇淋？', icons: ['ice_cream', 'burger', 'noodles'], correct: 0 },
+        { prompt: '哪个是汤？', icons: ['juice_glass', 'pizza', 'soup_bowl'], correct: 2 },
+      ],
+    },
+    colourSceneId: 'zh_hsk2_l124_restaurant_outline',
+    colour: {
+      example: { label: '比萨', color: 'red' },
+      regions: [
+        { label: '汉堡', color: 'brown' },
+        { label: '面条', color: 'yellow' },
+        { label: '果汁', color: 'orange' },
+        { label: '冰淇淋', color: 'pink' },
+        { label: '汤', color: 'green' },
+      ],
+    },
+  },
+  // L125 — 去旅行 (going travelling)
+  125: {
+    theme: '去旅行',
+    dragSceneId: 'zh_hsk2_l125_travel',
+    dragNames: ['小明', '小红', '小华', '小丽', '小刚'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小明。', a: '小明' },
+        { q: '有几个行李箱？', say: '有两个行李箱。', a: '二' },
+      ],
+      questions: [
+        { prompt: '有几张票？', say: '有三张票。', accepted: numAns(3) },
+        { prompt: '有几架飞机？', say: '有四架飞机。', accepted: numAns(4) },
+        { prompt: '有几辆车？', say: '有五辆车。', accepted: numAns(5) },
+        { prompt: '他们坐几点的飞机？', say: '他们坐八点的飞机。', accepted: [...numAns(8), '八点'] },
+        { prompt: '他几岁？', say: '他九岁。', accepted: numAns(9) },
+      ],
+    },
+    match: {
+      example: { name: '小明', iconId: 'plane', say: '小明坐了飞机。' },
+      items: [
+        { name: '小红', iconId: 'bus', say: '小红坐了公共汽车。' },
+        { name: '小华', iconId: 'sailboat', say: '小华坐了船。' },
+        { name: '小丽', iconId: 'suitcase', say: '小丽带了行李箱。' },
+        { name: '小刚', iconId: 'ticket', say: '小刚买了票。' },
+        { name: '小英', iconId: 'map', say: '小英看了地图。' },
+      ],
+      distractors: ['compass'],
+    },
+    tick: {
+      example: { prompt: '哪个是飞机？', icons: ['plane', 'bus', 'sailboat'], correct: 0 },
+      questions: [
+        { prompt: '哪个是公共汽车？', icons: ['sailboat', 'bus', 'plane'], correct: 1 },
+        { prompt: '哪个是船？', icons: ['sailboat', 'plane', 'bus'], correct: 0 },
+        { prompt: '哪个是行李箱？', icons: ['ticket', 'suitcase', 'map'], correct: 1 },
+        { prompt: '哪个是票？', icons: ['ticket', 'map', 'suitcase'], correct: 0 },
+        { prompt: '哪个是地图？', icons: ['suitcase', 'ticket', 'map'], correct: 2 },
+      ],
+    },
+    colourSceneId: 'zh_hsk2_l125_travel_outline',
+    colour: {
+      example: { label: '飞机', color: 'blue' },
+      regions: [
+        { label: '公共汽车', color: 'red' },
+        { label: '船', color: 'green' },
+        { label: '行李箱', color: 'brown' },
+        { label: '票', color: 'yellow' },
+        { label: '地图', color: 'orange' },
+      ],
+    },
+  },
 };
 
 // ─── Template fallback (L106-L120, not yet curated) ─────────────────────────
@@ -1136,24 +1454,53 @@ function tmplColour(levelNumber: number, idx: number): ColourPart {
 
 // ─── Level assembly ─────────────────────────────────────────────────────────
 
-function makeZhLevel(idx: number): ExamLevel {
-  const levelNumber = 100 + idx; // 101..120
+/** HSK band (1/2/3) + 1-based index within the band, from a 101+ level number. */
+function zhBand(levelNumber: number): { band: 1 | 2 | 3; start: number; idx: number } {
+  const band = levelNumber >= 141 ? 3 : levelNumber >= 121 ? 2 : 1;
+  const start = band === 3 ? 141 : band === 2 ? 121 : 101;
+  return { band, start, idx: levelNumber - start + 1 };
+}
+
+function makeZhLevel(levelNumber: number): ExamLevel {
+  const idx = levelNumber - 100; // template fallback only ever runs for HSK1
   const def = ZH_LEVEL_DEFS[levelNumber];
-  const parts: ExamLevel['parts'] = def
-    ? [zhDrag(levelNumber, def), zhWrite(levelNumber, def), zhTick(levelNumber, def), zhColour(levelNumber, def)]
-    : [tmplDrag(levelNumber, idx), tmplWrite(levelNumber, idx), tmplTick(levelNumber), tmplColour(levelNumber, idx)];
+  const { band, idx: idxInBand } = zhBand(levelNumber);
+
+  let parts: ExamLevel['parts'];
+  if (def?.match) {
+    // HSK2+ : 5-part with Matching at p3 (tick→p4, colour→p5).
+    parts = [
+      zhDrag(levelNumber, def),
+      zhWrite(levelNumber, def),
+      zhMatch(levelNumber, def.match, 3),
+      zhTick(levelNumber, def, 4),
+      zhColour(levelNumber, def, 5),
+    ];
+  } else if (def) {
+    parts = [zhDrag(levelNumber, def), zhWrite(levelNumber, def), zhTick(levelNumber, def), zhColour(levelNumber, def)];
+  } else {
+    parts = [tmplDrag(levelNumber, idx), tmplWrite(levelNumber, idx), tmplTick(levelNumber), tmplColour(levelNumber, idx)];
+  }
+
+  // Engine difficulty hint (time limit) rises with the band.
+  const difficulty = band === 3 ? 'flyers' : band === 2 ? 'movers' : 'starters';
+  const timeLimitSec = (band === 3 ? 40 : band === 2 ? 35 : 30) * 60;
   return {
     levelNumber,
-    difficulty: 'starters', // engine difficulty hint (time limit); HSK1 ≈ easy
-    title: def ? `HSK 1 · ${idx} — ${def.theme}` : `HSK 1 · ${idx}`,
-    description: 'Bài thi nghe tiếng Trung HSK1 — nghe, ghép tên, viết, chọn, tô màu.',
-    timeLimitSec: 30 * 60,
+    difficulty,
+    title: def ? `HSK ${band} · ${idxInBand} — ${def.theme}` : `HSK ${band} · ${idxInBand}`,
+    description: `Bài thi nghe tiếng Trung HSK${band} — nghe, ghép tên, viết, chọn, tô màu.`,
+    timeLimitSec,
     parts,
   };
 }
 
-/** HSK1: 20 levels (101-120). L101-105 curated, L106-120 template. */
-export const allLevelsZh: ExamLevel[] = Array.from({ length: 20 }, (_, i) => makeZhLevel(i + 1));
+/** All curated Chinese levels (HSK1 101-120, HSK2 121+, …) — built from the
+ *  level numbers present in ZH_LEVEL_DEFS, ascending. */
+export const allLevelsZh: ExamLevel[] = Object.keys(ZH_LEVEL_DEFS)
+  .map(Number)
+  .sort((a, b) => a - b)
+  .map((levelNumber) => makeZhLevel(levelNumber));
 
 export function getLevelZh(levelNumber: number): ExamLevel | undefined {
   return allLevelsZh.find((l) => l.levelNumber === levelNumber);

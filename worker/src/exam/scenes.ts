@@ -230,6 +230,17 @@ export const SCENE_IDS = [
   'zh_hsk1_l118_market_outline',
   'zh_hsk1_l119_weekend_outline',
   'zh_hsk1_l120_party_outline',
+  // HSK2 batch 1 (L121-125)
+  'zh_hsk2_l121_sportsday',
+  'zh_hsk2_l122_music',
+  'zh_hsk2_l123_zoo',
+  'zh_hsk2_l124_restaurant',
+  'zh_hsk2_l125_travel',
+  'zh_hsk2_l121_sportsday_outline',
+  'zh_hsk2_l122_music_outline',
+  'zh_hsk2_l123_zoo_outline',
+  'zh_hsk2_l124_restaurant_outline',
+  'zh_hsk2_l125_travel_outline',
 ] as const;
 
 export type SceneId = typeof SCENE_IDS[number];
@@ -1625,6 +1636,60 @@ export const SCENE_PROMPTS: Record<SceneId, ScenePromptSpec> = {
   zh_hsk1_l120_party_outline: {
     prompt:
       'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of party objects spread across the wide image: a cake, a present box, a ball, a cat, a dog, a balloon. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+
+  // ─── D-23: HSK2 batch 1 drag scenes (L121-125) ───────────────────────────
+  zh_hsk2_l121_sportsday: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children at a school sports day. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt kicking a football; child wearing a blue shirt holding a basketball; child wearing a green shirt holding a trophy. Bottom row left to right: child wearing a yellow shirt wearing a medal; child wearing a pink shirt blowing a whistle; child wearing an orange shirt running. Sports field background with a running track. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+  zh_hsk2_l122_music: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children in a music lesson. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt playing a guitar; child wearing a blue shirt playing a piano; child wearing a green shirt playing drums. Bottom row left to right: child wearing a yellow shirt playing a violin; child wearing a pink shirt playing a trumpet; child wearing an orange shirt singing into a microphone. Music classroom background. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+  zh_hsk2_l123_zoo: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children at a zoo. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt looking at a lion; child wearing a blue shirt feeding an elephant; child wearing a green shirt watching a monkey. Bottom row left to right: child wearing a yellow shirt pointing at a giraffe; child wearing a pink shirt looking at a snake; child wearing an orange shirt watching a penguin. Zoo background with enclosures and trees. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+  zh_hsk2_l124_restaurant: {
+    prompt:
+      'Wide horizontal cartoon illustration of a Chinese family eating at a restaurant. COMPOSITION (most important): Six people arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: person wearing a red shirt eating pizza; person wearing a blue shirt eating a burger; person wearing a green shirt eating noodles. Bottom row left to right: person wearing a yellow shirt drinking juice; person wearing a pink shirt eating an ice cream; person wearing an orange shirt eating soup. Restaurant background with tables. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+  zh_hsk2_l125_travel: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children going travelling at an airport. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt boarding a plane; child wearing a blue shirt getting on a bus; child wearing a green shirt on a boat. Bottom row left to right: child wearing a yellow shirt pulling a suitcase; child wearing a pink shirt holding a ticket; child wearing an orange shirt reading a map. Airport background. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+
+  // ─── D-23: HSK2 batch 1 colour outline scenes (L121-125) ─────────────────
+  zh_hsk2_l121_sportsday_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of sports objects spread across the wide image: a football, a basketball, a trophy, a medal, a whistle, a flag. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  zh_hsk2_l122_music_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of musical instruments spread across the wide image: a guitar, a piano, a drum, a violin, a trumpet, a music note. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  zh_hsk2_l123_zoo_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of zoo animals spread across the wide image: a lion, an elephant, a monkey, a giraffe, a snake, a penguin. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  zh_hsk2_l124_restaurant_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of restaurant food spread across the wide image: a slice of pizza, a burger, a bowl of noodles, a glass of juice, an ice cream, a bowl of soup. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  zh_hsk2_l125_travel_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of travel objects spread across the wide image: a plane, a bus, a boat, a suitcase, a ticket, a map. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
     aspect: 'landscape',
   },
 };
