@@ -670,6 +670,28 @@ export default {
       });
     }
 
+    // ─── D-21 dashboard admin API (Google role=admin, NOT ADMIN_TOKEN) ──
+    // Must run BEFORE handleAdminRequest below, which is ADMIN_TOKEN-gated and
+    // would 401 a Google-login admin. Auth here = signed-in Google user whose
+    // D1 role is admin (checked inside handleAdminUsersRequest).
+    if (url.pathname.startsWith('/admin/users') || url.pathname === '/admin/stats') {
+      const bearer = req.headers.get('Authorization')?.startsWith('Bearer ')
+        ? req.headers.get('Authorization')!.slice(7) : null;
+      const gUser = bearer ? await verifyGoogleToken(bearer) : null;
+      if (!gUser) {
+        return new Response(JSON.stringify({ error: 'Auth required' }), {
+          status: 401, headers: { 'Content-Type': 'application/json', ...cors },
+        });
+      }
+      const role = await getUserRole(env.DB, gUser.userId);
+      const r = await handleAdminUsersRequest(req, env, role);
+      if (r) {
+        const headers = new Headers(r.headers);
+        Object.entries(cors).forEach(([k, v]) => headers.set(k, String(v)));
+        return new Response(r.body, { status: r.status, headers });
+      }
+    }
+
     // ─── Admin endpoints (Bearer ADMIN_TOKEN required) ──────────────────
     // Handler returns null if path doesn't match /admin/*; otherwise it
     // fully owns the response. Auth is internal to handleAdminRequest.
@@ -792,19 +814,6 @@ export default {
         resp = r ?? new Response(JSON.stringify({ error: 'Not found' }), {
           status: 404, headers: { 'Content-Type': 'application/json' },
         });
-      } else if (url.pathname.startsWith('/admin/users') || url.pathname === '/admin/stats') {
-        // D-21: admin dashboard API (manage users, view progress). Admin-only.
-        if (!user) {
-          resp = new Response(JSON.stringify({ error: 'Auth required' }), {
-            status: 401, headers: { 'Content-Type': 'application/json' },
-          });
-        } else {
-          const role = await getUserRole(env.DB, user.userId);
-          const r = await handleAdminUsersRequest(req, env, role);
-          resp = r ?? new Response(JSON.stringify({ error: 'Not found' }), {
-            status: 404, headers: { 'Content-Type': 'application/json' },
-          });
-        }
       } else if (url.pathname.startsWith('/exam/')) {
         // Exam routes (audio TTS, future: attempt persistence). Auth check
         // happens inside the handler since some endpoints will need user
