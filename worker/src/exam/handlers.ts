@@ -755,6 +755,37 @@ function pcmToWav(pcm: Uint8Array, sampleRate: number): ArrayBuffer {
   return out;
 }
 
+/** ElevenLabs as raw 24 kHz mono 16-bit PCM (for stitching). */
+async function generateElevenLabsPcm(env: Env, text: string): Promise<ArrayBuffer> {
+  if (!env.ELEVENLABS_API_KEY) throw new Error('ELEVENLABS_API_KEY not configured');
+  const voiceId = env.ELEVENLABS_VOICE_ID || ELEVENLABS_DEFAULT_VOICE_ID;
+  const modelId = env.ELEVENLABS_MODEL_ID || ELEVENLABS_DEFAULT_MODEL_ID;
+  const res = await fetch(
+    `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?output_format=pcm_24000`,
+    {
+      method: 'POST',
+      headers: { 'xi-api-key': env.ELEVENLABS_API_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text,
+        model_id: modelId,
+        voice_settings: { stability: 0.65, similarity_boost: 0.85, style: 0, use_speaker_boost: true },
+      }),
+    },
+  );
+  if (!res.ok) {
+    const e = await res.text().catch(() => '');
+    throw new Error(`ElevenLabs PCM HTTP ${res.status}: ${e.slice(0, 150)}`);
+  }
+  return await res.arrayBuffer();
+}
+
+/** Which provider the gap-stitched audio is cached under — must match the
+ *  read path's first lookup so it isn't shadowed by an older entry. */
+function gapProvider(env: Env, lang: 'en' | 'zh'): string {
+  if (lang === 'zh') return 'qwen';
+  return env.ELEVENLABS_API_KEY ? 'elevenlabs' : 'aura2';
+}
+
 /** TTS one segment → mono-16-bit PCM (+ rate). Null if engine can't give WAV/PCM. */
 async function ttsSegmentPcm(
   env: Env,
@@ -767,7 +798,16 @@ async function ttsSegmentPcm(
       if (!env.DASHSCOPE_API_KEY) return null; // melotts format unknown → skip gaps
       return parseWavPcm(await generateQwenTTS(env, text));
     }
-    // English: Aura-2 raw linear16 PCM (assume 24 kHz mono 16-bit).
+    // English: prefer ElevenLabs PCM (matches read preference + same voice as
+    // Part 1/4). Fall back to Aura-2 linear16. Both 24 kHz mono 16-bit.
+    if (env.ELEVENLABS_API_KEY) {
+      try {
+        const pcm = new Uint8Array(await generateElevenLabsPcm(env, text));
+        if (pcm.byteLength) return { sampleRate: 24000, data: pcm };
+      } catch (err) {
+        console.warn('[exam-audio] ElevenLabs PCM failed, trying Aura-2:', err);
+      }
+    }
     const speaker = env.AURA2_VOICE || AURA2_DEFAULT_VOICE;
     const stream = (await env.AI.run('@cf/deepgram/aura-2-en', {
       text, speaker, encoding: 'linear16',
@@ -810,7 +850,7 @@ async function generateWithGaps(
     if (i > 0) { combined.set(silence, pos); pos += silence.length; }
     combined.set(p.data, pos); pos += p.data.length;
   });
-  return { bytes: pcmToWav(combined, sampleRate), provider: lang === 'zh' ? 'qwen' : 'aura2' };
+  return { bytes: pcmToWav(combined, sampleRate), provider: gapProvider(env, lang) };
 }
 
 // ─── Scene image: read-only user path ──────────────────────────────────
