@@ -197,6 +197,17 @@ export const SCENE_IDS = [
   'zh_hsk1_l103_clothes_outline',
   'zh_hsk1_l104_animals_outline',
   'zh_hsk1_l105_food_outline',
+  // HSK1 batch 2 (L106-110)
+  'zh_hsk1_l106_school',
+  'zh_hsk1_l107_birthday',
+  'zh_hsk1_l108_daily',
+  'zh_hsk1_l109_livingroom',
+  'zh_hsk1_l110_kitchen',
+  'zh_hsk1_l106_school_outline',
+  'zh_hsk1_l107_birthday_outline',
+  'zh_hsk1_l108_daily_outline',
+  'zh_hsk1_l109_livingroom_outline',
+  'zh_hsk1_l110_kitchen_outline',
 ] as const;
 
 export type SceneId = typeof SCENE_IDS[number];
@@ -1430,6 +1441,60 @@ export const SCENE_PROMPTS: Record<SceneId, ScenePromptSpec> = {
   zh_hsk1_l105_food_outline: {
     prompt:
       'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of food spread across the wide image: an apple, a banana, a slice of cake, a loaf of bread, an orange, a bunch of grapes. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+
+  // ─── D-23: HSK1 batch 2 drag scenes (L106-110) ───────────────────────────
+  zh_hsk1_l106_school: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children in a school classroom. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt writing in a book; child wearing a blue shirt holding a pen; child wearing a green shirt carrying a schoolbag. Bottom row left to right: child wearing a yellow shirt sitting on a chair; child wearing a pink shirt reading a book; child wearing an orange shirt holding a ball. Classroom background with a blackboard and desks. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+  zh_hsk1_l107_birthday: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children at a birthday party. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt holding a birthday cake; child wearing a blue shirt holding balloons; child wearing a green shirt holding a present. Bottom row left to right: child wearing a yellow shirt eating cake; child wearing a pink shirt blowing a party horn; child wearing an orange shirt clapping hands. Party background with balloons and bunting. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+  zh_hsk1_l108_daily: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children doing their morning routine. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing red pyjamas waking up by a clock; child wearing a blue shirt brushing teeth; child wearing a green shirt eating breakfast. Bottom row left to right: child wearing a yellow shirt getting dressed; child wearing a pink shirt putting on shoes; child wearing an orange shirt carrying a schoolbag. Home background with a big wall clock. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+  zh_hsk1_l109_livingroom: {
+    prompt:
+      'Wide horizontal cartoon illustration of a Chinese family in the living room. COMPOSITION (most important): Six people arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: person wearing a red shirt sitting on a sofa; person wearing a blue shirt watching television; person wearing a green shirt reading at a table. Bottom row left to right: person wearing a yellow shirt turning on a lamp; person wearing a pink shirt using a computer; person wearing an orange shirt sitting on a chair. Cosy living room background. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+  zh_hsk1_l110_kitchen: {
+    prompt:
+      'Wide horizontal cartoon illustration of Chinese children eating and drinking in a kitchen. COMPOSITION (most important): Six children arranged in a clean 3×2 grid (three columns, two rows), each in their own area with empty space around them so they do not overlap. Top row left to right: child wearing a red shirt holding a bowl of rice; child wearing a blue shirt drinking a glass of water; child wearing a green shirt holding bread. Bottom row left to right: child wearing a yellow shirt eating an apple; child wearing a pink shirt holding a slice of cake; child wearing an orange shirt drinking juice. Kitchen background with a table. Wide 16:9 aspect ratio. Flat cartoon design, vibrant colors, kid-friendly style, thick outlines, no text, no words.',
+    aspect: 'landscape',
+  },
+
+  // ─── D-23: HSK1 batch 2 colour outline scenes (L106-110) ─────────────────
+  zh_hsk1_l106_school_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of school objects spread across the wide image: a book, a pen, a chair, a ball, a schoolbag, a clock. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  zh_hsk1_l107_birthday_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of objects spread across the wide image: an apple, a ball, a book, a cat, a bird, a flower. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  zh_hsk1_l108_daily_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of objects spread across the wide image: a clock, a sun, a moon, a star, a bed, a lamp. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  zh_hsk1_l109_livingroom_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of living room furniture spread across the wide image: a bed, a chair, a table, a television, a lamp, a computer. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
+    aspect: 'landscape',
+  },
+  zh_hsk1_l110_kitchen_outline: {
+    prompt:
+      'Wide horizontal black and white line art coloring page for kids. Simple outline drawing of food and drink spread across the wide image: an apple, a banana, a loaf of bread, a slice of cake, a bowl of rice, a glass of juice. Each object well separated, no overlap. Thick black outlines on pure white background. Wide 16:9 aspect ratio. No fills, no shading, no text. Coloring book style.',
     aspect: 'landscape',
   },
 };

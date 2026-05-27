@@ -4,14 +4,15 @@
  * Levels 101-120 (no collision with the English 1-60 range). Audio is Chinese,
  * read by Qwen-TTS Cherry (D-1); Part 2 accepts hanzi AND toneless pinyin.
  *
- * L101-L105 are HAND-CURATED unique per level (like the English Starters):
+ * L101-L110 are HAND-CURATED unique per level (like the English Starters):
  * each has its own theme, Chinese scene image, vocabulary and questions —
- * driven by ZH_LEVEL_DEFS below. L106-L120 still use the original uniform
+ * driven by ZH_LEVEL_DEFS below. L111-L120 still use the original uniform
  * template (reusing English scenes) until later batches curate them.
  *
  * Theme roadmap (HSK1 syllabus, progressive):
- *   101 数字 & 公园 · 102 家庭 & 家 · 103 颜色 & 衣服 · 104 动物 · 105 食物
- *   106-120: 学校/时间/地点/天气/动词/职业… (template fallback for now)
+ *   101 数字·公园 · 102 家庭·家 · 103 颜色·衣服 · 104 动物 · 105 食物
+ *   106 学校 · 107 数字·年龄 · 108 时间 · 109 家里物品 · 110 吃喝
+ *   111-120: 地点/天气/动词/职业… (template fallback for now)
  */
 import type { ExamLevel, DragNamePart, WritePart, TickPart, ColourPart } from '../../../types';
 import type { IconId } from '../examIcons';
@@ -409,7 +410,206 @@ const ZH_LEVEL_DEFS: Record<number, ZhLevelDef> = {
       ],
     },
   },
-};
+  // L106 — 学校 (school)
+  106: {
+    theme: '学校',
+    dragSceneId: 'zh_hsk1_l106_school',
+    dragNames: ['小明', '小红', '小华', '小英', '小刚'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小明。', a: '小明' },
+        { q: '有几本书？', say: '有四本书。', a: '四' },
+      ],
+      questions: [
+        { prompt: '有几支笔？', say: '有三支笔。', accepted: numAns(3) },
+        { prompt: '有几个学生？', say: '有五个学生。', accepted: numAns(5) },
+        { prompt: '有几把椅子？', say: '有六把椅子。', accepted: numAns(6) },
+        { prompt: '老师叫什么？', say: '老师叫小红。', accepted: ['小红', 'xiaohong'] },
+        { prompt: '现在几点？', say: '现在八点。', accepted: [...numAns(8), '八点'] },
+      ],
+    },
+    tick: {
+      example: { prompt: '哪个是书？', icons: ['book', 'pen', 'bag_red'], correct: 0 },
+      questions: [
+        { prompt: '哪个是笔？', icons: ['ball', 'pen', 'book'], correct: 1 },
+        { prompt: '哪个是书包？', icons: ['bag_red', 'book', 'chair'], correct: 0 },
+        { prompt: '哪个是椅子？', icons: ['lamp', 'chair', 'bed'], correct: 1 },
+        { prompt: '哪个是球？', icons: ['pen', 'book', 'ball'], correct: 2 },
+        { prompt: '有几本书？', icons: ['count_2', 'count_3', 'count_4'], correct: 1 },
+      ],
+    },
+    colourSceneId: 'zh_hsk1_l106_school_outline',
+    colour: {
+      example: { label: '书', color: 'red' },
+      regions: [
+        { label: '笔', color: 'blue' },
+        { label: '椅子', color: 'brown' },
+        { label: '球', color: 'green' },
+        { label: '书包', color: 'yellow' },
+        { label: '钟', color: 'black' },
+      ],
+    },
+  },
+  // L107 — 数字与年龄 (numbers & age)
+  107: {
+    theme: '数字·年龄',
+    dragSceneId: 'zh_hsk1_l107_birthday',
+    dragNames: ['小丽', '小华', '小明', '小红', '小英'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小丽。', a: '小丽' },
+        { q: '她几岁？', say: '她七岁。', a: '七' },
+      ],
+      questions: [
+        { prompt: '他几岁？', say: '他八岁。', accepted: numAns(8) },
+        { prompt: '有几个蛋糕？', say: '有两个蛋糕。', accepted: [...numAns(2), '两'] },
+        { prompt: '有几个气球？', say: '有九个气球。', accepted: numAns(9) },
+        { prompt: '有几个朋友？', say: '有六个朋友。', accepted: numAns(6) },
+        { prompt: '有几只猫？', say: '有三只猫。', accepted: numAns(3) },
+      ],
+    },
+    tick: {
+      example: { prompt: '有几只狗？', icons: ['count_2', 'count_3', 'count_4'], correct: 0 },
+      questions: [
+        { prompt: '有几只猫？', icons: ['count_3', 'count_2', 'count_4'], correct: 0 },
+        { prompt: '有几个苹果？', icons: ['count_5', 'count_4', 'count_6'], correct: 1 },
+        { prompt: '有几本书？', icons: ['count_4', 'count_5', 'count_6'], correct: 1 },
+        { prompt: '有几支笔？', icons: ['count_6', 'count_5', 'count_7'], correct: 0 },
+        { prompt: '有几只鸟？', icons: ['count_2', 'count_3', 'count_7'], correct: 0 },
+      ],
+    },
+    colourSceneId: 'zh_hsk1_l107_birthday_outline',
+    colour: {
+      example: { label: '苹果', color: 'red' },
+      regions: [
+        { label: '球', color: 'blue' },
+        { label: '书', color: 'green' },
+        { label: '猫', color: 'orange' },
+        { label: '鸟', color: 'yellow' },
+        { label: '花', color: 'pink' },
+      ],
+    },
+  },
+  // L108 — 时间 (time)
+  108: {
+    theme: '时间',
+    dragSceneId: 'zh_hsk1_l108_daily',
+    dragNames: ['小华', '小刚', '小芳', '小明', '小红'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小华。', a: '小华' },
+        { q: '今天几号？', say: '今天五号。', a: '五' },
+      ],
+      questions: [
+        { prompt: '现在几点？', say: '现在七点。', accepted: [...numAns(7), '七点'] },
+        { prompt: '今天几号？', say: '今天六号。', accepted: numAns(6) },
+        { prompt: '他几点起床？', say: '他八点起床。', accepted: [...numAns(8), '八点'] },
+        { prompt: '现在几点？', say: '现在三点。', accepted: [...numAns(3), '三点'] },
+        { prompt: '今天星期几？', say: '今天星期四。', accepted: ['四', '4', 'si', '星期四'] },
+      ],
+    },
+    tick: {
+      example: { prompt: '哪个是三点？', icons: ['clock_3', 'clock_4', 'clock_5'], correct: 0 },
+      questions: [
+        { prompt: '哪个是四点？', icons: ['clock_5', 'clock_4', 'clock_3'], correct: 1 },
+        { prompt: '哪个是五点？', icons: ['clock_6', 'clock_5', 'clock_4'], correct: 1 },
+        { prompt: '哪个是六点？', icons: ['clock_6', 'clock_8', 'clock_3'], correct: 0 },
+        { prompt: '哪个是八点？', icons: ['clock_5', 'clock_6', 'clock_8'], correct: 2 },
+        { prompt: '哪个是书？', icons: ['book', 'pen', 'ball'], correct: 0 },
+      ],
+    },
+    colourSceneId: 'zh_hsk1_l108_daily_outline',
+    colour: {
+      example: { label: '钟', color: 'red' },
+      regions: [
+        { label: '太阳', color: 'yellow' },
+        { label: '月亮', color: 'grey' },
+        { label: '星星', color: 'blue' },
+        { label: '床', color: 'pink' },
+        { label: '灯', color: 'orange' },
+      ],
+    },
+  },
+  // L109 — 家里物品 (home objects)
+  109: {
+    theme: '家里物品',
+    dragSceneId: 'zh_hsk1_l109_livingroom',
+    dragNames: ['小英', '小宝', '小明', '小华', '小红'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小英。', a: '小英' },
+        { q: '有几张桌子？', say: '有两张桌子。', a: '二' },
+      ],
+      questions: [
+        { prompt: '有几把椅子？', say: '有四把椅子。', accepted: numAns(4) },
+        { prompt: '有几台电视？', say: '有一台电视。', accepted: numAns(1) },
+        { prompt: '有几张床？', say: '有三张床。', accepted: numAns(3) },
+        { prompt: '有几盏灯？', say: '有五盏灯。', accepted: numAns(5) },
+        { prompt: '现在几点？', say: '现在六点。', accepted: [...numAns(6), '六点'] },
+      ],
+    },
+    tick: {
+      example: { prompt: '哪个是床？', icons: ['bed', 'chair', 'lamp'], correct: 0 },
+      questions: [
+        { prompt: '哪个是椅子？', icons: ['lamp', 'chair', 'bed'], correct: 1 },
+        { prompt: '哪个是灯？', icons: ['book', 'tv', 'lamp'], correct: 2 },
+        { prompt: '哪个是电视？', icons: ['tv', 'laptop', 'lamp'], correct: 0 },
+        { prompt: '哪个是电脑？', icons: ['book', 'laptop', 'tv'], correct: 1 },
+        { prompt: '哪个是玩具熊？', icons: ['cat', 'teddy', 'dog'], correct: 1 },
+      ],
+    },
+    colourSceneId: 'zh_hsk1_l109_livingroom_outline',
+    colour: {
+      example: { label: '床', color: 'pink' },
+      regions: [
+        { label: '椅子', color: 'blue' },
+        { label: '桌子', color: 'brown' },
+        { label: '电视', color: 'black' },
+        { label: '灯', color: 'yellow' },
+        { label: '电脑', color: 'grey' },
+      ],
+    },
+  },
+  // L110 — 吃的喝的 (food & drink)
+  110: {
+    theme: '吃喝',
+    dragSceneId: 'zh_hsk1_l110_kitchen',
+    dragNames: ['小红', '小明', '小丽', '小华', '小英'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小红。', a: '小红' },
+        { q: '有几个面包？', say: '有三个面包。', a: '三' },
+      ],
+      questions: [
+        { prompt: '有几碗米饭？', say: '有两碗米饭。', accepted: [...numAns(2), '两'] },
+        { prompt: '有几杯水？', say: '有四杯水。', accepted: numAns(4) },
+        { prompt: '有几个苹果？', say: '有五个苹果。', accepted: numAns(5) },
+        { prompt: '有几块蛋糕？', say: '有六块蛋糕。', accepted: numAns(6) },
+        { prompt: '有几杯果汁？', say: '有三杯果汁。', accepted: numAns(3) },
+      ],
+    },
+    tick: {
+      example: { prompt: '哪个是面包？', icons: ['bread', 'cake', 'pizza'], correct: 0 },
+      questions: [
+        { prompt: '哪个是米饭？', icons: ['soup_bowl', 'bread', 'cake'], correct: 0 },
+        { prompt: '哪个是苹果？', icons: ['apple', 'banana', 'orange'], correct: 0 },
+        { prompt: '哪个是蛋糕？', icons: ['bread', 'cake', 'pizza'], correct: 1 },
+        { prompt: '哪个是果汁？', icons: ['juice_glass', 'soup_bowl', 'cake'], correct: 0 },
+        { prompt: '哪个是香蕉？', icons: ['orange', 'banana', 'apple'], correct: 1 },
+      ],
+    },
+    colourSceneId: 'zh_hsk1_l110_kitchen_outline',
+    colour: {
+      example: { label: '苹果', color: 'red' },
+      regions: [
+        { label: '香蕉', color: 'yellow' },
+        { label: '面包', color: 'brown' },
+        { label: '蛋糕', color: 'pink' },
+        { label: '米饭', color: 'grey' },
+        { label: '果汁', color: 'orange' },
+      ],
+    },
+  },};
 
 // ─── Template fallback (L106-L120, not yet curated) ─────────────────────────
 
