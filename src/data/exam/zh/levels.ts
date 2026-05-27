@@ -4,15 +4,16 @@
  * Levels 101-120 (no collision with the English 1-60 range). Audio is Chinese,
  * read by Qwen-TTS Cherry (D-1); Part 2 accepts hanzi AND toneless pinyin.
  *
- * L101-L110 are HAND-CURATED unique per level (like the English Starters):
+ * L101-L115 are HAND-CURATED unique per level (like the English Starters):
  * each has its own theme, Chinese scene image, vocabulary and questions —
- * driven by ZH_LEVEL_DEFS below. L111-L120 still use the original uniform
+ * driven by ZH_LEVEL_DEFS below. L116-L120 still use the original uniform
  * template (reusing English scenes) until later batches curate them.
  *
  * Theme roadmap (HSK1 syllabus, progressive):
  *   101 数字·公园 · 102 家庭·家 · 103 颜色·衣服 · 104 动物 · 105 食物
  *   106 学校 · 107 数字·年龄 · 108 时间 · 109 家里物品 · 110 吃喝
- *   111-120: 地点/天气/动词/职业… (template fallback for now)
+ *   111 交通 · 112 玩具 · 113 动物园 · 114 野餐 · 115 购物
+ *   116-120: 复习/综合… (template fallback for now)
  */
 import type { ExamLevel, DragNamePart, WritePart, TickPart, ColourPart } from '../../../types';
 import type { IconId } from '../examIcons';
@@ -609,7 +610,208 @@ const ZH_LEVEL_DEFS: Record<number, ZhLevelDef> = {
         { label: '果汁', color: 'orange' },
       ],
     },
-  },};
+  },
+  // L111 — 交通 (transport)
+  111: {
+    theme: '交通',
+    dragSceneId: 'zh_hsk1_l111_station',
+    dragNames: ['小明', '小红', '小华', '小英', '小刚'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小明。', a: '小明' },
+        { q: '有几辆车？', say: '有三辆车。', a: '三' },
+      ],
+      questions: [
+        { prompt: '有几架飞机？', say: '有两架飞机。', accepted: [...numAns(2), '两'] },
+        { prompt: '有几条船？', say: '有四条船。', accepted: numAns(4) },
+        { prompt: '他几岁？', say: '他六岁。', accepted: numAns(6) },
+        { prompt: '有几张票？', say: '有五张票。', accepted: numAns(5) },
+        { prompt: '现在几点？', say: '现在八点。', accepted: [...numAns(8), '八点'] },
+      ],
+    },
+    tick: {
+      example: { prompt: '哪个是公共汽车？', icons: ['bus', 'plane', 'sailboat'], correct: 0 },
+      questions: [
+        { prompt: '哪个是飞机？', icons: ['sailboat', 'plane', 'bus'], correct: 1 },
+        { prompt: '哪个是船？', icons: ['bus', 'sailboat', 'plane'], correct: 1 },
+        { prompt: '哪个是救护车？', icons: ['ambulance', 'fire_engine', 'bus'], correct: 0 },
+        { prompt: '哪个是消防车？', icons: ['bus', 'fire_engine', 'ambulance'], correct: 1 },
+        { prompt: '哪个是票？', icons: ['ticket', 'box', 'book'], correct: 0 },
+      ],
+    },
+    colourSceneId: 'zh_hsk1_l111_station_outline',
+    colour: {
+      example: { label: '公共汽车', color: 'red' },
+      regions: [
+        { label: '飞机', color: 'blue' },
+        { label: '船', color: 'green' },
+        { label: '火车', color: 'black' },
+        { label: '气球', color: 'pink' },
+        { label: '太阳', color: 'orange' },
+      ],
+    },
+  },
+  // L112 — 玩具 (toys)
+  112: {
+    theme: '玩具',
+    dragSceneId: 'zh_hsk1_l112_toyshop',
+    dragNames: ['小红', '小华', '小明', '小英', '小丽'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小红。', a: '小红' },
+        { q: '有几个球？', say: '有三个球。', a: '三' },
+      ],
+      questions: [
+        { prompt: '有几个风筝？', say: '有两个风筝。', accepted: [...numAns(2), '两'] },
+        { prompt: '有几个娃娃？', say: '有四个娃娃。', accepted: numAns(4) },
+        { prompt: '有几个玩具熊？', say: '有五个玩具熊。', accepted: numAns(5) },
+        { prompt: '她几岁？', say: '她六岁。', accepted: numAns(6) },
+        { prompt: '有几本书？', say: '有七本书。', accepted: numAns(7) },
+      ],
+    },
+    tick: {
+      example: { prompt: '哪个是球？', icons: ['ball', 'kite', 'teddy'], correct: 0 },
+      questions: [
+        { prompt: '哪个是风筝？', icons: ['teddy', 'kite', 'ball'], correct: 1 },
+        { prompt: '哪个是玩具熊？', icons: ['teddy', 'drum', 'doll_in_box'], correct: 0 },
+        { prompt: '哪个是鼓？', icons: ['ball', 'drum', 'kite'], correct: 1 },
+        { prompt: '哪个是娃娃？', icons: ['doll_in_box', 'teddy', 'drum'], correct: 0 },
+        { prompt: '哪个是书？', icons: ['ball', 'book', 'pen'], correct: 1 },
+      ],
+    },
+    colourSceneId: 'zh_hsk1_l112_toyshop_outline',
+    colour: {
+      example: { label: '球', color: 'red' },
+      regions: [
+        { label: '风筝', color: 'blue' },
+        { label: '玩具熊', color: 'brown' },
+        { label: '鼓', color: 'green' },
+        { label: '娃娃', color: 'pink' },
+        { label: '书', color: 'yellow' },
+      ],
+    },
+  },
+  // L113 — 动物园 (zoo animals)
+  113: {
+    theme: '动物园',
+    dragSceneId: 'zh_hsk1_l113_zoo',
+    dragNames: ['小华', '小明', '小红', '小英', '小丽'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小华。', a: '小华' },
+        { q: '有几只狮子？', say: '有两只狮子。', a: '二' },
+      ],
+      questions: [
+        { prompt: '有几只猴子？', say: '有三只猴子。', accepted: numAns(3) },
+        { prompt: '有几只大象？', say: '有四只大象。', accepted: numAns(4) },
+        { prompt: '有几只企鹅？', say: '有五只企鹅。', accepted: numAns(5) },
+        { prompt: '它几岁？', say: '它六岁。', accepted: numAns(6) },
+        { prompt: '有几只长颈鹿？', say: '有两只长颈鹿。', accepted: [...numAns(2), '两'] },
+      ],
+    },
+    tick: {
+      example: { prompt: '哪个是狮子？', icons: ['lion', 'monkey', 'elephant'], correct: 0 },
+      questions: [
+        { prompt: '哪个是猴子？', icons: ['elephant', 'monkey', 'lion'], correct: 1 },
+        { prompt: '哪个是大象？', icons: ['elephant', 'giraffe', 'snake'], correct: 0 },
+        { prompt: '哪个是长颈鹿？', icons: ['snake', 'giraffe', 'monkey'], correct: 1 },
+        { prompt: '哪个是蛇？', icons: ['snake', 'penguin', 'lion'], correct: 0 },
+        { prompt: '哪个是企鹅？', icons: ['monkey', 'elephant', 'penguin'], correct: 2 },
+      ],
+    },
+    colourSceneId: 'zh_hsk1_l113_zoo_outline',
+    colour: {
+      example: { label: '狮子', color: 'yellow' },
+      regions: [
+        { label: '猴子', color: 'brown' },
+        { label: '大象', color: 'grey' },
+        { label: '长颈鹿', color: 'orange' },
+        { label: '蛇', color: 'green' },
+        { label: '企鹅', color: 'black' },
+      ],
+    },
+  },
+  // L114 — 野餐 (picnic food)
+  114: {
+    theme: '野餐',
+    dragSceneId: 'zh_hsk1_l114_picnic',
+    dragNames: ['小英', '小明', '小丽', '小华', '小红'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小英。', a: '小英' },
+        { q: '有几个汉堡？', say: '有三个汉堡。', a: '三' },
+      ],
+      questions: [
+        { prompt: '有几块比萨？', say: '有两块比萨。', accepted: [...numAns(2), '两'] },
+        { prompt: '有几个冰淇淋？', say: '有四个冰淇淋。', accepted: numAns(4) },
+        { prompt: '有几块蛋糕？', say: '有五块蛋糕。', accepted: numAns(5) },
+        { prompt: '有几个面包？', say: '有六个面包。', accepted: numAns(6) },
+        { prompt: '有几根香蕉？', say: '有三根香蕉。', accepted: numAns(3) },
+      ],
+    },
+    tick: {
+      example: { prompt: '哪个是比萨？', icons: ['pizza', 'burger', 'cake'], correct: 0 },
+      questions: [
+        { prompt: '哪个是汉堡？', icons: ['bread', 'burger', 'pizza'], correct: 1 },
+        { prompt: '哪个是冰淇淋？', icons: ['ice_cream', 'cake', 'pizza'], correct: 0 },
+        { prompt: '哪个是蛋糕？', icons: ['bread', 'cake', 'burger'], correct: 1 },
+        { prompt: '哪个是面包？', icons: ['bread', 'pizza', 'cake'], correct: 0 },
+        { prompt: '哪个是香蕉？', icons: ['apple', 'banana', 'orange'], correct: 1 },
+      ],
+    },
+    colourSceneId: 'zh_hsk1_l114_picnic_outline',
+    colour: {
+      example: { label: '比萨', color: 'red' },
+      regions: [
+        { label: '汉堡', color: 'brown' },
+        { label: '冰淇淋', color: 'pink' },
+        { label: '蛋糕', color: 'yellow' },
+        { label: '面包', color: 'orange' },
+        { label: '香蕉', color: 'green' },
+      ],
+    },
+  },
+  // L115 — 购物 (shopping)
+  115: {
+    theme: '购物',
+    dragSceneId: 'zh_hsk1_l115_shop',
+    dragNames: ['小红', '小明', '小华', '小丽', '小刚'],
+    write: {
+      examples: [
+        { q: '这是谁？', say: '这是小红。', a: '小红' },
+        { q: '有几个包？', say: '有两个包。', a: '二' },
+      ],
+      questions: [
+        { prompt: '有几个盒子？', say: '有三个盒子。', accepted: numAns(3) },
+        { prompt: '有几本书？', say: '有四本书。', accepted: numAns(4) },
+        { prompt: '有几张票？', say: '有五张票。', accepted: numAns(5) },
+        { prompt: '他几岁？', say: '他八岁。', accepted: numAns(8) },
+        { prompt: '现在几点？', say: '现在六点。', accepted: [...numAns(6), '六点'] },
+      ],
+    },
+    tick: {
+      example: { prompt: '哪个是钱？', icons: ['coin', 'bag_red', 'box'], correct: 0 },
+      questions: [
+        { prompt: '哪个是包？', icons: ['box', 'bag_red', 'book'], correct: 1 },
+        { prompt: '哪个是盒子？', icons: ['box', 'coin', 'ticket'], correct: 0 },
+        { prompt: '哪个是书？', icons: ['ball', 'book', 'pen'], correct: 1 },
+        { prompt: '哪个是价签？', icons: ['price_tag', 'coin', 'box'], correct: 0 },
+        { prompt: '哪个是票？', icons: ['book', 'box', 'ticket'], correct: 2 },
+      ],
+    },
+    colourSceneId: 'zh_hsk1_l115_shop_outline',
+    colour: {
+      example: { label: '包', color: 'red' },
+      regions: [
+        { label: '盒子', color: 'brown' },
+        { label: '书', color: 'blue' },
+        { label: '票', color: 'yellow' },
+        { label: '钱', color: 'green' },
+        { label: '价签', color: 'orange' },
+      ],
+    },
+  },
+};
 
 // ─── Template fallback (L106-L120, not yet curated) ─────────────────────────
 
