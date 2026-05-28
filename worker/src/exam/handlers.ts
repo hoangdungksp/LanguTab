@@ -213,6 +213,32 @@ async function getAudioFromCacheReadOnly(req: Request, env: Env): Promise<Respon
  * R2, without downloading it. Powers the admin "có audio / chưa có audio"
  * badge so admin knows which parts still need generating.
  */
+async function adminAudioStatusBatch(req: Request, env: Env): Promise<Response> {
+  let body: { items?: { audioKey: string; audioScript: string }[] };
+  try { body = (await req.json()) as typeof body; } catch {
+    return new Response(JSON.stringify({ error: 'Invalid JSON' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+  }
+  const items = Array.isArray(body.items) ? body.items : [];
+  const results: Record<string, boolean> = {};
+  const bucket = env.IMAGES;
+  if (!bucket) return new Response(JSON.stringify({ results }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+  const cacheVersion = env.AUDIO_CACHE_VERSION || 'v1';
+  const queue = [...items];
+  const work = async () => {
+    for (let it = queue.shift(); it; it = queue.shift()) {
+      if (!it.audioKey || !it.audioScript) continue;
+      const scriptHash = await sha256Short(it.audioScript);
+      let cached = false;
+      for (const provider of preferredProvidersForLookup(env, langFromAudioKey(it.audioKey))) {
+        if (await bucket.head(`exam-audio/${cacheVersion}/${provider}/${it.audioKey}.${scriptHash}`)) { cached = true; break; }
+      }
+      results[it.audioKey] = cached;
+    }
+  };
+  await Promise.all(Array.from({ length: 12 }, work));
+  return new Response(JSON.stringify({ results }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+}
+
 async function adminAudioStatus(req: Request, env: Env): Promise<Response> {
   let body: AudioRequestBody;
   try {
@@ -1079,6 +1105,13 @@ export async function handleAdminExamRequest(
   // "⚠️ chưa có audio". Uses HEAD (no body download).
   if (url.pathname === '/admin/exam/audio/status' && req.method === 'POST') {
     return adminAudioStatus(req, env);
+  }
+
+  // D-21: batch audio status — body { items: [{audioKey, audioScript}] } →
+  // { results: { [audioKey]: cached } }. One round-trip for the web dashboard
+  // to fill the whole Audio column (server-side R2 heads, concurrency-limited).
+  if (url.pathname === '/admin/exam/audio/status-batch' && req.method === 'POST') {
+    return adminAudioStatusBatch(req, env);
   }
 
   // ─── Sprint 4.9: Calibration override endpoints ────────────────────

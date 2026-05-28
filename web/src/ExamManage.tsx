@@ -3,7 +3,7 @@ import { levelsFor, levelIdOf, partLabel, type CatLevel, type CatPart } from './
 import { CalibrateEditor } from './CalibrateEditor';
 import {
   fetchSceneImage, generateScene, getScenePrompt, uploadScene,
-  audioStatus, generateAudio, saveScript, deleteScript, scenesStatus, fetchAudio,
+  audioStatusBatch, generateAudio, saveScript, deleteScript, scenesStatus, fetchAudio,
 } from './examApi';
 
 const planetOf = (n: number) =>
@@ -18,7 +18,6 @@ export function ExamManage() {
   const [planet, setPlanet] = useState('');
   const [scenes, setScenes] = useState<Record<string, boolean>>({});
   const [audio, setAudio] = useState<Record<string, boolean>>({});
-  const [scanning, setScanning] = useState(false);
   const [open, setOpen] = useState<number | null>(null);
   const [largeImg, setLargeImg] = useState<string | null>(null);
   const [bulk, setBulk] = useState<{ done: number; total: number } | null>(null);
@@ -28,6 +27,13 @@ export function ExamManage() {
 
   // Image status (one bulk call, covers all langs).
   useEffect(() => { scenesStatus().then(setScenes).catch(() => {}); }, []);
+
+  // Audio status — auto-load for the whole current language in one batch call
+  // (server-side R2 heads), so the Audio column fills like the Ảnh column.
+  useEffect(() => {
+    const items = levels.flatMap((l) => l.parts.map((p) => ({ audioKey: p.audioKey, audioScript: p.audioScript })));
+    audioStatusBatch(items).then((r) => setAudio((m) => ({ ...m, ...r }))).catch(() => {});
+  }, [levels]);
 
   const shown = useMemo(() => {
     const s = q.trim().toLowerCase();
@@ -43,22 +49,6 @@ export function ExamManage() {
   const audStat = (l: CatLevel) => {
     const checked = l.parts.filter((p) => p.audioKey in audio);
     return { done: checked.filter((p) => audio[p.audioKey]).length, total: l.parts.length, checked: checked.length };
-  };
-
-  // On-demand audio scan for the levels currently shown (concurrency-limited).
-  const scanAudio = async () => {
-    setScanning(true);
-    const jobs = shown.flatMap((l) => l.parts.map((p) => p));
-    let i = 0;
-    const worker = async () => {
-      while (i < jobs.length) {
-        const p = jobs[i++];
-        try { const r = await audioStatus(p.audioKey, p.audioScript); setAudio((m) => ({ ...m, [p.audioKey]: r.cached })); }
-        catch { /* ignore */ }
-      }
-    };
-    await Promise.all(Array.from({ length: 6 }, worker));
-    setScanning(false);
   };
 
   // Bulk-generate audio for every part of the currently shown levels.
@@ -109,9 +99,6 @@ export function ExamManage() {
           </select>
           <span className="spacer" />
           {bulk && <span className="muted">Tạo audio… {bulk.done}/{bulk.total}</span>}
-          <button className="btn sm" disabled={scanning || !!bulk} onClick={scanAudio}>
-            {scanning ? 'Đang kiểm tra…' : '⟳ Kiểm tra audio'}
-          </button>
           <button className="btn sm primary" disabled={!!bulk} onClick={bulkGenAudio}>
             🎙️ Tạo audio hàng loạt
           </button>
@@ -229,11 +216,6 @@ function PartCard({ levelNumber, part, onAudio, onView }: {
     onAudio?.(true);
     return `✓ audio (${r.provider}, ${(r.bytes / 1024).toFixed(0)}KB)`;
   });
-  const onCheckAudio = run('Kiểm tra', async () => {
-    const r = await audioStatus(part.audioKey, script);
-    onAudio?.(r.cached);
-    return r.cached ? `✓ đã có audio (${r.provider})` : '⚠️ chưa có audio cho script này';
-  });
   const onListen = run('Tải audio', async () => {
     setAudioUrl(await fetchAudio(part.audioKey, script));
     return '▶ đang phát bên dưới';
@@ -296,7 +278,6 @@ function PartCard({ levelNumber, part, onAudio, onView }: {
           <div className="row wrap">
             <button className="btn sm primary" disabled={busy} onClick={onGenAudio}>🎙️ Tạo / Regen</button>
             <button className="btn sm" disabled={busy} onClick={onListen}>▶ Nghe</button>
-            <button className="btn sm" disabled={busy} onClick={onCheckAudio}>Kiểm tra audio</button>
             <button className="btn sm" disabled={busy} onClick={onSaveScript}>Lưu script</button>
             <button className="btn sm" disabled={busy} onClick={onResetScript}>Khôi phục gốc</button>
           </div>

@@ -66,6 +66,14 @@ export async function audioStatus(audioKey: string, audioScript: string): Promis
   return asJson(res);
 }
 
+/** One-shot status for many parts → { audioKey: cached }. Fills the table column. */
+export async function audioStatusBatch(items: { audioKey: string; audioScript: string }[]): Promise<Record<string, boolean>> {
+  const res = await fetch(`${WORKER_URL}/admin/exam/audio/status-batch`,
+    { method: 'POST', headers: authHeaders({ 'Content-Type': 'application/json' }), body: JSON.stringify({ items }) });
+  const data = await asJson<{ results: Record<string, boolean> }>(res);
+  return data.results;
+}
+
 /** Generate/regenerate audio for (audioKey, script). Returns provider header. */
 export async function generateAudio(audioKey: string, audioScript: string, force = true): Promise<{ provider: string; bytes: number }> {
   const res = await fetch(`${WORKER_URL}/admin/exam/audio/generate`,
