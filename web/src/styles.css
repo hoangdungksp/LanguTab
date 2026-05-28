@@ -145,3 +145,8 @@ select { padding: 6px 8px; border-radius: 8px; border: 1px solid var(--line); ba
 
 tr.open-row td { background: var(--brand-soft); font-weight: 600; }
 tr.detail-row td, tr.detail-row:hover td { background: #f8fafc; padding: 6px 14px 16px; }
+
+.scene img { cursor: zoom-in; }
+.lightbox { position: fixed; inset: 0; background: rgba(0,0,0,.82); display: flex;
+  align-items: center; justify-content: center; z-index: 100; padding: 24px; cursor: zoom-out; }
+.lightbox img { max-width: 95vw; max-height: 90vh; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,.5); }

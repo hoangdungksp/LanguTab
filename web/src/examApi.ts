@@ -67,6 +67,16 @@ export async function generateAudio(audioKey: string, audioScript: string, force
   return { provider: res.headers.get('X-Audio-Provider') || '?', bytes: buf.byteLength };
 }
 
+/** Fetch cached audio (read-only, no TTS cost) → object URL to play. 404 if not generated yet. */
+export async function fetchAudio(audioKey: string, audioScript: string): Promise<string> {
+  const res = await fetch(`${WORKER_URL}/exam/audio`,
+    { method: 'POST', headers: authHeaders({ 'Content-Type': 'application/json' }), body: JSON.stringify({ audioKey, audioScript }) });
+  if (res.status === 401) { authExpired(); throw new Error('Phiên hết hạn — đăng nhập lại.'); }
+  if (res.status === 404) throw new Error('Chưa có audio — bấm “Tạo audio” trước.');
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return URL.createObjectURL(await res.blob());
+}
+
 /** Save a script override for a part (then regen audio to apply it). */
 export async function saveScript(levelId: string, partId: string, script: string): Promise<{ ok: true }> {
   const res = await fetch(`${WORKER_URL}/admin/exam/audio-script/${encodeURIComponent(levelId)}/${encodeURIComponent(partId)}`,

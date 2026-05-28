@@ -2,7 +2,7 @@ import { Fragment, useEffect, useMemo, useState } from 'react';
 import { levelsFor, levelIdOf, partLabel, type CatLevel, type CatPart } from './catalog';
 import {
   sceneImageUrl, generateScene, getScenePrompt, uploadScene,
-  audioStatus, generateAudio, saveScript, deleteScript, scenesStatus,
+  audioStatus, generateAudio, saveScript, deleteScript, scenesStatus, fetchAudio,
 } from './examApi';
 
 const planetOf = (n: number) =>
@@ -19,8 +19,11 @@ export function ExamManage() {
   const [audio, setAudio] = useState<Record<string, boolean>>({});
   const [scanning, setScanning] = useState(false);
   const [open, setOpen] = useState<number | null>(null);
+  const [largeImg, setLargeImg] = useState<string | null>(null);
+  const [bulk, setBulk] = useState<{ done: number; total: number } | null>(null);
 
   const levels = useMemo(() => levelsFor(lang), [lang]);
+  const setAudioCached = (k: string, v: boolean) => setAudio((m) => ({ ...m, [k]: v }));
 
   // Image status (one bulk call, covers all langs).
   useEffect(() => { scenesStatus().then(setScenes).catch(() => {}); }, []);
@@ -57,6 +60,26 @@ export function ExamManage() {
     setScanning(false);
   };
 
+  // Bulk-generate audio for every part of the currently shown levels.
+  const bulkGenAudio = async () => {
+    const jobs = shown.flatMap((l) => l.parts);
+    if (!confirm(
+      `Tạo audio cho ${jobs.length} phần của ${shown.length} level đang hiện?\n` +
+      `Lưu ý: tốn quota TTS (English = ElevenLabs, tiếng Trung = Qwen). Nên lọc hành tinh trước cho đỡ tốn.`,
+    )) return;
+    setBulk({ done: 0, total: jobs.length });
+    let i = 0; let done = 0;
+    const worker = async () => {
+      while (i < jobs.length) {
+        const p = jobs[i++];
+        try { await generateAudio(p.audioKey, p.audioScript, true); setAudioCached(p.audioKey, true); } catch { /* keep going */ }
+        done++; setBulk({ done, total: jobs.length });
+      }
+    };
+    await Promise.all(Array.from({ length: 2 }, worker)); // gentle on TTS
+    setBulk(null);
+  };
+
   const Stat = ({ done, total, checked }: { done: number; total: number; checked?: number }) => {
     if (checked !== undefined && checked === 0) return <span className="muted">—</span>;
     const ok = done === total;
@@ -84,8 +107,12 @@ export function ExamManage() {
             {PLANETS[lang].map((p) => <option key={p} value={p}>{p}</option>)}
           </select>
           <span className="spacer" />
-          <button className="btn sm" disabled={scanning} onClick={scanAudio}>
+          {bulk && <span className="muted">Tạo audio… {bulk.done}/{bulk.total}</span>}
+          <button className="btn sm" disabled={scanning || !!bulk} onClick={scanAudio}>
             {scanning ? 'Đang kiểm tra…' : '⟳ Kiểm tra audio'}
+          </button>
+          <button className="btn sm primary" disabled={!!bulk} onClick={bulkGenAudio}>
+            🎙️ Tạo audio hàng loạt
           </button>
         </div>
 
@@ -114,10 +141,7 @@ export function ExamManage() {
                   {isOpen && (
                     <tr className="detail-row">
                       <td colSpan={6}>
-                        {l.parts.map((p) => (
-                          <PartCard key={p.partId} levelNumber={l.levelNumber} part={p}
-                            onAudio={(cached) => setAudio((m) => ({ ...m, [p.audioKey]: cached }))} />
-                        ))}
+                        <LevelDetail level={l} onAudioCached={setAudioCached} onView={setLargeImg} />
                       </td>
                     </tr>
                   )}
@@ -128,16 +152,56 @@ export function ExamManage() {
         </table>
         {shown.length === 0 && <p className="muted">Không có level khớp.</p>}
       </div>
+
+      {largeImg && (
+        <div className="lightbox" onClick={() => setLargeImg(null)}>
+          <img src={largeImg} alt="" />
+          <button className="btn sm" style={{ position: 'absolute', top: 16, right: 16 }} onClick={() => setLargeImg(null)}>✕ Đóng</button>
+        </div>
+      )}
     </>
   );
 }
 
-function PartCard({ levelNumber, part, onAudio }: { levelNumber: number; part: CatPart; onAudio?: (cached: boolean) => void }) {
+function LevelDetail({ level, onAudioCached, onView }: {
+  level: CatLevel; onAudioCached: (k: string, v: boolean) => void; onView: (url: string) => void;
+}) {
+  const [busy, setBusy] = useState(false);
+  const [prog, setProg] = useState('');
+  const genAll = async () => {
+    if (!confirm(`Tạo audio cho cả ${level.parts.length} phần của "${level.title}"?`)) return;
+    setBusy(true);
+    for (let i = 0; i < level.parts.length; i++) {
+      const p = level.parts[i];
+      setProg(`Đang tạo ${i + 1}/${level.parts.length}: ${p.partId}…`);
+      try { await generateAudio(p.audioKey, p.audioScript, true); onAudioCached(p.audioKey, true); } catch { /* skip */ }
+    }
+    setProg('✓ Đã tạo audio cả level'); setBusy(false);
+  };
+  return (
+    <>
+      <div className="row" style={{ marginBottom: 8 }}>
+        <button className="btn sm primary" disabled={busy} onClick={genAll}>🎙️ Tạo audio cả level</button>
+        {prog && <span className="muted">{prog}</span>}
+      </div>
+      {level.parts.map((p) => (
+        <PartCard key={p.partId} levelNumber={level.levelNumber} part={p}
+          onAudio={(cached) => onAudioCached(p.audioKey, cached)} onView={onView} />
+      ))}
+    </>
+  );
+}
+
+function PartCard({ levelNumber, part, onAudio, onView }: {
+  levelNumber: number; part: CatPart; onAudio?: (cached: boolean) => void; onView?: (url: string) => void;
+}) {
   const [script, setScript] = useState(part.audioScript);
   const [msg, setMsg] = useState('');
   const [busy, setBusy] = useState(false);
   const [imgBust, setImgBust] = useState(0);
+  const [audioUrl, setAudioUrl] = useState('');
   const levelId = levelIdOf(levelNumber);
+  const imgSrc = part.sceneId ? `${sceneImageUrl(part.sceneId)}${imgBust ? `?t=${imgBust}` : ''}` : '';
 
   const run = (label: string, fn: () => Promise<string>) => async () => {
     setBusy(true); setMsg(`${label}…`);
@@ -155,6 +219,10 @@ function PartCard({ levelNumber, part, onAudio }: { levelNumber: number; part: C
     const r = await audioStatus(part.audioKey, script);
     onAudio?.(r.cached);
     return r.cached ? `✓ đã có audio (${r.provider})` : '⚠️ chưa có audio cho script này';
+  });
+  const onListen = run('Tải audio', async () => {
+    setAudioUrl(await fetchAudio(part.audioKey, script));
+    return '▶ đang phát bên dưới';
   });
   const onGenScene = run('Sinh ảnh', async () => {
     if (!part.sceneId) return '';
@@ -187,7 +255,8 @@ function PartCard({ levelNumber, part, onAudio }: { levelNumber: number; part: C
       <div className="part-body">
         {part.sceneId ? (
           <div className="scene">
-            <img src={`${sceneImageUrl(part.sceneId)}${imgBust ? `?t=${imgBust}` : ''}`} alt={part.sceneId}
+            <img src={imgSrc} alt={part.sceneId} title="Bấm để xem ảnh to"
+              onClick={() => onView?.(imgSrc)}
               onError={(e) => { (e.target as HTMLImageElement).style.opacity = '0.15'; }} />
             <div className="mono">{part.sceneId}</div>
             <div className="row wrap">
@@ -200,13 +269,15 @@ function PartCard({ levelNumber, part, onAudio }: { levelNumber: number; part: C
         ) : <div className="scene muted" style={{ alignSelf: 'center' }}>(không có ảnh)</div>}
 
         <div className="audio">
-          <textarea value={script} onChange={(e) => setScript(e.target.value)} rows={4} />
+          <textarea value={script} onChange={(e) => setScript(e.target.value)} rows={8} />
           <div className="row wrap">
             <button className="btn sm primary" disabled={busy} onClick={onGenAudio}>🎙️ Tạo / Regen</button>
+            <button className="btn sm" disabled={busy} onClick={onListen}>▶ Nghe</button>
             <button className="btn sm" disabled={busy} onClick={onCheckAudio}>Kiểm tra</button>
             <button className="btn sm" disabled={busy} onClick={onSaveScript}>Lưu script</button>
             <button className="btn sm" disabled={busy} onClick={onResetScript}>Khôi phục gốc</button>
           </div>
+          {audioUrl && <audio controls autoPlay src={audioUrl} style={{ width: '100%', marginTop: 8 }} />}
         </div>
       </div>
       {msg && <div className="muted" style={{ marginTop: 6 }}>{msg}</div>}
