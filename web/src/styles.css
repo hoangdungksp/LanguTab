@@ -138,3 +138,7 @@ select { padding: 6px 8px; border-radius: 8px; border: 1px solid var(--line); ba
 
 .logo-img { width: 56px; height: 56px; border-radius: 14px; box-shadow: var(--shadow); }
 .recharts-wrapper { font-size: 12px; }
+
+.ok { color: var(--green); font-weight: 600; }
+.warn { color: #b45309; font-weight: 600; }
+.drawer.wide { width: min(740px, 96vw); }

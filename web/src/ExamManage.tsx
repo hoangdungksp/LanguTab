@@ -1,46 +1,136 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { levelsFor, levelIdOf, partLabel, type CatLevel, type CatPart } from './catalog';
 import {
   sceneImageUrl, generateScene, getScenePrompt, uploadScene,
-  audioStatus, generateAudio, saveScript, deleteScript,
+  audioStatus, generateAudio, saveScript, deleteScript, scenesStatus,
 } from './examApi';
 
-/** Editor/admin section: manage exam levels (images, audio, scripts). */
+const planetOf = (n: number) =>
+  n > 140 ? 'HSK3' : n > 120 ? 'HSK2' : n > 100 ? 'HSK1' : n > 40 ? 'Flyers' : n > 20 ? 'Movers' : 'Starters';
+const displayNum = (n: number) => (n > 100 ? n - 100 : n);
+const PLANETS: Record<'en' | 'zh', string[]> = { en: ['Starters', 'Movers', 'Flyers'], zh: ['HSK1', 'HSK2', 'HSK3'] };
+
+/** Editor/admin section: manage exam levels in a table, edit one in a drawer. */
 export function ExamManage() {
   const [lang, setLang] = useState<'en' | 'zh'>('en');
+  const [q, setQ] = useState('');
+  const [planet, setPlanet] = useState('');
+  const [scenes, setScenes] = useState<Record<string, boolean>>({});
+  const [audio, setAudio] = useState<Record<string, boolean>>({});
+  const [scanning, setScanning] = useState(false);
+  const [open, setOpen] = useState<CatLevel | null>(null);
+
   const levels = useMemo(() => levelsFor(lang), [lang]);
-  const [levelNumber, setLevelNumber] = useState<number>(levels[0]?.levelNumber ?? 1);
-  const level: CatLevel | undefined = levels.find((l) => l.levelNumber === levelNumber) ?? levels[0];
+
+  // Image status (one bulk call, covers all langs).
+  useEffect(() => { scenesStatus().then(setScenes).catch(() => {}); }, []);
+
+  const shown = useMemo(() => {
+    const s = q.trim().toLowerCase();
+    return levels.filter((l) =>
+      (!planet || planetOf(l.levelNumber) === planet) &&
+      (!s || l.title.toLowerCase().includes(s) || String(displayNum(l.levelNumber)).includes(s)));
+  }, [levels, q, planet]);
+
+  const imgStat = (l: CatLevel) => {
+    const withScene = l.parts.filter((p) => p.sceneId);
+    return { done: withScene.filter((p) => scenes[p.sceneId!]).length, total: withScene.length };
+  };
+  const audStat = (l: CatLevel) => {
+    const checked = l.parts.filter((p) => p.audioKey in audio);
+    return { done: checked.filter((p) => audio[p.audioKey]).length, total: l.parts.length, checked: checked.length };
+  };
+
+  // On-demand audio scan for the levels currently shown (concurrency-limited).
+  const scanAudio = async () => {
+    setScanning(true);
+    const jobs = shown.flatMap((l) => l.parts.map((p) => p));
+    let i = 0;
+    const worker = async () => {
+      while (i < jobs.length) {
+        const p = jobs[i++];
+        try { const r = await audioStatus(p.audioKey, p.audioScript); setAudio((m) => ({ ...m, [p.audioKey]: r.cached })); }
+        catch { /* ignore */ }
+      }
+    };
+    await Promise.all(Array.from({ length: 6 }, worker));
+    setScanning(false);
+  };
+
+  const Stat = ({ done, total, checked }: { done: number; total: number; checked?: number }) => {
+    if (checked !== undefined && checked === 0) return <span className="muted">—</span>;
+    const ok = done === total;
+    return <span className={ok ? 'ok' : 'warn'}>{ok ? '✅' : '⚠️'} {done}/{total}</span>;
+  };
 
   return (
     <>
       <div className="page-head">
         <h1>Quản lý bài thi</h1>
-        <p>Chọn ngôn ngữ và level để sửa nội dung, sinh ảnh, tạo audio.</p>
+        <p>Bảng tất cả level — bấm “Mở” để sửa ảnh, audio, nội dung từng phần.</p>
       </div>
       <div className="card">
         <div className="toolbar">
           <div className="tabs">
-            <button className={`btn sm ${lang === 'en' ? 'primary' : ''}`} onClick={() => { setLang('en'); setLevelNumber(1); }}>English</button>
-            <button className={`btn sm ${lang === 'zh' ? 'primary' : ''}`} onClick={() => { setLang('zh'); setLevelNumber(101); }}>中文 HSK</button>
+            <button className={`btn sm ${lang === 'en' ? 'primary' : ''}`} onClick={() => { setLang('en'); setPlanet(''); }}>English</button>
+            <button className={`btn sm ${lang === 'zh' ? 'primary' : ''}`} onClick={() => { setLang('zh'); setPlanet(''); }}>中文 HSK</button>
           </div>
-          <span className="spacer" />
-          <select value={level?.levelNumber} onChange={(e) => setLevelNumber(Number(e.target.value))}>
-            {levels.map((l) => (
-              <option key={l.levelNumber} value={l.levelNumber}>{l.title}</option>
-            ))}
+          <div className="search" style={{ width: 200 }}>
+            <span className="ico">🔍</span>
+            <input placeholder="Tìm level…" value={q} onChange={(e) => setQ(e.target.value)} />
+          </div>
+          <select value={planet} onChange={(e) => setPlanet(e.target.value)}>
+            <option value="">Tất cả hành tinh</option>
+            {PLANETS[lang].map((p) => <option key={p} value={p}>{p}</option>)}
           </select>
+          <span className="spacer" />
+          <button className="btn sm" disabled={scanning} onClick={scanAudio}>
+            {scanning ? 'Đang kiểm tra…' : '⟳ Kiểm tra audio'}
+          </button>
         </div>
 
-        {level && level.parts.map((p) => (
-          <PartCard key={p.partId} levelNumber={level.levelNumber} part={p} />
-        ))}
+        <table>
+          <thead>
+            <tr><th>#</th><th>Tên level</th><th>Phần</th><th>Ảnh</th><th>Audio</th><th></th></tr>
+          </thead>
+          <tbody>
+            {shown.map((l) => {
+              const im = imgStat(l); const au = audStat(l);
+              return (
+                <tr key={l.levelNumber}>
+                  <td><b>{displayNum(l.levelNumber)}</b></td>
+                  <td>{l.title}</td>
+                  <td>{l.parts.length}</td>
+                  <td>{im.total ? <Stat done={im.done} total={im.total} /> : <span className="muted">—</span>}</td>
+                  <td><Stat done={au.done} total={au.total} checked={au.checked} /></td>
+                  <td><button className="btn sm primary" onClick={() => setOpen(l)}>Mở →</button></td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        {shown.length === 0 && <p className="muted">Không có level khớp.</p>}
       </div>
+
+      {open && (
+        <div className="drawer-bg" onClick={() => setOpen(null)}>
+          <div className="drawer wide" onClick={(e) => e.stopPropagation()}>
+            <header>
+              <div><b>{open.title}</b><div className="mono">{levelIdOf(open.levelNumber)} · {open.parts.length} phần</div></div>
+              <button className="btn sm" onClick={() => setOpen(null)}>✕</button>
+            </header>
+            {open.parts.map((p) => (
+              <PartCard key={p.partId} levelNumber={open.levelNumber} part={p}
+                onAudio={(cached) => setAudio((m) => ({ ...m, [p.audioKey]: cached }))} />
+            ))}
+          </div>
+        </div>
+      )}
     </>
   );
 }
 
-function PartCard({ levelNumber, part }: { levelNumber: number; part: CatPart }) {
+function PartCard({ levelNumber, part, onAudio }: { levelNumber: number; part: CatPart; onAudio?: (cached: boolean) => void }) {
   const [script, setScript] = useState(part.audioScript);
   const [msg, setMsg] = useState('');
   const [busy, setBusy] = useState(false);
@@ -56,10 +146,12 @@ function PartCard({ levelNumber, part }: { levelNumber: number; part: CatPart })
 
   const onGenAudio = run('Tạo audio', async () => {
     const r = await generateAudio(part.audioKey, script, true);
+    onAudio?.(true);
     return `✓ audio (${r.provider}, ${(r.bytes / 1024).toFixed(0)}KB)`;
   });
   const onCheckAudio = run('Kiểm tra', async () => {
     const r = await audioStatus(part.audioKey, script);
+    onAudio?.(r.cached);
     return r.cached ? `✓ đã có audio (${r.provider})` : '⚠️ chưa có audio cho script này';
   });
   const onGenScene = run('Sinh ảnh', async () => {
@@ -72,7 +164,7 @@ function PartCard({ levelNumber, part }: { levelNumber: number; part: CatPart })
     if (!part.sceneId) return '';
     const r = await getScenePrompt(part.sceneId);
     await navigator.clipboard?.writeText(r.prompt).catch(() => {});
-    return '✓ đã copy prompt vào clipboard';
+    return '✓ đã copy prompt';
   });
   const onUpload = (file: File) => run('Upload', async () => {
     if (!part.sceneId) return '';
@@ -80,55 +172,42 @@ function PartCard({ levelNumber, part }: { levelNumber: number; part: CatPart })
     setImgBust(Date.now());
     return '✓ upload ảnh xong';
   })();
-  const onSaveScript = run('Lưu script', async () => {
-    await saveScript(levelId, part.partId, script);
-    return '✓ đã lưu override — nhớ "Tạo audio" để áp dụng';
-  });
-  const onResetScript = run('Khôi phục', async () => {
-    await deleteScript(levelId, part.partId);
-    setScript(part.audioScript);
-    return '✓ đã xoá override (về script gốc) — tạo lại audio';
-  });
+  const onSaveScript = run('Lưu script', async () => { await saveScript(levelId, part.partId, script); return '✓ đã lưu — bấm "Tạo audio" để áp dụng'; });
+  const onResetScript = run('Khôi phục', async () => { await deleteScript(levelId, part.partId); setScript(part.audioScript); return '✓ đã về script gốc — tạo lại audio'; });
 
   return (
     <div className="part">
       <div className="row">
         <b>{part.partId}</b>
         <span className="tag">{partLabel(part.type)}</span>
-        <span className="muted mono">{part.audioKey}</span>
+        <span className="mono">{part.audioKey}</span>
       </div>
-
       <div className="part-body">
-        {part.sceneId && (
+        {part.sceneId ? (
           <div className="scene">
-            <img
-              src={`${sceneImageUrl(part.sceneId)}${imgBust ? `?t=${imgBust}` : ''}`}
-              alt={part.sceneId}
-              onError={(e) => { (e.target as HTMLImageElement).style.opacity = '0.15'; }}
-            />
-            <div className="muted mono">{part.sceneId}</div>
+            <img src={`${sceneImageUrl(part.sceneId)}${imgBust ? `?t=${imgBust}` : ''}`} alt={part.sceneId}
+              onError={(e) => { (e.target as HTMLImageElement).style.opacity = '0.15'; }} />
+            <div className="mono">{part.sceneId}</div>
             <div className="row wrap">
               <button className="btn sm" disabled={busy} onClick={onGenScene}>Sinh ảnh</button>
-              <button className="btn sm" disabled={busy} onClick={onPrompt}>Lấy prompt</button>
-              <label className="btn sm">Upload
-                <input type="file" accept="image/*" hidden
-                  onChange={(e) => { const f = e.target.files?.[0]; if (f) onUpload(f); }} />
-              </label>
+              <button className="btn sm" disabled={busy} onClick={onPrompt}>Prompt</button>
+              <label className="btn sm">Upload<input type="file" accept="image/*" hidden
+                onChange={(e) => { const f = e.target.files?.[0]; if (f) onUpload(f); }} /></label>
             </div>
           </div>
-        )}
+        ) : <div className="scene muted" style={{ alignSelf: 'center' }}>(không có ảnh)</div>}
 
         <div className="audio">
           <textarea value={script} onChange={(e) => setScript(e.target.value)} rows={4} />
           <div className="row wrap">
-            <button className="btn sm primary" disabled={busy} onClick={onGenAudio}>🎙️ Tạo / Regen audio</button>
+            <button className="btn sm primary" disabled={busy} onClick={onGenAudio}>🎙️ Tạo / Regen</button>
             <button className="btn sm" disabled={busy} onClick={onCheckAudio}>Kiểm tra</button>
             <button className="btn sm" disabled={busy} onClick={onSaveScript}>Lưu script</button>
             <button className="btn sm" disabled={busy} onClick={onResetScript}>Khôi phục gốc</button>
           </div>
         </div>
       </div>
-      {msg && <div className="muted">{msg}</div>}
+      {msg && <div className="muted" style={{ marginTop: 6 }}>{msg}</div>}
     </div>
   );
 }

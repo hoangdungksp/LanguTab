@@ -20,6 +20,15 @@ async function asJson<T>(res: Response): Promise<T> {
 export const sceneImageUrl = (sceneId: string) =>
   `${WORKER_URL}/exam/scene/${encodeURIComponent(sceneId)}`;
 
+/** Bulk: which scenes already have a generated image (one R2 head per scene). */
+export async function scenesStatus(): Promise<Record<string, boolean>> {
+  const res = await fetch(`${WORKER_URL}/admin/exam/scenes/status`, { headers: authHeaders() });
+  const data = await asJson<{ scenes: Record<string, { cached: boolean }> }>(res);
+  const out: Record<string, boolean> = {};
+  for (const [id, v] of Object.entries(data.scenes)) out[id] = v.cached;
+  return out;
+}
+
 /** Generate a scene image via Flux (overwrites cache). */
 export async function generateScene(sceneId: string): Promise<{ bytes: number }> {
   const res = await fetch(`${WORKER_URL}/admin/exam/scenes/${encodeURIComponent(sceneId)}/generate`,
