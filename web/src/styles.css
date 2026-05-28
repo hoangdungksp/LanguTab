@@ -167,3 +167,18 @@ tr.detail-row td, tr.detail-row:hover td { background: #f8fafc; padding: 6px 14p
 .cal-box.sel .cal-label { background: var(--green); }
 .cal-handle { position: absolute; right: -7px; bottom: -7px; width: 15px; height: 15px; background: #fff;
   border: 2px solid var(--brand); border-radius: 3px; cursor: nwse-resize; }
+
+/* scene actions appear on hover only */
+.scene-actions { position: absolute; left: 0; right: 0; bottom: 0; display: flex; gap: 6px; flex-wrap: wrap;
+  justify-content: center; padding: 8px; background: linear-gradient(transparent, rgba(0,0,0,.6));
+  opacity: 0; transition: opacity .15s; }
+.scene-frame:hover .scene-actions { opacity: 1; }
+.scene-actions .btn { background: rgba(255,255,255,.95); border-color: transparent; }
+.scene-frame.empty { cursor: default; }
+
+/* calibration script panel */
+.cal-script { width: min(960px, 95vw); max-height: 22vh; overflow: auto; background: var(--surface);
+  border-radius: 12px; padding: 12px 14px; margin-top: 10px; box-shadow: var(--shadow); }
+.cal-script-head { font-weight: 700; font-size: 13px; margin-bottom: 6px; }
+.cal-script p { margin: 0 0 8px; font-size: 13px; line-height: 1.55; }
+.cal-legend { display: flex; gap: 6px; flex-wrap: wrap; }

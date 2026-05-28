@@ -270,21 +270,26 @@ function PartCard({ levelNumber, part, onAudio, onView }: {
         {part.sceneId ? (
           <div className="scene">
             <div className="scene-frame" onClick={() => imgOk && onView?.(imgUrl)}>
-              {imgOk && <img src={imgUrl} alt={part.sceneId} title="Bấm để xem ảnh to" />}
+              {imgOk && <img src={imgUrl} alt="" title="Bấm để xem ảnh to" />}
               {imgOk === null && <span className="ph">Đang tải ảnh…</span>}
-              {imgOk === false && <span className="ph">Chưa có ảnh — bấm “Sinh ảnh” hoặc “Upload”.</span>}
-            </div>
-            <div className="row wrap">
-              <button className="btn sm" disabled={busy} onClick={onGenScene}>Sinh ảnh</button>
-              <button className="btn sm" disabled={busy} onClick={onPrompt}>Prompt</button>
-              <label className="btn sm">Upload<input type="file" accept="image/*" hidden
-                onChange={(e) => { const f = e.target.files?.[0]; if (f) onUpload(f); }} /></label>
-              {part.boxes?.length ? (
-                <button className="btn sm" onClick={() => imgOk ? setCalOpen(true) : setMsg('Cần có ảnh trước khi chỉnh vị trí.')}>📐 Vị trí</button>
-              ) : null}
+              {imgOk === false && <span className="ph">Chưa có ảnh</span>}
+              {/* Hidden by default — appear on hover over the image. */}
+              <div className="scene-actions" onClick={(e) => e.stopPropagation()}>
+                <button className="btn sm" disabled={busy} onClick={onGenScene}>Sinh ảnh</button>
+                <button className="btn sm" disabled={busy} onClick={onPrompt}>Prompt</button>
+                <label className="btn sm">Upload<input type="file" accept="image/*" hidden
+                  onChange={(e) => { const f = e.target.files?.[0]; if (f) onUpload(f); }} /></label>
+                {part.boxes?.length ? (
+                  <button className="btn sm" onClick={() => imgOk ? setCalOpen(true) : setMsg('Cần có ảnh trước khi chỉnh vị trí.')}>📐 Vị trí</button>
+                ) : null}
+              </div>
             </div>
           </div>
-        ) : <div className="scene muted" style={{ alignSelf: 'center' }}>(không có ảnh)</div>}
+        ) : (
+          <div className="scene">
+            <div className="scene-frame empty"><span className="ph">Bài thi này không có ảnh</span></div>
+          </div>
+        )}
 
         <div className="audio">
           <textarea value={script} onChange={(e) => setScript(e.target.value)} rows={8} />
@@ -301,7 +306,7 @@ function PartCard({ levelNumber, part, onAudio, onView }: {
       {msg && <div className="muted" style={{ marginTop: 6 }}>{msg}</div>}
       {calOpen && part.boxes && (
         <CalibrateEditor levelId={levelId} partId={part.partId} imageUrl={imgUrl}
-          defaults={part.boxes} onClose={() => setCalOpen(false)} />
+          defaults={part.boxes} script={script} onClose={() => setCalOpen(false)} />
       )}
     </div>
   );

@@ -7,8 +7,8 @@ import { getCalibration, saveCalibration, deleteCalibration } from './examApi';
  * drag part, colour regions for the colour part) over the scene image, then
  * save. Positions are 0-1 fractions of the image.
  */
-export function CalibrateEditor({ levelId, partId, imageUrl, defaults, onClose }: {
-  levelId: string; partId: string; imageUrl: string; defaults: CalBox[]; onClose: () => void;
+export function CalibrateEditor({ levelId, partId, imageUrl, defaults, script, onClose }: {
+  levelId: string; partId: string; imageUrl: string; defaults: CalBox[]; script?: string; onClose: () => void;
 }) {
   const [boxes, setBoxes] = useState<CalBox[]>(defaults.map((b) => ({ ...b })));
   const [sel, setSel] = useState<string | null>(null);
@@ -99,6 +99,13 @@ export function CalibrateEditor({ levelId, partId, imageUrl, defaults, onClose }
             <span className="cal-handle" onPointerDown={onDown(b.id, 'resize')} />
           </div>
         ))}
+      </div>
+      <div className="cal-script">
+        <div className="cal-script-head">📖 Lời thoại (đọc để căn đúng vị trí từng ô):</div>
+        <p>{script || '(không có lời thoại)'}</p>
+        <div className="cal-legend">
+          {boxes.map((b) => <span key={b.id} className="tag">{b.label || b.id}</span>)}
+        </div>
       </div>
     </div>
   );
