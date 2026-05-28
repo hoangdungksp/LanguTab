@@ -200,6 +200,7 @@ function PartCard({ levelNumber, part, onAudio, onView }: {
   const [busy, setBusy] = useState(false);
   const [imgBust, setImgBust] = useState(0);
   const [audioUrl, setAudioUrl] = useState('');
+  const [imgOk, setImgOk] = useState<boolean | null>(null); // null=loading, true/false=loaded/missing
   const levelId = levelIdOf(levelNumber);
   const imgSrc = part.sceneId ? `${sceneImageUrl(part.sceneId)}${imgBust ? `?t=${imgBust}` : ''}` : '';
 
@@ -227,7 +228,7 @@ function PartCard({ levelNumber, part, onAudio, onView }: {
   const onGenScene = run('Sinh ảnh', async () => {
     if (!part.sceneId) return '';
     const r = await generateScene(part.sceneId);
-    setImgBust(Date.now());
+    setImgOk(null); setImgBust(Date.now());
     return `✓ ảnh sinh xong (${(r.bytes / 1024).toFixed(0)}KB)`;
   });
   const onPrompt = run('Lấy prompt', async () => {
@@ -239,7 +240,7 @@ function PartCard({ levelNumber, part, onAudio, onView }: {
   const onUpload = (file: File) => run('Upload', async () => {
     if (!part.sceneId) return '';
     await uploadScene(part.sceneId, file);
-    setImgBust(Date.now());
+    setImgOk(null); setImgBust(Date.now());
     return '✓ upload ảnh xong';
   })();
   const onSaveScript = run('Lưu script', async () => { await saveScript(levelId, part.partId, script); return '✓ đã lưu — bấm "Tạo audio" để áp dụng'; });
@@ -255,9 +256,15 @@ function PartCard({ levelNumber, part, onAudio, onView }: {
       <div className="part-body">
         {part.sceneId ? (
           <div className="scene">
-            <img src={imgSrc} alt={part.sceneId} title="Bấm để xem ảnh to"
-              onClick={() => onView?.(imgSrc)}
-              onError={(e) => { (e.target as HTMLImageElement).style.opacity = '0.15'; }} />
+            <div className="scene-frame" onClick={() => imgOk && onView?.(imgSrc)}>
+              <img key={imgBust} src={imgSrc} alt={part.sceneId}
+                title={imgOk ? 'Bấm để xem ảnh to' : ''}
+                style={{ display: imgOk ? 'block' : 'none' }}
+                onLoad={() => setImgOk(true)}
+                onError={() => setImgOk(false)} />
+              {imgOk === null && <span className="ph">Đang tải ảnh…</span>}
+              {imgOk === false && <span className="ph">Chưa có ảnh — bấm “Sinh ảnh” hoặc “Upload”.</span>}
+            </div>
             <div className="mono">{part.sceneId}</div>
             <div className="row wrap">
               <button className="btn sm" disabled={busy} onClick={onGenScene}>Sinh ảnh</button>
