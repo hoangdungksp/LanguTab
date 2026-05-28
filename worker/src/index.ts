@@ -632,6 +632,7 @@ import { handleBillingRequest } from './billing/handlers';
 import { handleExamRequest, handleAdminExamRequest } from './exam/handlers';
 import { handleProgressRequest } from './exam/progress';
 import { handleJournalRequest } from './journal/correct';
+import { handleJournalStoreRequest } from './journal/store';
 import { handleAdminUsersRequest } from './admin/users';
 import { getUserTier, quotaFor } from './billing/tier';
 import { getUserRole, canEdit } from './auth/roles';
@@ -812,6 +813,12 @@ export default {
       } else if (url.pathname === '/journal/correct') {
         // D-22: AI grammar correction for journal entries (auth + KV rate limit).
         const r = await handleJournalRequest(req, env, user);
+        resp = r ?? new Response(JSON.stringify({ error: 'Not found' }), {
+          status: 404, headers: { 'Content-Type': 'application/json' },
+        });
+      } else if (url.pathname === '/journal' || /^\/journal\/[^/]+$/.test(url.pathname)) {
+        // D-22: journal storage on D1 (list / upsert / delete own entries).
+        const r = await handleJournalStoreRequest(req, env, user);
         resp = r ?? new Response(JSON.stringify({ error: 'Not found' }), {
           status: 404, headers: { 'Content-Type': 'application/json' },
         });

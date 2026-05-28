@@ -12,6 +12,7 @@ import {
   useUserStories,
   useUserStoryActions,
 } from '../hooks/useUserStories';
+import { getCachedRole } from '../../services/adminModeService';
 
 /**
  * Stories tab — comprehensible-input reading practice.
@@ -56,6 +57,8 @@ const GENRES_BY_ID = new Map(STORY_GENRES.map((g) => [g.id, g]));
 
 function StorySelector() {
   const openStory = useAppStore((s) => s.openStory);
+  const role = getCachedRole();
+  const canEdit = role === 'admin' || role === 'editor';
 
   // Active HSK level tab. Default to HSK 1 since that's where beginners
   // start and we have the most content there. We don't persist this in the
@@ -139,14 +142,16 @@ function StorySelector() {
         {/* Spacer pushes the create button to the right edge on wide screens.
             On narrow screens flex-wrap drops it to a new line naturally. */}
         <div className="ml-auto" />
-        <button
-          onClick={() => setModalOpen(true)}
-          className="flex items-center gap-2 rounded-pill border-2 border-coral-600 bg-coral-500 px-4 py-2 font-display text-sm font-semibold text-white shadow-chunky-soft transition-all hover:bg-coral-600"
-          title="Tạo truyện riêng bằng AI"
-        >
-          <span>✨</span>
-          <span>Tạo truyện AI</span>
-        </button>
+        {canEdit && (
+          <button
+            onClick={() => setModalOpen(true)}
+            className="flex items-center gap-2 rounded-pill border-2 border-coral-600 bg-coral-500 px-4 py-2 font-display text-sm font-semibold text-white shadow-chunky-soft transition-all hover:bg-coral-600"
+            title="Tạo truyện riêng bằng AI (chỉ admin/editor)"
+          >
+            <span>✨</span>
+            <span>Tạo truyện AI</span>
+          </button>
+        )}
       </div>
 
       {/* User-generated stories — render BEFORE source-data stories at the
@@ -163,7 +168,7 @@ function StorySelector() {
               ({userStoriesAtLevel.length} truyện AI)
             </span>
           </div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="flex flex-col gap-3">
             {userStoriesAtLevel.map((us) => (
               <UserStoryCard
                 key={us.id}
@@ -191,9 +196,9 @@ function StorySelector() {
             Chưa có truyện HSK {activeLevel}
           </div>
           <div className="mt-1 text-sm text-ink-500">
-            Truyện mẫu cho cấp độ này đang được biên soạn. Bạn có thể bấm{' '}
-            <strong className="text-coral-600">✨ Tạo truyện AI</strong> để
-            tự tạo truyện riêng.
+            Truyện mẫu cho cấp độ này đang được biên soạn.{canEdit && (
+              <> Bạn có thể bấm <strong className="text-coral-600">✨ Tạo truyện AI</strong> để tự tạo truyện riêng.</>
+            )}
           </div>
         </div>
       ) : filteredStories.length > 0 && (
@@ -203,7 +208,7 @@ function StorySelector() {
               📚 Truyện mẫu
             </h2>
           )}
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="flex flex-col gap-3">
           {filteredStories.map((story) => {
             const genre = GENRES_BY_ID.get(story.genre);
             const wordCount = story.vocabularyUsed.length;
@@ -216,38 +221,21 @@ function StorySelector() {
               <button
                 key={story.id}
                 onClick={() => openStory(story.id)}
-                className="group flex flex-col gap-3 rounded-chunk border-2 border-ink-100 bg-paper p-5 text-left transition-all duration-150 hover:border-ink-700 hover:shadow-chunky-ink"
+                className="group flex items-center gap-4 rounded-chunk border-2 border-ink-100 bg-paper p-4 text-left transition-all duration-150 hover:border-ink-700 hover:shadow-chunky-ink"
               >
-                <div className="flex items-center gap-3">
-                  <span className="text-4xl">{genre?.emoji ?? '📖'}</span>
-                  <div className="flex-1">
-                    <div className="font-display text-lg font-bold text-ink-700">
-                      {genre?.label ?? story.genre}
-                    </div>
-                    <div className="text-xs text-ink-400">
-                      HSK {story.hskLevel}
-                    </div>
-                  </div>
+                <span className="shrink-0 text-3xl">{genre?.emoji ?? '📖'}</span>
+                <div className="min-w-0 flex-1">
+                  <div className="font-display text-zh text-xl font-bold text-ink-700">{story.title.zh}</div>
+                  <div className="truncate font-mono-ipa text-sm text-coral-600">{story.title.pinyin}</div>
+                  <div className="truncate text-sm italic text-ink-500">{story.title.vi}</div>
                 </div>
-
-                <div>
-                  <div className="font-display text-zh text-2xl font-bold text-ink-700">
-                    {story.title.zh}
+                <div className="hidden shrink-0 text-right md:block">
+                  <span className="inline-block rounded-pill bg-ink-100 px-2 py-0.5 text-xs font-bold text-ink-500">
+                    {genre?.label ?? story.genre} · HSK {story.hskLevel}
+                  </span>
+                  <div className="mt-1 whitespace-nowrap text-xs text-ink-400">
+                    📝 {wordCount} · ✨ {newWordCount}{story.estimatedMinutes ? ` · ⏱️ ${story.estimatedMinutes}p` : ''}
                   </div>
-                  <div className="font-mono-ipa text-sm text-coral-600">
-                    {story.title.pinyin}
-                  </div>
-                  <div className="text-sm italic text-ink-500">
-                    {story.title.vi}
-                  </div>
-                </div>
-
-                <div className="mt-auto flex items-center gap-4 text-xs text-ink-400">
-                  <span>📝 {wordCount} từ</span>
-                  <span>✨ {newWordCount} từ mới</span>
-                  {story.estimatedMinutes && (
-                    <span>⏱️ ~{story.estimatedMinutes} phút</span>
-                  )}
                 </div>
               </button>
             );
