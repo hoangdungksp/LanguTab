@@ -272,7 +272,6 @@ function PartCard({ levelNumber, part, onAudio, onView }: {
               {imgOk === null && <span className="ph">Đang tải ảnh…</span>}
               {imgOk === false && <span className="ph">Chưa có ảnh — bấm “Sinh ảnh” hoặc “Upload”.</span>}
             </div>
-            <div className="mono">{part.sceneId}</div>
             <div className="row wrap">
               <button className="btn sm" disabled={busy} onClick={onGenScene}>Sinh ảnh</button>
               <button className="btn sm" disabled={busy} onClick={onPrompt}>Prompt</button>
@@ -287,7 +286,7 @@ function PartCard({ levelNumber, part, onAudio, onView }: {
           <div className="row wrap">
             <button className="btn sm primary" disabled={busy} onClick={onGenAudio}>🎙️ Tạo / Regen</button>
             <button className="btn sm" disabled={busy} onClick={onListen}>▶ Nghe</button>
-            <button className="btn sm" disabled={busy} onClick={onCheckAudio}>Kiểm tra</button>
+            <button className="btn sm" disabled={busy} onClick={onCheckAudio}>Kiểm tra audio</button>
             <button className="btn sm" disabled={busy} onClick={onSaveScript}>Lưu script</button>
             <button className="btn sm" disabled={busy} onClick={onResetScript}>Khôi phục gốc</button>
           </div>
