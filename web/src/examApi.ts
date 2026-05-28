@@ -16,9 +16,18 @@ async function asJson<T>(res: Response): Promise<T> {
   return data as T;
 }
 
-/** Public scene image URL (200 if generated, 404 otherwise). */
-export const sceneImageUrl = (sceneId: string) =>
-  `${WORKER_URL}/exam/scene/${encodeURIComponent(sceneId)}`;
+/**
+ * Fetch a scene image WITH the auth token (GET /exam/scene/:id requires a
+ * signed-in user — a plain <img src> can't send the Bearer header) → object
+ * URL. Throws on 404 (not generated yet).
+ */
+export async function fetchSceneImage(sceneId: string): Promise<string> {
+  const res = await fetch(`${WORKER_URL}/exam/scene/${encodeURIComponent(sceneId)}?t=${Date.now()}`,
+    { headers: authHeaders() });
+  if (res.status === 401) { authExpired(); throw new Error('Phiên hết hạn — đăng nhập lại.'); }
+  if (!res.ok) throw new Error('no-image');
+  return URL.createObjectURL(await res.blob());
+}
 
 /** Bulk: which scenes already have a generated image (one R2 head per scene). */
 export async function scenesStatus(): Promise<Record<string, boolean>> {

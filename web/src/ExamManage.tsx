@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import { levelsFor, levelIdOf, partLabel, type CatLevel, type CatPart } from './catalog';
 import {
-  sceneImageUrl, generateScene, getScenePrompt, uploadScene,
+  fetchSceneImage, generateScene, getScenePrompt, uploadScene,
   audioStatus, generateAudio, saveScript, deleteScript, scenesStatus, fetchAudio,
 } from './examApi';
 
@@ -200,9 +200,20 @@ function PartCard({ levelNumber, part, onAudio, onView }: {
   const [busy, setBusy] = useState(false);
   const [imgBust, setImgBust] = useState(0);
   const [audioUrl, setAudioUrl] = useState('');
+  const [imgUrl, setImgUrl] = useState('');
   const [imgOk, setImgOk] = useState<boolean | null>(null); // null=loading, true/false=loaded/missing
   const levelId = levelIdOf(levelNumber);
-  const imgSrc = part.sceneId ? `${sceneImageUrl(part.sceneId)}${imgBust ? `?t=${imgBust}` : ''}` : '';
+
+  // Load the scene image WITH auth (object URL); reloads when bust changes.
+  useEffect(() => {
+    if (!part.sceneId) { setImgOk(false); return; }
+    let revoke = '';
+    setImgOk(null);
+    fetchSceneImage(part.sceneId)
+      .then((url) => { revoke = url; setImgUrl(url); setImgOk(true); })
+      .catch(() => setImgOk(false));
+    return () => { if (revoke) URL.revokeObjectURL(revoke); };
+  }, [part.sceneId, imgBust]);
 
   const run = (label: string, fn: () => Promise<string>) => async () => {
     setBusy(true); setMsg(`${label}…`);
@@ -256,12 +267,8 @@ function PartCard({ levelNumber, part, onAudio, onView }: {
       <div className="part-body">
         {part.sceneId ? (
           <div className="scene">
-            <div className="scene-frame" onClick={() => imgOk && onView?.(imgSrc)}>
-              <img key={imgBust} src={imgSrc} alt={part.sceneId}
-                title={imgOk ? 'Bấm để xem ảnh to' : ''}
-                style={{ display: imgOk ? 'block' : 'none' }}
-                onLoad={() => setImgOk(true)}
-                onError={() => setImgOk(false)} />
+            <div className="scene-frame" onClick={() => imgOk && onView?.(imgUrl)}>
+              {imgOk && <img src={imgUrl} alt={part.sceneId} title="Bấm để xem ảnh to" />}
               {imgOk === null && <span className="ph">Đang tải ảnh…</span>}
               {imgOk === false && <span className="ph">Chưa có ảnh — bấm “Sinh ảnh” hoặc “Upload”.</span>}
             </div>
