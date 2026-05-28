@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { levelsFor, levelIdOf, partLabel, type CatLevel, type CatPart } from './catalog';
 import {
   sceneImageUrl, generateScene, getScenePrompt, uploadScene,
@@ -18,7 +18,7 @@ export function ExamManage() {
   const [scenes, setScenes] = useState<Record<string, boolean>>({});
   const [audio, setAudio] = useState<Record<string, boolean>>({});
   const [scanning, setScanning] = useState(false);
-  const [open, setOpen] = useState<CatLevel | null>(null);
+  const [open, setOpen] = useState<number | null>(null);
 
   const levels = useMemo(() => levelsFor(lang), [lang]);
 
@@ -96,36 +96,38 @@ export function ExamManage() {
           <tbody>
             {shown.map((l) => {
               const im = imgStat(l); const au = audStat(l);
+              const isOpen = open === l.levelNumber;
               return (
-                <tr key={l.levelNumber}>
-                  <td><b>{displayNum(l.levelNumber)}</b></td>
-                  <td>{l.title}</td>
-                  <td>{l.parts.length}</td>
-                  <td>{im.total ? <Stat done={im.done} total={im.total} /> : <span className="muted">—</span>}</td>
-                  <td><Stat done={au.done} total={au.total} checked={au.checked} /></td>
-                  <td><button className="btn sm primary" onClick={() => setOpen(l)}>Mở →</button></td>
-                </tr>
+                <Fragment key={l.levelNumber}>
+                  <tr className={isOpen ? 'open-row' : ''}>
+                    <td><b>{displayNum(l.levelNumber)}</b></td>
+                    <td>{l.title}</td>
+                    <td>{l.parts.length}</td>
+                    <td>{im.total ? <Stat done={im.done} total={im.total} /> : <span className="muted">—</span>}</td>
+                    <td><Stat done={au.done} total={au.total} checked={au.checked} /></td>
+                    <td>
+                      <button className={`btn sm ${isOpen ? '' : 'primary'}`} onClick={() => setOpen(isOpen ? null : l.levelNumber)}>
+                        {isOpen ? 'Đóng ▴' : 'Mở ▾'}
+                      </button>
+                    </td>
+                  </tr>
+                  {isOpen && (
+                    <tr className="detail-row">
+                      <td colSpan={6}>
+                        {l.parts.map((p) => (
+                          <PartCard key={p.partId} levelNumber={l.levelNumber} part={p}
+                            onAudio={(cached) => setAudio((m) => ({ ...m, [p.audioKey]: cached }))} />
+                        ))}
+                      </td>
+                    </tr>
+                  )}
+                </Fragment>
               );
             })}
           </tbody>
         </table>
         {shown.length === 0 && <p className="muted">Không có level khớp.</p>}
       </div>
-
-      {open && (
-        <div className="drawer-bg" onClick={() => setOpen(null)}>
-          <div className="drawer wide" onClick={(e) => e.stopPropagation()}>
-            <header>
-              <div><b>{open.title}</b><div className="mono">{levelIdOf(open.levelNumber)} · {open.parts.length} phần</div></div>
-              <button className="btn sm" onClick={() => setOpen(null)}>✕</button>
-            </header>
-            {open.parts.map((p) => (
-              <PartCard key={p.partId} levelNumber={open.levelNumber} part={p}
-                onAudio={(cached) => setAudio((m) => ({ ...m, [p.audioKey]: cached }))} />
-            ))}
-          </div>
-        </div>
-      )}
     </>
   );
 }
