@@ -5,12 +5,15 @@
  */
 import { getLevelsForLang } from '../../src/data/exam';
 
+export interface CalBox { id: string; label?: string; x: number; y: number; width: number; height: number }
 export interface CatPart {
   partId: string;
   type: string;
   audioKey: string;
   audioScript: string;
   sceneId?: string;
+  /** Calibratable boxes: drop zones (drag) or colour regions (colour). */
+  boxes?: CalBox[];
 }
 export interface CatLevel {
   levelNumber: number;
@@ -22,13 +25,22 @@ export function levelsFor(lang: 'en' | 'zh'): CatLevel[] {
   return getLevelsForLang(lang).map((l) => ({
     levelNumber: l.levelNumber,
     title: l.title,
-    parts: l.parts.map((p) => ({
-      partId: p.partId,
-      type: p.type,
-      audioKey: p.audioKey,
-      audioScript: p.audioScript,
-      sceneId: 'sceneId' in p ? (p as { sceneId: string }).sceneId : undefined,
-    })),
+    parts: l.parts.map((p) => {
+      let boxes: CalBox[] | undefined;
+      if (p.type === 'listening_drag_name') {
+        boxes = (p as { dropZones: CalBox[] }).dropZones?.map((z) => ({ ...z }));
+      } else if (p.type === 'listening_colour') {
+        boxes = (p as { regions: CalBox[] }).regions?.map((r) => ({ ...r }));
+      }
+      return {
+        partId: p.partId,
+        type: p.type,
+        audioKey: p.audioKey,
+        audioScript: p.audioScript,
+        sceneId: 'sceneId' in p ? (p as { sceneId: string }).sceneId : undefined,
+        boxes,
+      };
+    }),
   }));
 }
 

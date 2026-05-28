@@ -155,3 +155,15 @@ tr.detail-row td, tr.detail-row:hover td { background: #f8fafc; padding: 6px 14p
   border-radius: 10px; background: #f1f5f9; overflow: hidden; display: grid; place-items: center; cursor: zoom-in; }
 .scene-frame img { width: 100%; height: 100%; object-fit: cover; border: none; border-radius: 0; aspect-ratio: auto; }
 .ph { color: var(--muted); font-size: 12px; text-align: center; padding: 10px; }
+
+/* calibration editor */
+.cal-toolbar { width: min(960px, 95vw); display: flex; align-items: center; gap: 10px;
+  background: var(--surface); padding: 10px 14px; border-radius: 12px; margin-bottom: 10px; box-shadow: var(--shadow); }
+.cal-wrap { position: relative; display: inline-block; touch-action: none; user-select: none; background: #000; border-radius: 8px; }
+.cal-wrap img { display: block; max-width: 95vw; max-height: 78vh; border-radius: 8px; }
+.cal-box { position: absolute; border: 2px solid var(--brand); background: rgba(249,115,22,.18); box-sizing: border-box; cursor: move; }
+.cal-box.sel { border-color: var(--green); background: rgba(22,163,74,.22); z-index: 2; }
+.cal-label { position: absolute; top: -17px; left: 0; font-size: 10px; font-weight: 700; background: var(--brand); color: #fff; padding: 0 5px; border-radius: 4px; white-space: nowrap; }
+.cal-box.sel .cal-label { background: var(--green); }
+.cal-handle { position: absolute; right: -7px; bottom: -7px; width: 15px; height: 15px; background: #fff;
+  border: 2px solid var(--brand); border-radius: 3px; cursor: nwse-resize; }

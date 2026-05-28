@@ -86,6 +86,27 @@ export async function fetchAudio(audioKey: string, audioScript: string): Promise
   return URL.createObjectURL(await res.blob());
 }
 
+// ── Calibration (drop-zone / colour-region positions, 0-1 fractions) ──────
+export interface ZoneOverride { zone_id: string; x: number; y: number; width: number; height: number }
+
+export async function getCalibration(levelId: string, partId: string): Promise<ZoneOverride[]> {
+  const res = await fetch(`${WORKER_URL}/exam/calibration/${encodeURIComponent(levelId)}/${encodeURIComponent(partId)}`,
+    { headers: authHeaders() });
+  if (!res.ok) return [];
+  const data = await res.json().catch(() => ({})) as { zones?: ZoneOverride[] };
+  return data.zones ?? [];
+}
+export async function saveCalibration(levelId: string, partId: string, zones: ZoneOverride[]): Promise<void> {
+  const res = await fetch(`${WORKER_URL}/admin/exam/calibration/${encodeURIComponent(levelId)}/${encodeURIComponent(partId)}`,
+    { method: 'POST', headers: authHeaders({ 'Content-Type': 'application/json' }), body: JSON.stringify({ zones }) });
+  await asJson(res);
+}
+export async function deleteCalibration(levelId: string, partId: string): Promise<void> {
+  const res = await fetch(`${WORKER_URL}/admin/exam/calibration/${encodeURIComponent(levelId)}/${encodeURIComponent(partId)}`,
+    { method: 'DELETE', headers: authHeaders() });
+  await asJson(res);
+}
+
 /** Save a script override for a part (then regen audio to apply it). */
 export async function saveScript(levelId: string, partId: string, script: string): Promise<{ ok: true }> {
   const res = await fetch(`${WORKER_URL}/admin/exam/audio-script/${encodeURIComponent(levelId)}/${encodeURIComponent(partId)}`,

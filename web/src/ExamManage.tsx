@@ -1,5 +1,6 @@
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import { levelsFor, levelIdOf, partLabel, type CatLevel, type CatPart } from './catalog';
+import { CalibrateEditor } from './CalibrateEditor';
 import {
   fetchSceneImage, generateScene, getScenePrompt, uploadScene,
   audioStatus, generateAudio, saveScript, deleteScript, scenesStatus, fetchAudio,
@@ -202,6 +203,7 @@ function PartCard({ levelNumber, part, onAudio, onView }: {
   const [audioUrl, setAudioUrl] = useState('');
   const [imgUrl, setImgUrl] = useState('');
   const [imgOk, setImgOk] = useState<boolean | null>(null); // null=loading, true/false=loaded/missing
+  const [calOpen, setCalOpen] = useState(false);
   const levelId = levelIdOf(levelNumber);
 
   // Load the scene image WITH auth (object URL); reloads when bust changes.
@@ -277,6 +279,9 @@ function PartCard({ levelNumber, part, onAudio, onView }: {
               <button className="btn sm" disabled={busy} onClick={onPrompt}>Prompt</button>
               <label className="btn sm">Upload<input type="file" accept="image/*" hidden
                 onChange={(e) => { const f = e.target.files?.[0]; if (f) onUpload(f); }} /></label>
+              {part.boxes?.length ? (
+                <button className="btn sm" onClick={() => imgOk ? setCalOpen(true) : setMsg('Cần có ảnh trước khi chỉnh vị trí.')}>📐 Vị trí</button>
+              ) : null}
             </div>
           </div>
         ) : <div className="scene muted" style={{ alignSelf: 'center' }}>(không có ảnh)</div>}
@@ -294,6 +299,10 @@ function PartCard({ levelNumber, part, onAudio, onView }: {
         </div>
       </div>
       {msg && <div className="muted" style={{ marginTop: 6 }}>{msg}</div>}
+      {calOpen && part.boxes && (
+        <CalibrateEditor levelId={levelId} partId={part.partId} imageUrl={imgUrl}
+          defaults={part.boxes} onClose={() => setCalOpen(false)} />
+      )}
     </div>
   );
 }
