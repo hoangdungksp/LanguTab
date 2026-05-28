@@ -34,6 +34,21 @@ export interface CacheEntry {
   createdAt: Date;
 }
 
+/** D-22: a daily journal entry + optional AI grammar feedback. Stored locally
+ *  in IndexedDB and kept until the user deletes it. */
+export interface JournalEntry {
+  id: string;            // 'jr_<ts>_<rand>'
+  lang: 'en' | 'zh';
+  date: string;          // YYYY-MM-DD (the day being written about)
+  text: string;          // the learner's writing
+  corrected?: string;    // AI-corrected version
+  notes?: { wrong: string; fix: string; explain: string }[];
+  summary?: string;      // AI encouragement (Vietnamese)
+  createdAt: number;
+  updatedAt: number;
+  userId?: string;
+}
+
 export class LinguaDB extends Dexie {
   wordProgress!: EntityTable<WordProgress, 'wordId'>;
   settings!: EntityTable<Settings, 'id'>;
@@ -66,6 +81,8 @@ export class LinguaDB extends Dexie {
    *   - isFavorite      : filter starred stories
    */
   userStories!: EntityTable<UserStory, 'id'>;
+  /** D-22: daily journal entries (local, persistent until user deletes). */
+  journalEntries!: EntityTable<JournalEntry, 'id'>;
 
   constructor() {
     super('LinguaNewTabDB');
@@ -127,6 +144,18 @@ export class LinguaDB extends Dexie {
       customImages: 'wordId, lang, syncStatus, uploadedAt, userId',
       reviewLog: '++id, reviewedAt, lang, wordId, userId',
       userStories: 'id, createdAt, hskLevel, genre, isFavorite, userId',
+    });
+
+    // v6 — D-22 daily journal. String PK 'jr_<ts>_<rand>'; indexed by date,
+    // lang, createdAt (list newest), userId (multi-user filter).
+    this.version(6).stores({
+      wordProgress: 'wordId, lang, due, state, userId',
+      settings: 'id, userId',
+      cache: 'key, createdAt',
+      customImages: 'wordId, lang, syncStatus, uploadedAt, userId',
+      reviewLog: '++id, reviewedAt, lang, wordId, userId',
+      userStories: 'id, createdAt, hskLevel, genre, isFavorite, userId',
+      journalEntries: 'id, date, lang, createdAt, userId',
     });
   }
 }

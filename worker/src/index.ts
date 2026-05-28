@@ -631,6 +631,7 @@ import { handleSyncRequest } from './sync/handlers';
 import { handleBillingRequest } from './billing/handlers';
 import { handleExamRequest, handleAdminExamRequest } from './exam/handlers';
 import { handleProgressRequest } from './exam/progress';
+import { handleJournalRequest } from './journal/correct';
 import { handleAdminUsersRequest } from './admin/users';
 import { getUserTier, quotaFor } from './billing/tier';
 import { getUserRole, canEdit } from './auth/roles';
@@ -808,6 +809,12 @@ export default {
             resp = await proxyGenerateStory(req, env, user);
           }
         }
+      } else if (url.pathname === '/journal/correct') {
+        // D-22: AI grammar correction for journal entries (auth + KV rate limit).
+        const r = await handleJournalRequest(req, env, user);
+        resp = r ?? new Response(JSON.stringify({ error: 'Not found' }), {
+          status: 404, headers: { 'Content-Type': 'application/json' },
+        });
       } else if (url.pathname === '/exam/progress') {
         // D-21: mirror exam progress to D1 (GET own / POST upsert). Auth-gated.
         const r = await handleProgressRequest(req, env, user);

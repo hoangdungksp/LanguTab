@@ -226,7 +226,7 @@ export interface Settings {
   hasSeenOnboarding?: boolean;
 }
 
-export type TabId = 'dashboard' | 'phonetics' | 'flashcards' | 'stories' | 'translate' | 'exam';
+export type TabId = 'dashboard' | 'phonetics' | 'flashcards' | 'stories' | 'translate' | 'exam' | 'phrasebook' | 'journal';
 
 /**
  * User-uploaded custom image for a flashcard.

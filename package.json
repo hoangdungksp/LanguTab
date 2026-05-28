@@ -1,8 +1,8 @@
 {
   "name": "lingua-newtab",
   "displayName": "LinguTab — Học tiếng Trung & Anh",
-  "version": "1.20.0",
-  "versionName": "1.20.0 — Web dashboard (D-21): nền sync tiến độ + admin quản lý user",
+  "version": "1.21.0",
+  "versionName": "1.21.0 — Mẫu câu thông dụng (EN+ZH) + Nhật ký có AI sửa ngữ pháp",
   "description": "Chrome extension thay new tab thành nơi học tiếng Trung / tiếng Anh với phonetics, flashcard SRS, TTS. Dành cho người Việt.",
   "private": true,
   "type": "module",

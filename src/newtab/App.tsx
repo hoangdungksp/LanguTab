@@ -9,6 +9,8 @@ import { TabFlashcards } from './components/TabFlashcards';
 import { TabStories } from './components/TabStories';
 import { TabTranslate } from './components/TabTranslate';
 import { TabExam } from './components/TabExam';
+import { TabPhrasebook } from './components/TabPhrasebook';
+import { TabJournal } from './components/TabJournal';
 import { OnboardingModal } from './components/OnboardingModal';
 import { syncPendingImages } from '../services/imageService';
 import { onAuthChange } from '../services/authService';
@@ -84,6 +86,8 @@ export default function App() {
         <div style={{ display: activeTab === 'translate' ? 'block' : 'none' }}>
           <TabTranslate />
         </div>
+        {activeTab === 'phrasebook' && <TabPhrasebook />}
+        {activeTab === 'journal' && <TabJournal />}
         {activeTab === 'exam' && <TabExam />}
       </main>
 

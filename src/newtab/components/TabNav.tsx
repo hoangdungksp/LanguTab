@@ -17,6 +17,8 @@ const MAIN_TABS: Tab[] = [
   { id: 'phonetics',  label: 'Phát âm',    emoji: '🎧', description: 'Âm & thanh điệu' },
   { id: 'flashcards', label: 'Flashcard',  emoji: '🃏', description: 'Ôn từ vựng' },
   { id: 'stories',    label: 'Truyện kể',  emoji: '📖', description: 'Truyện ngắn HSK 1-4' },
+  { id: 'phrasebook', label: 'Mẫu câu',    emoji: '💬', description: 'Câu giao tiếp thông dụng' },
+  { id: 'journal',    label: 'Nhật ký',    emoji: '📔', description: 'Viết & AI sửa câu' },
   { id: 'translate',  label: 'Dịch',       emoji: '🌐', description: 'Dịch văn bản' },
 ];
 
